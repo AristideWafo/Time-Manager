@@ -1,8 +1,11 @@
 name: Build
 
 on:
-  push:
-    branches: [ "cicd" ]
+  workflow_call:
+    inputs:
+      environment:
+        required: true
+        type: string
 
 jobs:
   build:
@@ -11,4 +14,4 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
       - name: Build app
-        run: echo "Building..."
+        run: echo "Building for ${{ inputs.environment }}"
