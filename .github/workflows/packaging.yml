@@ -26,7 +26,7 @@ jobs:
 
       - name: Echo based on branch
         run: |
-          if [[ "${{ github.ref_name }}" == *front* ]]; then
+          if [[ "${{ github.ref_name }}" == *cicd* ]]; then
             echo "fronts"
           elif [[ "${{ github.ref_name }}" == *back* ]]; then
             echo "backkk"
