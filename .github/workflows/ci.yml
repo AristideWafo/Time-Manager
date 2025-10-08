@@ -6,17 +6,6 @@ on:
   pull_request:
     branches: [ "cicd" ]
 
-permissions:
-  contents: read
-  packages: write
-  id-token: write
-  
-env:
-  REGISTRY: ghcr.io
-  IMAGE_NAME_BACK: ${{ github.repository }}/backend
-  IMAGE_NAME_FRONT: ${{ github.repository }}/frontend
-  IMAGE_NAME_NGINX: ${{ github.repository }}/nginx
-
 jobs:
   buildStep:
     uses: ./.github/workflows/build.yml
@@ -30,6 +19,10 @@ jobs:
 
   packagingStep:
     needs: [buildStep, testStep]
+    permissions:
+      contents: read
+      packages: write
+      id-token: write
     uses: ./.github/workflows/packaging.yml
     with:
       environment: production

@@ -24,19 +24,31 @@ jobs:
       - name: Package app
         run: echo "Packaging for ${{ inputs.environment }}"
 
-      - name: Echo based on branch
+      - name: Log in to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+          
+      - name: Build image
         run: |
-          if [[ "${{ github.ref_name }}" == *cicd* ]]; then
-            echo "fronts"
+          if [[ "${{ github.ref_name }}" == *front* ]]; then
+            docker build -t $REGISTRY/${IMAGE_NAME_FRONT}:latest ./front
           elif [[ "${{ github.ref_name }}" == *back* ]]; then
-            echo "backkk"
+            docker build -t $REGISTRY/${IMAGE_NAME_BACK}:latest ./back
           else
             echo "no match"
-            echo "${{ github.ref_name }}"
+            docker build -t $REGISTRY/${IMAGE_NAME_NGINX}:latest ./nginx
           fi
-      # - name: Log in to GitHub Container Registry
-      #   uses: docker/login-action@v3
-      #   with:
-      #     registry: ghcr.io
-      #     username: ${{ github.actor }}
-      #     password: ${{ secrets.GITHUB_TOKEN }}
+                
+      - name: Push image
+        run: |
+          if [[ "${{ github.ref_name }}" == *front* ]]; then
+            docker push $REGISTRY/${IMAGE_NAME_FRONT}:latest
+          elif [[ "${{ github.ref_name }}" == *back* ]]; then
+            docker push $REGISTRY/${IMAGE_NAME_BACK}:latest
+          else
+            echo "no match"
+            docker push $REGISTRY/${IMAGE_NAME_NGINX}:latest
+          fi
