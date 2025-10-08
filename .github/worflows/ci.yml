@@ -2,8 +2,7 @@ name: CI Build & Push
 
 on:
   push:
-    branches:
-      - prod
+    branches: [ "prod" ]
   pull_request:
 
 env:
