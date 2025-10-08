@@ -34,21 +34,21 @@ jobs:
       - name: Build image
         run: |
           if [[ "${{ github.ref_name }}" == *front* ]]; then
-            docker build -t $REGISTRY/${IMAGE_NAME_FRONT}:latest ./front
+            docker build -t $REGISTRY/${IMAGE_NAME_FRONT,,}:latest ./front
           elif [[ "${{ github.ref_name }}" == *back* ]]; then
-            docker build -t $REGISTRY/${IMAGE_NAME_BACK}:latest ./back
+            docker build -t $REGISTRY/${IMAGE_NAME_BACK,,}:latest ./back
           else
             echo "no match"
-            docker build -t $REGISTRY/${IMAGE_NAME_NGINX}:latest ./nginx
+            docker build -t $REGISTRY/${IMAGE_NAME_NGINX,,}:latest ./nginx
           fi
                 
       - name: Push image
         run: |
           if [[ "${{ github.ref_name }}" == *front* ]]; then
-            docker push $REGISTRY/${IMAGE_NAME_FRONT}:latest
+            docker push $REGISTRY/${IMAGE_NAME_FRONT,,}:latest
           elif [[ "${{ github.ref_name }}" == *back* ]]; then
-            docker push $REGISTRY/${IMAGE_NAME_BACK}:latest
+            docker push $REGISTRY/${IMAGE_NAME_BACK,,}:latest
           else
             echo "no match"
-            docker push $REGISTRY/${IMAGE_NAME_NGINX}:latest
+            docker push $REGISTRY/${IMAGE_NAME_NGINX,,}:latest
           fi
