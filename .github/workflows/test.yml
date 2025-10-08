@@ -5,7 +5,7 @@ on:
     branches: [ "cicd" ]
 
 jobs:
-  build:
+  test:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
