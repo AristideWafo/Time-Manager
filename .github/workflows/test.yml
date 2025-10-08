@@ -11,9 +11,7 @@ jobs:
   test:
     runs-on: ubuntu-latest
     steps:
-      - name: Set up Node.js
-        run: ls -la
-      # - name: Checkout
-      #   uses: actions/checkout@v4
+      - name: Checkout
+        uses: actions/checkout@v4
       - name: Test app
         run: echo "Testing for ${{ inputs.environment }}"

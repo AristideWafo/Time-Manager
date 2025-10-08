@@ -1,10 +1,11 @@
 name: Deploy
 
 on:
-  workflow_run:
-    workflows: [ "build" ]    # nom du workflow à écouter
-    types:
-      - completed
+  workflow_call:
+    inputs:
+      environment:
+        required: true
+        type: string
 
 jobs:
   deploy:
