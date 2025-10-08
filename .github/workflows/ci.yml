@@ -13,15 +13,15 @@ env:
   IMAGE_NAME_NGINX: ${{ github.repository }}/nginx
 
 jobs:
-  build:
+  buildStep:
     uses: ./.github/workflows/build.yml
-    # with:
-    #   environment: production
+    with:
+      environment: production
 
-  test:
+  testStep:
     uses: ./.github/workflows/test.yml
-    # with:
-    #   environment: production
+    with:
+      environment: production
 
 
   # build-and-push:
