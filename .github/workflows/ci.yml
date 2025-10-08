@@ -13,16 +13,11 @@ env:
   IMAGE_NAME_NGINX: ${{ github.repository }}/nginx
 
 jobs:
-  test:
-    runs-on: ubuntu-latest
+  call-reusable:
+    uses: ./.github/workflows/build.yml
+    with:
+      environment: production
 
-    steps:
-      - name: Checkout repo
-        uses: actions/checkout@v4
-
-      - name: Set up Python
-        run: |
-          echo "python-version: 3.11"
   # build-and-push:
   #   runs-on: ubuntu-latest
   #   permissions:
