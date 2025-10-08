@@ -1,8 +1,11 @@
 name: Test
 
 on:
-  push:
-    branches: [ "cicd" ]
+  workflow_call:
+    inputs:
+      environment:
+        required: true
+        type: string
 
 jobs:
   test:
@@ -11,4 +14,4 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
       - name: Test app
-        run: echo "Testing..."
+        run: echo "Testing for ${{ inputs.environment }}"
