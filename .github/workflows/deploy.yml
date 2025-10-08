@@ -1,0 +1,14 @@
+name: Deploy
+
+on:
+  workflow_run:
+    workflows: [ "Build" ]    # nom du workflow à écouter
+    types:
+      - completed
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Deploy app
+        run: echo "Deploying after build..."
