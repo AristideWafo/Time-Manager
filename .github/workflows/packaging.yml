@@ -32,6 +32,7 @@ jobs:
             echo "backkk"
           else
             echo "no match"
+            echo "${{ github.ref_name }}"
           fi
       # - name: Log in to GitHub Container Registry
       #   uses: docker/login-action@v3
