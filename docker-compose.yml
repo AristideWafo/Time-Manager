@@ -1,0 +1,30 @@
+version: "3.9"
+
+services:
+  backend:
+    image: ghcr.io/jerrywafo/monrepo/backend:latest
+    ports:
+      - "8080:8080"
+    networks:
+      - internal
+
+  frontend:
+    image: ghcr.io/jerrywafo/monrepo/frontend:latest
+    ports:
+      - "3000:80"
+    networks:
+      - internal
+
+  nginx:
+    image: ghcr.io/jerrywafo/monrepo/nginx:latest
+    ports:
+      - "80:80"
+    depends_on:
+      - backend
+      - frontend
+    networks:
+      - internal
+
+networks:
+  internal:
+    driver: bridge
