@@ -7,10 +7,9 @@ on:
         required: true
         type: string
 
-
 jobs:
   deploy:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu:24.04
     steps:
       - name: Deploy app
         run: echo "Deploying after build..."
