@@ -1,5 +1,9 @@
 name: Test
 
+env:
+  GO_VERSION: '1.25.1'
+  WORKING_DIR: './back'
+
 on:
   workflow_call:
     inputs:
@@ -29,10 +33,10 @@ jobs:
       - name: Setup Go
         uses: actions/setup-go@v6
         with:
-          go-version: '1.25.1'  # Exact version from go.mod
+          go-version: ${{ env.GO_VERSION }}  # Exact version from go.mod
       
       - name: Ensure deps
-        working-directory: ./back
+        working-directory: ${{ env.WORKING_DIR }}
         run: go mod tidy
 
       - name: Install golangci-lint
