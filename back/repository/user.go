@@ -1,6 +1,8 @@
 package repository
 
-import "TimeManager/model"
+import (
+	"TimeManager/model"
+)
 
 // TO DO: DUMMY REPLIES
 
