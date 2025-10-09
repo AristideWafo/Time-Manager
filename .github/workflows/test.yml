@@ -16,16 +16,19 @@ jobs:
       - name: Test app
         run: echo "Testing for ${{ inputs.environment }}"
   
-  go-lint: 
-      if: contains(github.event.pull_request.head.ref, '/back_') || contains(github.ref_name, 'cicd')
-      name: lint
-      runs-on: ubuntu-latest
-      steps:
-        - uses: actions/checkout@v5
-        - uses: actions/setup-go@v6
-          with:
-            go-version: stable
-        - name: golangci-lint
-          uses: golangci/golangci-lint-action@v8
-          with:
-            version: v2.1
+  go-lint:
+    if: contains(github.ref_name, 'cicd') || contains(github.ref_name, 'back_')
+    name: lint
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-go@v6
+        with:
+          go-version: stable
+      - name: Install golangci-lint from source
+        run: |
+          go install github.com/golangci/golangci-lint/cmd/golangci-lint@latest
+          export PATH="$(go env GOPATH)/bin:$PATH"
+      - name: Run golangci-lint
+        run: |
+          $(go env GOPATH)/bin/golangci-lint run
