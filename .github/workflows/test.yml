@@ -17,7 +17,7 @@ jobs:
         run: echo "Testing for ${{ inputs.environment }}"
   
   go-lint: 
-      if: contains(github.event.pull_request.head.ref, '/back_')   
+      if: contains(github.event.pull_request.head.ref, '/back_') || contains(github.event.pull_request.head.ref, 'cicd')
       name: lint
       runs-on: ubuntu-latest
       steps:
