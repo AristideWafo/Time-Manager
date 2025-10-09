@@ -14,6 +14,8 @@ jobs:
 
   testStep:
     needs: [buildStep]
+    permissions:
+      contents: read
     uses: ./.github/workflows/test.yml
     with:
       environment: production
