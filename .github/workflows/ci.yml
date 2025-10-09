@@ -1,0 +1,31 @@
+name: CI Build & Push
+
+on:
+  push:
+    branches: [ "cicd" ]
+  pull_request:
+    branches: [ "cicd" ]
+
+jobs:
+  buildStep:
+    uses: ./.github/workflows/build.yml
+    with:
+      environment: production
+
+  testStep:
+    needs: [buildStep]
+    permissions:
+      contents: read
+    uses: ./.github/workflows/test.yml
+    with:
+      environment: production
+
+  packagingStep:
+    needs: [buildStep, testStep]
+    permissions:
+      contents: read
+      packages: write
+      id-token: write
+    uses: ./.github/workflows/packaging.yml
+    with:
+      environment: production
