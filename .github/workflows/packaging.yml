@@ -38,9 +38,9 @@ jobs:
             docker build -t $REGISTRY/${IMAGE_NAME_FRONT,,}:latest ./front
           elif [[ "${{ github.ref_name }}" == *back* ]]; then
             docker build -t $REGISTRY/${IMAGE_NAME_BACK,,}:latest ./back
+            docker build -t $REGISTRY/${IMAGE_NAME_NGINX,,}:latest ./nginx
           else
             echo "no match"
-            docker build -t $REGISTRY/${IMAGE_NAME_NGINX,,}:latest ./nginx
           fi
                 
       - name: Push image
@@ -49,7 +49,7 @@ jobs:
             docker push $REGISTRY/${IMAGE_NAME_FRONT,,}:latest
           elif [[ "${{ github.ref_name }}" == *back* ]]; then
             docker push $REGISTRY/${IMAGE_NAME_BACK,,}:latest
+            docker push $REGISTRY/${IMAGE_NAME_NGINX,,}:latest
           else
             echo "no match"
-            docker push $REGISTRY/${IMAGE_NAME_NGINX,,}:latest
           fi
