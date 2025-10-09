@@ -3,3 +3,5 @@
 [![OpenSSF Best Practices](https://bestpractices.coreinfrastructure.org/projects/0000/badge)](https://bestpractices.coreinfrastructure.org/)
 [![CI Build](https://github.com/AristideWafo/Time-Manager/actions/workflows/ci.yml/badge.svg)](https://github.com/AristideWafo/Time-Manager/actions/workflows/ci.yml)
 [![CodeQL](https://github.com/AristideWafo/Time-Manager/actions/workflows/codeql-analysis.yml/badge.svg)](https://github.com/AristideWafo/Time-Manager/actions/workflows/codeql-analysis.yml)
+
+
