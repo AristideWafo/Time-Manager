@@ -28,7 +28,7 @@ jobs:
       - name: Setup Go
         uses: actions/setup-go@v6
         with:
-          go-version: '1.25.1'  # Matching exact version from go.mod
+          go-version: stable  # Matching exact version from go.mod
       
       - name: Ensure deps (generate go.sum)
         working-directory: ./back
