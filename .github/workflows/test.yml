@@ -28,16 +28,17 @@ jobs:
       - name: Setup Go (match go.mod)
         uses: actions/setup-go@v6
         with:
-          go-version: '1.25.2'    # mettre la version exacte de go.mod
+          go-version: '1.25.2'
+      
       - name: Ensure deps (generate go.sum)
-        working-directory: ./back   # <- chemin vers le dossier contenant go.mod
+        working-directory: ./back
         run: go mod tidy
 
       - name: Install golangci-lint with same Go
         run: |
-          go install github.com/golangci/golangci-lint/cmd/golangci-lint@v2.5.0
+          go install github.com/golangci/golangci-lint/cmd/golangci-lint@v1.55.2
           echo "$(go env GOPATH)/bin" >> $GITHUB_PATH
 
       - name: Run golangci-lint
-        working-directory: ./back   # <- idem
+        working-directory: ./back
         run: golangci-lint run
