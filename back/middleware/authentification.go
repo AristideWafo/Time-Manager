@@ -21,7 +21,7 @@ func AuthMiddleware() gin.HandlerFunc {
 
 		if token == "" {
 			err := errors.New("NO TOKEN GIVEN")
-			context.AbortWithError(http.StatusBadRequest, err)
+			err = context.AbortWithError(http.StatusBadRequest, err)
 			context.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 			return
 		}
@@ -34,7 +34,7 @@ func AuthMiddleware() gin.HandlerFunc {
 			return
 		}
 
-		context.AbortWithError(http.StatusBadRequest, err)
+		err = context.AbortWithError(http.StatusBadRequest, err)
 		context.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 
 	}

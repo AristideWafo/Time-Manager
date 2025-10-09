@@ -4,7 +4,6 @@ import (
 	"TimeManager/model"
 	"TimeManager/repository"
 	"TimeManager/service"
-	"errors"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -23,30 +22,23 @@ func authentificate(context *gin.Context) {
 	var user AuthentificationUserInput
 
 	if err := context.BindJSON(&user); err != nil {
-		context.AbortWithError(http.StatusBadRequest, err)
+		err = context.AbortWithError(http.StatusBadRequest, err)
 		context.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
-	fetched_user, success, err := repository.Login(user.Email, user.Password)
-
-	if !success {
-		err := errors.New("USER NOT FOUND")
-		context.AbortWithError(http.StatusNotFound, error(err))
-		context.JSON(http.StatusNotFound, gin.H{"error": "User not found"})
-		return
-	}
+	fetched_user, err := repository.Login(user.Email, user.Password)
 
 	if err != nil {
-		context.AbortWithError(http.StatusInternalServerError, err)
-		context.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		err = context.AbortWithError(http.StatusNotFound, err)
+		context.JSON(http.StatusNotFound, gin.H{"error": err.Error()})
 		return
 	}
 
 	token, err := service.CreateToken(fetched_user.ID, fetched_user.Role, fetched_user.Team)
 
 	if err != nil {
-		context.AbortWithError(http.StatusInternalServerError, err)
+		err = context.AbortWithError(http.StatusInternalServerError, err)
 		context.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
@@ -54,15 +46,18 @@ func authentificate(context *gin.Context) {
 	var output AuthentificationUserOutput
 
 	if err = copier.Copy(&output, &fetched_user); err != nil {
-		context.AbortWithError(http.StatusInternalServerError, err)
+		err = context.AbortWithError(http.StatusInternalServerError, err)
 		context.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
 	}
 
 	output.Token = token
+	output.ID = fetched_user.ID.Hex()
 
 	if err = model.ValidateModel(&output); err != nil {
-		context.AbortWithError(http.StatusInternalServerError, err)
+		err = context.AbortWithError(http.StatusInternalServerError, err)
 		context.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
 	}
 
 	context.JSON(http.StatusOK, output)

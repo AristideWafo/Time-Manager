@@ -1,4 +1,4 @@
-package user
+package presence
 
 import (
 	"TimeManager/model"
@@ -12,15 +12,15 @@ import (
 	"go.mongodb.org/mongo-driver/v2/bson"
 )
 
-func RegisterUserRoutes(router *gin.Engine) {
-	user := router.Group("/user")
+func RegisterPresenceRoutes(router *gin.Engine) {
+	user := router.Group("/presence")
 	{
-		user.GET("", FetchUser)
-		user.POST("/create", PostUser)
+		user.GET("", GetAllPresences)
+		user.POST("/create", CreatePresence)
 	}
 }
 
-func FetchUser(context *gin.Context) {
+func GetAllPresences(context *gin.Context) {
 
 	claims, exists := context.Get("claims")
 
@@ -48,7 +48,7 @@ func FetchUser(context *gin.Context) {
 		return
 	}
 
-	user, err := repository.GetUser(_id)
+	presences, err := repository.GetAllPresencesByUser(_id)
 
 	if err != nil {
 		err = context.AbortWithError(http.StatusNotFound, err)
@@ -56,35 +56,45 @@ func FetchUser(context *gin.Context) {
 		return
 	}
 
-	var output UserOutput
+	var output []PresenceOutput
 
-	if err = copier.Copy(&output, user); err != nil {
+	if err = copier.Copy(&output, presences); err != nil {
 		err = context.AbortWithError(http.StatusInternalServerError, err)
 		context.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 
-	output.ID = user.ID.Hex()
+	for _, presence := range output {
 
-	if err = model.ValidateModel(&output); err != nil {
-		err = context.AbortWithError(http.StatusInternalServerError, err)
-		context.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-		return
+		if err = model.ValidateModel(&presence); err != nil {
+			err = context.AbortWithError(http.StatusInternalServerError, err)
+			context.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+			return
+		}
 	}
 
 	context.JSON(http.StatusOK, gin.H{"user": output})
 }
 
-func PostUser(context *gin.Context) {
-	var user CreateUserInput
+func CreatePresence(context *gin.Context) {
 
-	if err := context.BindJSON(&user); err != nil {
+	var presence CreatePresenceInput
+
+	if err := context.BindJSON(&presence); err != nil {
 		err = context.AbortWithError(http.StatusBadRequest, err)
 		context.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
-	created_user, err := repository.CreateUser(user.FirstName, user.LastName, user.Email, user.Password, user.Role)
+	_id, err := bson.ObjectIDFromHex(presence.User)
+
+	if err != nil {
+		err = context.AbortWithError(http.StatusInternalServerError, err)
+		context.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	created_presence, err := repository.CreatePresence(presence.Type, _id, presence.Timestamp)
 
 	if err != nil {
 		err = context.AbortWithError(http.StatusConflict, err)
@@ -92,21 +102,13 @@ func PostUser(context *gin.Context) {
 		return
 	}
 
-	var output UserOutput
+	var output PresenceOutput
 
-	if err = copier.Copy(&output, created_user); err != nil {
+	if err = copier.Copy(&output, created_presence); err != nil {
 		err = context.AbortWithError(http.StatusInternalServerError, err)
 		context.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 
-	output.ID = created_user.ID.Hex()
-
-	if err = model.ValidateModel(&output); err != nil {
-		err = context.AbortWithError(http.StatusInternalServerError, err)
-		context.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-		return
-	}
-
-	context.JSON(http.StatusOK, gin.H{"user": output})
+	context.JSON(http.StatusOK, gin.H{"presence": output})
 }

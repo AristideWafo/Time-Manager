@@ -1,16 +1,18 @@
 package user
 
 type CreateUserInput struct {
-	FirstName string `json:"first_name" binding:"required" validate:"required"`
-	LastName  string `json:"last_name" binding:"required" validate:"required"`
-	Email     string `json:"email" binding:"required" validate:"required,email"`
-	Password  string `json:"password" binding:"required" validate:"required"`
+	FirstName string `json:"FirstName" bson:"FirstName" binding:"required" validate:"required"`
+	LastName  string `json:"LastName" bson:"LastName" binding:"required" validate:"required"`
+	Role      string `json:"Role" binding:"required" validate:"required"`
+	Email     string `json:"Email" binding:"required" validate:"required,email"`
+	Password  string `json:"Password" binding:"required" validate:"required"`
 }
 
 type UserOutput struct {
-	FirstName string `json:"first_name" binding:"required" validate:"required"`
-	LastName  string `json:"last_name" binding:"required" validate:"required"`
-	Email     string `json:"email" binding:"required" validate:"required,email"`
-	Role      string `json:"role" binding:"required" validate:"required"`
-	Team      string `json:"team" binding:"required" validate:"required"`
+	ID        string `json:"_id" bson:"_id" binding:"required" validate:"required"`
+	FirstName string `json:"FirstName" bson:"FirstName" binding:"required" validate:"required"`
+	LastName  string `json:"LastName" bson:"LastName" binding:"required" validate:"required"`
+	Email     string `json:"Email" binding:"required" validate:"required,email"`
+	Role      string `json:"Role" binding:"required" validate:"required"`
+	Team      string `json:"Team"`
 }

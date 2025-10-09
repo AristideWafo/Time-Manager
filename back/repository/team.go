@@ -26,7 +26,7 @@ func FetchTeam(name string) (model.Team, bool, error) {
 		return model.Team{}, false, err
 	}
 
-	err = model.ValidateModel(result)
+	err = model.ValidateModel(&result)
 
 	if err != nil {
 		fmt.Printf("Error found : %v", err)

@@ -7,7 +7,7 @@ import (
 	"time"
 
 	"github.com/golang-jwt/jwt/v5"
-	"go.mongodb.org/mongo-driver/bson/primitive"
+	"go.mongodb.org/mongo-driver/v2/bson"
 )
 
 type TokenClaims struct {
@@ -15,12 +15,12 @@ type TokenClaims struct {
 	jwt.RegisteredClaims
 }
 
-func CreateToken(_id primitive.ObjectID, role string, team string) (string, error) {
+func CreateToken(_id bson.ObjectID, role string, team bson.ObjectID) (string, error) {
 	claims := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
-		"sub":  _id,
+		"sub":  _id.Hex(),
 		"iss":  "todo-app",
 		"aud":  role,
-		"team": team,
+		"team": team.Hex(),
 		"exp":  time.Now().Add(time.Hour).Unix(),
 		"iat":  time.Now().Unix(),
 	})

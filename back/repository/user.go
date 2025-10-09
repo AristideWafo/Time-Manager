@@ -3,37 +3,55 @@ package repository
 import (
 	"TimeManager/model"
 
-	"go.mongodb.org/mongo-driver/bson/primitive"
+	"go.mongodb.org/mongo-driver/v2/bson"
 )
 
 // TO DO: DUMMY REPLIES
 
-var _id, _ = primitive.ObjectIDFromHex("68e8c75630834f60973523e8")
+var NULL_ID, _ = bson.ObjectIDFromHex("")
 
-var users = []model.User{
-	{ID: _id, Email: "Blue@IHateEpitech.com", Password: "Red", Role: "ADMIN", Team: "Rocket", FirstName: "Miel", LastName: "Pops"},
+func Login(email string, password string) (*model.User, error) {
+
+	user := &model.User{}
+	filter := bson.D{{Key: "Email", Value: email}, {Key: "Password", Value: password}}
+	err := GetOne(filter, UserCollection(), user)
+
+	return user, err
 }
 
-func Login(email string, password string) (model.User, bool, error) {
-	if email != users[0].Email || password != users[0].Password {
-		return model.User{}, false, nil
+func GetUser(_id bson.ObjectID) (*model.User, error) {
+
+	user := &model.User{}
+	filter := bson.D{{Key: "_id", Value: _id}}
+	err := GetOne(filter, UserCollection(), user)
+
+	if err != nil {
+		return user, err
 	}
-	return users[0], true, nil
-}
 
-func GetUser(_id primitive.ObjectID) (model.User, bool, error) {
-	if _id != users[0].ID {
-		return model.User{}, false, nil
+	if user.Team == NULL_ID {
+		return user, nil
 	}
-	return users[0], true, nil
+
+	filter = bson.D{{Key: "_id", Value: user.Team}}
+	team := &model.Team{}
+	err = GetOne(filter, TeamCollection(), team)
+
+	return user, err
 }
 
-func GetAllUsers() ([]model.User, bool, error) {
-	return users, true, nil
-}
+func CreateUser(first_name string, last_name string, email string, password string, role string) (*model.User, error) {
+	user := &model.User{
+		FirstName: first_name,
+		LastName:  last_name,
+		Email:     email,
+		Password:  password,
+		Role:      role,
+	}
 
-func CreateUser(email string, password string) (model.User, bool, error) {
-	return users[0], true, nil
+	err := Save(user, UserCollection())
+
+	return user, err
 }
 
 func UpdateUser(user model.User) (model.User, bool, error) {
