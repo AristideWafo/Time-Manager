@@ -3,7 +3,6 @@ name: CI Build & Push
 on:
   push:
     branches: [ "prod" ]
-  pull_request:
 
 env:
   REGISTRY: ghcr.io
