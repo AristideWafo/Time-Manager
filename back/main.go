@@ -3,7 +3,7 @@ package main
 import (
 	"TimeManager/middleware"
 	"TimeManager/repository"
-	"TimeManager/route/autentification"
+	"TimeManager/route/authentification"
 	"TimeManager/route/user"
 
 	"github.com/gin-gonic/gin"
@@ -21,7 +21,7 @@ func main() {
 	router := gin.Default()
 	router.Use(middleware.AuthMiddleware())
 
-	autentification.RegisterAuthentificationRoutes(router)
+	authentification.RegisterAuthentificationRoutes(router)
 	user.RegisterUserRoutes(router)
 
 	router.Run("localhost:8080")

@@ -1,13 +1,12 @@
-package user
+package authentification
 
-type CreateUserInput struct {
-	FirstName string `json:"first_name" binding:"required" validate:"required"`
-	LastName  string `json:"last_name" binding:"required" validate:"required"`
-	Email     string `json:"email" binding:"required" validate:"required,email"`
-	Password  string `json:"password" binding:"required" validate:"required"`
+type AuthentificationUserInput struct {
+	Email    string `json:"email" binding:"required" validate:"required,email"`
+	Password string `json:"password" binding:"required" validate:"required"`
 }
 
-type UserOutput struct {
+type AuthentificationUserOutput struct {
+	Token     string `json:"token" binding:"required" validate:"required"`
 	FirstName string `json:"first_name" binding:"required" validate:"required"`
 	LastName  string `json:"last_name" binding:"required" validate:"required"`
 	Email     string `json:"email" binding:"required" validate:"required,email"`
