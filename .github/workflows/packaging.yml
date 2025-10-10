@@ -4,11 +4,8 @@ on:
   workflow_call:
     inputs:
       environment:
-        required: true
+        required: false
         type: string
-  pull_request:
-    types: [closed]
-    branches: [ prod ] 
 
 env:
   REGISTRY: ghcr.io
@@ -18,7 +15,7 @@ env:
 
 jobs:
   packaging:
-    if: github.event.pull_request.merged == true && contains(github.event.pull_request.head.ref, 'front') || contains(github.event.pull_request.head.ref, 'back')
+    if: github.event.pull_request.merged == true && (contains(github.event.pull_request.head.ref, 'front') || contains(github.event.pull_request.head.ref, 'back'))
     runs-on: ubuntu-latest
 
     steps:

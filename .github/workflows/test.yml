@@ -11,6 +11,11 @@ on:
         required: true
         type: string
 
+  pull_request:
+    branches: [ "dev","feat/*","fix/*"  ]
+  push:
+    branches: [ "prod","feat/*","fix/*" ]
+
 permissions:
   contents: read
 
