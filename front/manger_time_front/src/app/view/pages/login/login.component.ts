@@ -2,9 +2,9 @@ import { Component } from '@angular/core';
 import { Router } from '@angular/router';
 
 @Component({
-    selector: 'app-login',
-    standalone: true,
-    template: `
+  selector: 'app-login',
+  standalone: true,
+  template: `
   <div class="login-container">
     <div class="login-card">
       <h1>Connexion</h1>
@@ -20,7 +20,7 @@ import { Router } from '@angular/router';
     </div>
   </div>
   `,
-    styles: [`
+  styles: [`
   .login-container {
     min-height: 100vh;
     display: flex;
@@ -68,12 +68,12 @@ import { Router } from '@angular/router';
   `]
 })
 export class LoginComponent {
-    constructor(private router: Router) { }
+  constructor(private router: Router) { }
 
-    onLogin() {
-        localStorage.setItem('access_token', 'FAKE_TOKEN_DEV_123');
-        this.router.navigate(['/home']);
-    }
+  onLogin() {
+    localStorage.setItem('access_token', 'FAKE_TOKEN_DEV_123');
+    this.router.navigate(['/home']);
+  }
 }
 
 
