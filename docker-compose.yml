@@ -1,27 +1,27 @@
 version: "3.9"
 
 services:
-  back:
-    image: ghcr.io/aristidewafo/time-manager/back:latest
+  backend:
+    image: ghcr.io/jerrywafo/monrepo/backend:latest
     ports:
       - "8080:8080"
     networks:
       - internal
 
-  front:
-    image: ghcr.io/aristidewafo/time-manager/front:latest
+  frontend:
+    image: ghcr.io/jerrywafo/monrepo/frontend:latest
     ports:
       - "3000:80"
     networks:
       - internal
 
   nginx:
-    image: ghcr.io/aristidewafo/time-manager/nginx:latest
+    image: ghcr.io/jerrywafo/monrepo/nginx:latest
     ports:
       - "80:80"
     depends_on:
-      - back
-      - front
+      - backend
+      - frontend
     networks:
       - internal
 
