@@ -6,10 +6,11 @@ import (
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
-type Team struct {
+type Presence struct {
 	ID        primitive.ObjectID `json:"_id" binding:"required" validate:"required"`
-	Name      string             `json:"name" binding:"required" validate:"required"`
+	Type      string             `json:"Type" binding:"required" validate:"required"`
+	Timestamp time.Time          `json:"timestamp" binding:"required" validate:"required"`
 	CreatedAt time.Time          `json:"created_at" binding:"required" validate:"required"`
 	UpdatedAt time.Time          `json:"updated_at"`
-	Users     []User             `json:"users" binding:"required" validate:"required"`
+	User      User               `json:"user" binding:"required" validate:"required"`
 }

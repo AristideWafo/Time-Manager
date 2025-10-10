@@ -1,6 +1,7 @@
 package user
 
 import (
+	"TimeManager/model"
 	"TimeManager/repository"
 	"TimeManager/service"
 	"errors"
@@ -8,6 +9,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/jinzhu/copier"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
 func RegisterUserRoutes(router *gin.Engine) {
@@ -36,7 +38,14 @@ func FetchUser(context *gin.Context) {
 		context.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 	}
 
-	user, success, err := repository.GetUser(asserted_claims.Subject)
+	_id, err := primitive.ObjectIDFromHex(asserted_claims.Subject)
+
+	if err != nil {
+		context.AbortWithError(http.StatusInternalServerError, err)
+		context.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+	}
+
+	user, success, err := repository.GetUser(_id)
 
 	if err != nil {
 		context.AbortWithError(http.StatusInternalServerError, err)
@@ -44,16 +53,19 @@ func FetchUser(context *gin.Context) {
 	}
 
 	if !success {
-		err := errors.New("USER NOT FOUND")
+		err = errors.New("USER NOT FOUND")
 		context.AbortWithError(http.StatusNotFound, err)
-		context.JSON(http.StatusNotFound, gin.H{"error": err.Error()})
+		context.JSON(http.StatusNotFound, gin.H{"error": asserted_claims.Subject})
 	}
 
 	var output UserOutput
 
-	err = copier.Copy(&output, &user)
+	if err = copier.Copy(&output, &user); err != nil {
+		context.AbortWithError(http.StatusInternalServerError, err)
+		context.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+	}
 
-	if err != nil {
+	if err = model.ValidateModel(&output); err != nil {
 		context.AbortWithError(http.StatusInternalServerError, err)
 		context.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 	}
@@ -62,7 +74,7 @@ func FetchUser(context *gin.Context) {
 }
 
 func PostUser(context *gin.Context) {
-	var user UserInput
+	var user CreateUserInput
 
 	if err := context.BindJSON(&user); err != nil {
 		context.AbortWithError(http.StatusBadRequest, err)
@@ -70,7 +82,7 @@ func PostUser(context *gin.Context) {
 		return
 	}
 
-	created_user, success, err := repository.CreateUser(user.Username, user.Password)
+	created_user, success, err := repository.CreateUser(user.Email, user.Password)
 
 	if err != nil {
 		context.AbortWithError(http.StatusInternalServerError, err)
@@ -84,9 +96,12 @@ func PostUser(context *gin.Context) {
 
 	var output UserOutput
 
-	err = copier.Copy(&output, &created_user)
+	if err = copier.Copy(&output, &created_user); err != nil {
+		context.AbortWithError(http.StatusInternalServerError, err)
+		context.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+	}
 
-	if err != nil {
+	if err = model.ValidateModel(&output); err != nil {
 		context.AbortWithError(http.StatusInternalServerError, err)
 		context.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 	}

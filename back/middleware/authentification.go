@@ -17,7 +17,7 @@ func AuthMiddleware() gin.HandlerFunc {
 			return
 		}
 
-		token := context.Request.Header.Get("Api_token")
+		token := context.Request.Header.Get("api_token")
 
 		if token == "" {
 			err := errors.New("NO TOKEN GIVEN")

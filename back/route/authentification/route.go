@@ -1,12 +1,14 @@
-package autentification
+package authentification
 
 import (
+	"TimeManager/model"
 	"TimeManager/repository"
 	"TimeManager/service"
 	"errors"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
+	"github.com/jinzhu/copier"
 )
 
 func RegisterAuthentificationRoutes(router *gin.Engine) {
@@ -18,7 +20,7 @@ func RegisterAuthentificationRoutes(router *gin.Engine) {
 
 func authentificate(context *gin.Context) {
 
-	var user AutentificationUserInput
+	var user AuthentificationUserInput
 
 	if err := context.BindJSON(&user); err != nil {
 		context.AbortWithError(http.StatusBadRequest, err)
@@ -26,7 +28,7 @@ func authentificate(context *gin.Context) {
 		return
 	}
 
-	fetch_user, success, err := repository.Login(user.Username, user.Password)
+	fetched_user, success, err := repository.Login(user.Email, user.Password)
 
 	if !success {
 		err := errors.New("USER NOT FOUND")
@@ -41,7 +43,7 @@ func authentificate(context *gin.Context) {
 		return
 	}
 
-	token, err := service.CreateToken(fetch_user.Username, fetch_user.Role, fetch_user.Team)
+	token, err := service.CreateToken(fetched_user.ID, fetched_user.Role, fetched_user.Team)
 
 	if err != nil {
 		context.AbortWithError(http.StatusInternalServerError, err)
@@ -49,6 +51,20 @@ func authentificate(context *gin.Context) {
 		return
 	}
 
-	context.JSON(http.StatusOK, gin.H{"token": token})
+	var output AuthentificationUserOutput
+
+	if err = copier.Copy(&output, &fetched_user); err != nil {
+		context.AbortWithError(http.StatusInternalServerError, err)
+		context.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+	}
+
+	output.Token = token
+
+	if err = model.ValidateModel(&output); err != nil {
+		context.AbortWithError(http.StatusInternalServerError, err)
+		context.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+	}
+
+	context.JSON(http.StatusOK, output)
 
 }

@@ -3,28 +3,29 @@ package service
 import (
 	"errors"
 	"fmt"
+	"os"
 	"time"
 
 	"github.com/golang-jwt/jwt/v5"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
 type TokenClaims struct {
-	Team string
+	Team string `json:"team" binding:"required" validate:"required"`
 	jwt.RegisteredClaims
 }
 
-var secretKey = []byte("secret-key")
-
-func CreateToken(username string, role string, team string) (string, error) {
+func CreateToken(_id primitive.ObjectID, role string, team string) (string, error) {
 	claims := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
-		"sub":  username,
+		"sub":  _id,
 		"iss":  "todo-app",
 		"aud":  role,
-		"Team": team,
+		"team": team,
 		"exp":  time.Now().Add(time.Hour).Unix(),
 		"iat":  time.Now().Unix(),
 	})
 
+	secretKey := []byte(os.Getenv("SECRET_KEY"))
 	tokenString, err := claims.SignedString(secretKey)
 
 	return tokenString, err
@@ -32,6 +33,7 @@ func CreateToken(username string, role string, team string) (string, error) {
 
 func ValidateToken(tokenString string) (TokenClaims, error) {
 
+	secretKey := []byte(os.Getenv("SECRET_KEY"))
 	token, err := jwt.ParseWithClaims(tokenString, &TokenClaims{}, func(token *jwt.Token) (interface{}, error) {
 
 		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
