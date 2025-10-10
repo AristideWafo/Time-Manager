@@ -1,10 +1,8 @@
 name: CI Build & Push
 
 on:
-  push:
-    branches: [ "cicd" ]
   pull_request:
-    branches: [ "cicd" ]
+    branches: [ "dev" ]
 
 jobs:
   buildStep:
