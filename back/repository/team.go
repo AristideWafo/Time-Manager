@@ -10,10 +10,6 @@ import (
 	"go.mongodb.org/mongo-driver/v2/mongo"
 )
 
-var teams = []model.Team{
-	{Name: "Rocket", Users: users},
-}
-
 func FetchTeam(name string) (model.Team, bool, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
@@ -48,12 +44,12 @@ func FetchAllTeams() ([]model.Team, bool, error) {
 
 	cursor, err := TeamCollection().Find(ctx, bson.M{})
 	if err != nil {
-		return nil, false, fmt.Errorf("failed to find teams: %w", err)
+		return []model.Team{}, false, fmt.Errorf("failed to find teams: %w", err)
 	}
 	defer cursor.Close(ctx)
 
 	if err := cursor.All(ctx, &result); err != nil {
-		return nil, false, fmt.Errorf("failed to decode teams: %w", err)
+		return []model.Team{}, false, fmt.Errorf("failed to decode teams: %w", err)
 	}
 
 	return result, true, nil
