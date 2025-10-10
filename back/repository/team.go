@@ -42,7 +42,21 @@ func FetchTeam(name string) (model.Team, bool, error) {
 }
 
 func FetchAllTeams() ([]model.Team, bool, error) {
-	return teams, true, nil
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+	var result []model.Team
+
+	cursor, err := TeamCollection().Find(ctx, bson.M{})
+	if err != nil {
+		return nil, false, fmt.Errorf("failed to find teams: %w", err)
+	}
+	defer cursor.Close(ctx)
+
+	if err := cursor.All(ctx, &result); err != nil {
+		return nil, false, fmt.Errorf("failed to decode teams: %w", err)
+	}
+
+	return result, true, nil
 }
 
 func CreateTeam(team model.Team) (model.Team, bool, error) {
