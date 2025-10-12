@@ -1,7 +1,6 @@
 import { HttpHandlerFn, HttpRequest } from '@angular/common/http';
 
 export function authTokenInterceptor(req: HttpRequest<unknown>, next: HttpHandlerFn) {
-    // Do not add Authorization for login endpoint
     if (req.url.endsWith('/authentification')) {
         return next(req);
     }
@@ -13,5 +12,3 @@ export function authTokenInterceptor(req: HttpRequest<unknown>, next: HttpHandle
 
     return next(reqWithAuth);
 }
-
-
