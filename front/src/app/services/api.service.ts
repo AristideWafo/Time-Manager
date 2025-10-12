@@ -31,21 +31,22 @@ export class ApiService {
         return this.http.delete(`${this.baseUrl}/user/${id}`);
     }
 
-    getTeamWorkers(teamId: number) {
-        return this.http.get(`${this.baseUrl}/team/${teamId}/workers`);
+    getAllTeams() {
+        return this.http.get<any[]>(`/team`);
     }
 
-    postTeamWorkers(teamId: number, data: any) {
-        return this.http.post(`${this.baseUrl}/team/${teamId}`, data);
+    createTeam(data: any) {
+        return this.http.post(`/team`, data);
     }
 
-    updateTeamWorkers(teamId: number, data: any) {
-        return this.http.put(`${this.baseUrl}/team/${teamId}/workers`, data);
+    updateTeam(id: string, data: any) {
+        return this.http.put(`/team/${id}`, data);
     }
 
-    deleteTeamWorkers(teamId: number) {
-        return this.http.delete(`${this.baseUrl}/team/${teamId}`);
+    deleteTeam(id: string) {
+        return this.http.delete(`/team/${id}`);
     }
+
 
     updatePointage(id: number, data: boolean) {
         return this.http.put(`${this.baseUrl}/pointage/${id}`, data);
