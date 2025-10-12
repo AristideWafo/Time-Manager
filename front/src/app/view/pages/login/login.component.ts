@@ -14,12 +14,12 @@ import { ApiService } from '../../../services/api.service';
     <div class="login-card">
       <h1>Connexion</h1>
       <form (ngSubmit)="onLogin()" #f="ngForm">
-        <label>Nom d'utilisateur</label>
+        <label>Email</label>
         <input
-          name="username"
+          name="email"
           type="text"
-          [(ngModel)]="username"
-          placeholder="Votre identifiant"
+          [(ngModel)]="email"
+          placeholder="Votre email"
           required
         >
 
@@ -43,7 +43,7 @@ import { ApiService } from '../../../services/api.service';
   `,
 })
 export class LoginComponent {
-  username = '';
+  email = '';
   password = '';
   loading = false;
   error = '';
@@ -55,7 +55,7 @@ export class LoginComponent {
     this.error = '';
     this.loading = true;
 
-    this.api.login({ username: this.username, password: this.password }).subscribe({
+    this.api.login({ email: this.email, password: this.password }).subscribe({
       next: (res) => {
         const token = res.token;
         if (!token) {
