@@ -43,7 +43,7 @@ import { ApiService } from '../../../services/api.service';
     </ul>
   </section>
   `,
-    styleUrls: ['./teams.component.css']
+    styleUrls: ['./teams.components.css']
 })
 export class TeamsComponent implements OnInit {
     teams: any[] = [];
