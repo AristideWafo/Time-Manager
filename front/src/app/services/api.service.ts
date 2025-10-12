@@ -32,19 +32,19 @@ export class ApiService {
     }
 
     getAllTeams() {
-        return this.http.get<any[]>(`/team`);
+        return this.http.get<any[]>(`${this.baseUrl}/team`);
     }
 
     createTeam(data: any) {
-        return this.http.post(`/team`, data);
+        return this.http.post(`${this.baseUrl}/team`, data);
     }
 
     updateTeam(id: string, data: any) {
-        return this.http.put(`/team/${id}`, data);
+        return this.http.put(`${this.baseUrl}/team/${id}`, data);
     }
 
     deleteTeam(id: string) {
-        return this.http.delete(`/team/${id}`);
+        return this.http.delete(`${this.baseUrl}/team/${id}`);
     }
 
 

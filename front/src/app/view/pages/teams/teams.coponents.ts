@@ -34,7 +34,6 @@ import { ApiService } from '../../../services/api.service';
           <button (click)="deleteTeam(team._id)">🗑️ Supprimer</button>
         </div>
 
-        <!-- Mode édition -->
         <div *ngIf="team.editing" class="edit-section">
           <input [(ngModel)]="team.name" name="editName" />
           <button (click)="updateTeam(team)">💾 Sauvegarder</button>
@@ -64,13 +63,19 @@ export class TeamsComponent implements OnInit {
     }
 
     createTeam() {
-        const data = { name: this.newTeamName };
+        const data = {
+            name: this.newTeamName,
+            created_at: new Date(),
+            updated_at: new Date(),
+            users: []
+        };
+
         this.api.createTeam(data).subscribe({
             next: (res) => {
                 this.teams.push(res);
                 this.newTeamName = '';
             },
-            error: (err) => console.error(err)
+            error: (err) => console.error('Erreur création équipe:', err)
         });
     }
 
@@ -80,16 +85,23 @@ export class TeamsComponent implements OnInit {
 
     cancelEdit(team: any) {
         team.editing = false;
-        this.loadTeams(); // recharge les données d’origine
+        this.loadTeams();
     }
 
     updateTeam(team: any) {
-        this.api.updateTeam(team._id, { name: team.name }).subscribe({
+        const data = {
+            name: team.name,
+            updated_at: new Date(),
+            created_at: team.created_at,
+            users: team.users || []
+        };
+
+        this.api.updateTeam(team._id, data).subscribe({
             next: () => {
                 team.editing = false;
                 this.loadTeams();
             },
-            error: (err) => console.error(err)
+            error: (err) => console.error('Erreur maj équipe:', err)
         });
     }
 
@@ -97,7 +109,7 @@ export class TeamsComponent implements OnInit {
         if (!confirm('Supprimer cette équipe ?')) return;
         this.api.deleteTeam(id).subscribe({
             next: () => this.teams = this.teams.filter(t => t._id !== id),
-            error: (err) => console.error(err)
+            error: (err) => console.error('Erreur suppression:', err)
         });
     }
 }
