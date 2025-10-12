@@ -9,6 +9,7 @@ import { Router } from '@angular/router';
     <h1>Accueil</h1>
     <p>Gestion du temps de travail</p>
     <button (click)="goToProfile()">Aller au profil</button>
+     <button (click)="goToTeams()">Gestion des équipes</button>
   </section>
   `,
   styleUrls: ['./home.component.css']
@@ -20,5 +21,9 @@ export class HomeComponent implements OnInit {
   }
   goToProfile() {
     this.router.navigate(['/profile']);
+  }
+
+  goToTeams() {
+    this.router.navigate(['/teams']);
   }
 }
