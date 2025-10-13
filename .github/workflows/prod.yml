@@ -1,0 +1,77 @@
+name: Production Pipeline
+
+on:
+  push:
+    branches: [ "prod" ]
+  pull_request:
+    types: [opened, synchronize, reopened]
+    branches: [ "prod" ]
+
+env:
+  GO_VERSION: '1.25.1'
+  NODE_VERSION: '22.13'
+  FRONT_REPOSITORY: './front'
+  BACK_REPOSITORY: './back'
+
+jobs:
+  build:
+    name: Build Application
+    uses: ./.github/workflows/build.yml
+    with:
+      go-version: $GO_VERSION
+      node-version: $NODE_VERSION
+      working-dir-front: $FRONT_REPOSITORY
+      working-dir-back: $BACK_REPOSITORY
+
+  test:
+    name: Run Tests & Linting
+    needs: [build]
+    permissions:
+      contents: read
+    uses: ./.github/workflows/test.yml
+    with:
+      go-version: $GO_VERSION
+      node-version: $NODE_VERSION
+      working-dir-front: $FRONT_REPOSITORY
+      working-dir-back: $BACK_REPOSITORY
+
+  security-scan:
+    name: Security Analysis
+    runs-on: ubuntu-latest
+    permissions:
+      security-events: write
+      actions: read
+      contents: read
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      
+      - name: Initialize CodeQL
+        uses: github/codeql-action/init@v3
+        with:
+          languages: go,javascript-typescript
+      
+      - name: Autobuild
+        uses: github/codeql-action/autobuild@v3
+      
+      - name: Perform CodeQL Analysis
+        uses: github/codeql-action/analyze@v3
+
+  package:
+    name: Package Application
+    needs: [build, test, security-scan]
+    permissions:
+      contents: read
+      packages: write
+      id-token: write
+    uses: ./.github/workflows/packaging.yml
+    with:
+      environment: production
+
+  deploy:
+    name: Deploy to Production
+    needs: [package]
+    if: github.ref == 'refs/heads/prod' && github.event_name == 'push'
+    uses: ./.github/workflows/deploy.yml
+    with:
+      environment: production

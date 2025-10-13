@@ -1,13 +1,18 @@
 name: Test
 
-env:
-  GO_VERSION: '1.25.1'
-  WORKING_DIR: './back'
-
 on:
   workflow_call:
     inputs:
-      environment:
+      go-version:
+        required: true
+        type: string
+      working-dir-front:
+        required: true
+        type: string
+      working-dir-back:
+        required: true
+        type: string
+      node-version:
         required: true
         type: string
 
@@ -20,12 +25,12 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v5
-      - name: Test app
-        run: echo "Testing for ${{ inputs.environment }}"
+      # - name: Test app
+      #   run: echo "Testing for ${{ inputs.go-version }} and ${{ inputs.node-version }}"
   
   go-lint:
     if: contains(github.ref_name, 'cicd') || contains(github.ref_name, 'back_')
-    name: lint
+    name: go-lint
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v5
@@ -33,10 +38,10 @@ jobs:
       - name: Setup Go
         uses: actions/setup-go@v6
         with:
-          go-version: ${{ env.GO_VERSION }}  # Exact version from go.mod
+          go-version: ${{ inputs.go-version }}  # Exact version from go.mod
       
       - name: Ensure deps
-        working-directory: ${{ env.WORKING_DIR }}
+        working-directory: ${{ inputs.working-dir-back }}
         run: go mod tidy
 
       - name: Install golangci-lint
