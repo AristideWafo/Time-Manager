@@ -1,4 +1,4 @@
-name: CI/CD Pipeline
+name: CI for Dev Operations
 
 env:
   GO_VERSION: '1.25.1'
@@ -9,14 +9,14 @@ env:
 
 on:
   push:
-    branches: [ "feat/**", "fix/**" ]
+    branches: [ "feat/*", "fix/*" ]
   pull_request:
-    types: [opened, synchronize, reopened]
-    branches: [ "dev", "main", "feat/*", "fix/*" ]
+    types: [opened, reopened]
+    branches: [ "dev", "feat/*", "fix/*" ]
 
 jobs:
   build:
-    name: Build Application
+    name: Build
     uses: ./.github/workflows/build.yml
     with:
       go-version: '1.25.1'
@@ -26,7 +26,7 @@ jobs:
       app-name: 'app'
 
   test:
-    name: Run Tests & Linting
+    name: Tests & Linting
     needs: [build]
     permissions:
       contents: read
