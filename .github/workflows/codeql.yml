@@ -3,8 +3,7 @@ name: "CodeQL Analysis"
 on:
   pull_request:
     branches: [ "dev","feat/*","fix/*"  ]
-  push:
-    branches: [ "feat/*","fix/*"  ]
+    types: [opened, synchronize, reopened]
   schedule:
     - cron: '24 3 * * 0'
 
