@@ -13,4 +13,25 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v5
+      - name: Set up Node.js
+        if: ${{ github.ref_name }} == *front*
+        uses: actions/setup-node@v5
+        with:
+          node-version: '22.13'
+      - name: Install dependencies
+        if: ${{ github.ref_name }} == *front*
+        run: npm ci
 
+      - name: Build Angular project
+        if: ${{ github.ref_name }} == *front*
+        run: npm run build -- --configuration production
+
+      # - name: Build app
+      #   run: |
+      #     if [[ "${{ github.ref_name }}" == *front* ]]; then
+      #       docker build -t $REGISTRY/${IMAGE_NAME_FRONT,,}:latest -f front/Dockerfile front
+      #     elif [[ "${{ github.ref_name }}" == *back* ]]; then
+            
+      #     else
+      #       echo "no match"
+      #     fi
