@@ -4,6 +4,7 @@ import (
 	"TimeManager/middleware"
 	"TimeManager/repository"
 	"TimeManager/route/authentification"
+	"TimeManager/route/presence"
 	"TimeManager/route/user"
 
 	"github.com/gin-gonic/gin"
@@ -11,7 +12,11 @@ import (
 )
 
 func init() {
-	gotenv.Load("../.env")
+	err := gotenv.Load("../.env")
+	if err != nil {
+		panic(err)
+	}
+
 }
 
 func main() {
@@ -23,6 +28,11 @@ func main() {
 
 	authentification.RegisterAuthentificationRoutes(router)
 	user.RegisterUserRoutes(router)
+	presence.RegisterPresenceRoutes(router)
 
-	router.Run("localhost:8080")
+	err := router.Run("localhost:8080")
+
+	if err != nil {
+		panic(err)
+	}
 }
