@@ -5,3 +5,6 @@
 [![CodeQL](https://github.com/AristideWafo/Time-Manager/actions/workflows/codeql-analysis.yml/badge.svg)](https://github.com/AristideWafo/Time-Manager/actions/workflows/codeql-analysis.yml)
 
 
+```
+docker compose -f docker-compose-dev.yml up
+```

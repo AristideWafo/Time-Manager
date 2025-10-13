@@ -1,37 +1,63 @@
 name: Build
 
+
 on:
   workflow_call:
     inputs:
-      environment:
+      go-version:
         required: true
         type: string
+      working-dir-front:
+        required: true
+        type: string
+        default: './front'
+      working-dir-back:
+        required: true
+        type: string
+      node-version:
+        required: true
+        type: string
+      app-name:
+        required: false
+        type: string
+        default: 'app'
 
 jobs:
-  build:
+  front-build:
+    if: contains(github.ref_name, 'cicd') || contains(github.ref_name, 'front_')
+    name: front-build
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v5
       - name: Set up Node.js
-        if: ${{ github.ref_name }} == *front*
         uses: actions/setup-node@v5
         with:
-          node-version: '22.13'
+          node-version: ${{ inputs.node-version }}
       - name: Install dependencies
-        if: ${{ github.ref_name }} == *front*
+        working-directory: ${{ inputs.working-dir-front }}
         run: npm ci
 
       - name: Build Angular project
-        if: ${{ github.ref_name }} == *front*
+        working-directory: ${{ inputs.working-dir-front }}
         run: npm run build -- --configuration production
+  back-build:
+    if: contains(github.ref_name, 'cicd') || contains(github.ref_name, 'back_')
+    name: back-build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
 
-      # - name: Build app
-      #   run: |
-      #     if [[ "${{ github.ref_name }}" == *front* ]]; then
-      #       docker build -t $REGISTRY/${IMAGE_NAME_FRONT,,}:latest -f front/Dockerfile front
-      #     elif [[ "${{ github.ref_name }}" == *back* ]]; then
-            
-      #     else
-      #       echo "no match"
-      #     fi
+      - name: Set up Go
+        uses: actions/setup-go@v6
+        with:
+          go-version: ${{ inputs.go-version }}  # Exact version from go.mod
+
+      - name: Ensure deps
+        working-directory: ${{ inputs.working-dir-back }}
+        run: go mod tidy
+
+      - name: Build Go project
+        working-directory: ${{ inputs.working-dir-back }}
+        run: go build -o ${{ inputs.app-name }} .

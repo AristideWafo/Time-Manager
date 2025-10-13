@@ -1,22 +1,29 @@
 name: CI/CD Pipeline
 
-on:
-  push:
-    branches: [ "feat/*","fix/*" ]
-  pull_request:
-    types: [opened, synchronize, reopened]
-    branches: [ "dev" ]
-
 env:
   GO_VERSION: '1.25.1'
-  NODE_VERSION: '18'
+  NODE_VERSION: '22.13'
+  FRONT_REPOSITORY: './front'
+  BACK_REPOSITORY: './back'
+  APP_NAME: 'app'
+
+on:
+  push:
+    branches: [ "feat/**", "fix/**" ]
+  pull_request:
+    types: [opened, synchronize, reopened]
+    branches: [ "dev", "main", "feat/*", "fix/*" ]
 
 jobs:
   build:
     name: Build Application
     uses: ./.github/workflows/build.yml
     with:
-      environment: development
+      go-version: $GO_VERSION
+      node-version: $NODE_VERSION
+      working-dir-front: $FRONT_REPOSITORY
+      working-dir-back: $BACK_REPOSITORY
+      app-name: $APP_NAME
 
   test:
     name: Run Tests & Linting
@@ -25,4 +32,7 @@ jobs:
       contents: read
     uses: ./.github/workflows/test.yml
     with:
-      environment: development
+      go-version: $GO_VERSION
+      node-version: $NODE_VERSION
+      working-dir-front: $FRONT_REPOSITORY
+      working-dir-back: $BACK_REPOSITORY
