@@ -3,34 +3,29 @@ import { HttpClient } from '@angular/common/http';
 
 @Injectable({ providedIn: 'root' })
 export class ApiService {
-
     private baseUrl = 'http://localhost:8080';
 
     constructor(private http: HttpClient) { }
 
+    // Authentification
     login(credentials: { email: string; password: string }) {
-        return this.http.post<{ token: string }>(
-            `${this.baseUrl}/authentification`,
-            credentials
-        );
+        return this.http.post<{ token: string }>(`${this.baseUrl}/authentification`, credentials);
     }
 
-    getUser(id: number) {
+    // Utilisateur
+    getUser(id: string) {
         return this.http.get(`${this.baseUrl}/user/${id}`);
     }
 
-    postUser(data: any) {
-        return this.http.post(`${this.baseUrl}/user/`, data);
-    }
-
-    updateUser(id: number, data: any) {
+    updateUser(id: string, data: any) {
         return this.http.put(`${this.baseUrl}/user/${id}`, data);
     }
 
-    deleteUser(id: number) {
+    deleteUser(id: string) {
         return this.http.delete(`${this.baseUrl}/user/${id}`);
     }
 
+    // Équipes
     getAllTeams() {
         return this.http.get<any[]>(`${this.baseUrl}/team`);
     }
@@ -47,8 +42,8 @@ export class ApiService {
         return this.http.delete(`${this.baseUrl}/team/${id}`);
     }
 
-
-    updatePointage(id: number, data: boolean) {
-        return this.http.put(`${this.baseUrl}/pointage/${id}`, data);
+    // Pointage
+    postPointage(data: { userId: string; isEntry: boolean }) {
+        return this.http.post(`${this.baseUrl}/pointage`, data);
     }
 }

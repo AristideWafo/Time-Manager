@@ -1,51 +1,59 @@
-  .login-container {
-      min-height: 100vh;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      background: #f6f7fb;
-  }
+.login-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    background-color: #f0f2f5;
+    padding: 20px;
+}
 
-  .login-card {
-      width: 360px;
-      background: white;
-      border-radius: 12px;
-      padding: 24px;
-      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
-  }
+.login-card {
+    background-color: #ffffff;
+    border: 1px solid #ddd;
+    padding: 30px 25px;
+    width: 320px;
+    border-radius: 10px;
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s;
+}
 
-  h1 {
-      margin: 0 0 16px;
-      font-size: 24px;
-  }
+.login-card:hover {
+    transform: translateY(-5px);
+}
 
-  form {
-      display: grid;
-      gap: 12px;
-  }
+.login-card input {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 15px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    outline: none;
+    transition: border-color 0.3s;
+}
 
-  label {
-      font-size: 12px;
-      color: #555;
-  }
+.login-card input:focus {
+    border-color: #007bff;
+}
 
-  input {
-      padding: 10px 12px;
-      border-radius: 8px;
-      border: 1px solid #ddd;
-      outline: none;
-  }
+.login-card button {
+    width: 100%;
+    padding: 10px;
+    background-color: #007bff;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-weight: bold;
+    transition: background-color 0.3s, transform 0.2s;
+}
 
-  input:focus {
-      border-color: var(--primary-color);
-      box-shadow: 0 0 0 3px color-mix(in srgb, var(--primary-color) 20%, transparent);
-  }
+.login-card button:hover {
+    background-color: #0056b3;
+    transform: translateY(-2px);
+}
 
-  .primary {
-      padding: 10px 14px;
-      border-radius: 8px;
-      border: 1px solid var(--primary-color);
-      background: var(--primary-color);
-      color: #fff;
-      cursor: pointer;
-  }
+.error {
+    color: #dc3545;
+    margin-top: 10px;
+    font-size: 0.9em;
+}

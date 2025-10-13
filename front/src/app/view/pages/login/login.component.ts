@@ -15,32 +15,17 @@ import { ApiService } from '../../../services/api.service';
       <h1>Connexion</h1>
       <form (ngSubmit)="onLogin()" #f="ngForm">
         <label>Email</label>
-        <input
-          name="email"
-          type="text"
-          [(ngModel)]="email"
-          placeholder="Votre email"
-          required
-        >
-
+        <input name="email" type="email" [(ngModel)]="email" placeholder="Votre email" required>
         <label>Mot de passe</label>
-        <input
-          name="password"
-          type="password"
-          [(ngModel)]="password"
-          placeholder="Votre mot de passe"
-          required
-        >
-
+        <input name="password" type="password" [(ngModel)]="password" placeholder="Votre mot de passe" required>
         <button class="primary" type="submit" [disabled]="loading || !f.form.valid">
           {{ loading ? 'Connexion...' : 'Se connecter' }}
         </button>
-
         <div class="error" *ngIf="error">{{ error }}</div>
       </form>
     </div>
   </div>
-  `,
+  `
 })
 export class LoginComponent {
   email = '';
@@ -57,7 +42,7 @@ export class LoginComponent {
 
     this.api.login({ email: this.email, password: this.password }).subscribe({
       next: (res) => {
-        const token = res.token;
+        const token = (res as any).token;
         if (!token) {
           this.error = 'Réponse invalide du serveur.';
           this.loading = false;
@@ -69,7 +54,7 @@ export class LoginComponent {
       error: (err) => {
         this.error = err?.error?.message || 'Identifiants invalides.';
         this.loading = false;
-      },
+      }
     });
   }
 }
