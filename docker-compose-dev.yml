@@ -2,21 +2,27 @@ version: "3.9"
 
 services:
   backend:
-    image: ./back:latest
+    build:
+      context: ./back
+      dockerfile: Dockerfile
     ports:
       - "8080:8080"
     networks:
       - internal
 
   frontend:
-    image: ./front:latest
+    build:
+      context: ./front
+      dockerfile: Dockerfile.dev
     ports:
-      - "3000:80"
+      - "4200:4200"
     networks:
       - internal
 
   nginx:
-    image: ./nginx:latest
+    build:
+      context: ./nginx
+      dockerfile: Dockerfile
     ports:
       - "80:80"
     depends_on:

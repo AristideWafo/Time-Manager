@@ -1,0 +1,36 @@
+FROM node:22.13-alpine
+
+# Install Angular CLI globally
+RUN npm install -g @angular/cli@latest
+
+# Create non-root user
+RUN addgroup -g 1001 -S appgroup && \
+    adduser -u 1001 -S appuser -G appgroup
+
+# Set working directory
+WORKDIR /app
+
+# Change ownership
+RUN chown appuser:appgroup /app
+
+# Switch to non-root user
+USER appuser
+
+# Copy package files
+COPY --chown=appuser:appgroup package*.json ./
+
+# Install dependencies (including dev dependencies)
+RUN npm install
+
+# Copy source code
+COPY --chown=appuser:appgroup . .
+
+# Expose port for dev server
+EXPOSE 4200
+
+# Health check for dev
+HEALTHCHECK --interval=30s --timeout=3s --start-period=10s --retries=3 \
+    CMD wget --no-verbose --tries=1 --spider http://localhost:4200/ || exit 1
+
+# Start development server with live reload
+CMD ["ng", "serve", "--host", "0.0.0.0", "--port", "4200", "--poll", "2000"]
