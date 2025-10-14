@@ -7,16 +7,20 @@ import (
 	"TimeManager/route/presence"
 	"TimeManager/route/user"
 
+	"log"
+	"os"
+
 	"github.com/gin-gonic/gin"
 	"github.com/subosito/gotenv"
 )
 
 func init() {
-	err := gotenv.Load("../.env")
-	if err != nil {
-		panic(err)
+	if os.Getenv("ENV") != "production" && os.Getenv("ENV") != "docker" {
+		err := gotenv.Load(".env")
+		if err != nil {
+			log.Println("Warning: .env file not found, using environment variables")
+		}
 	}
-
 }
 
 func main() {
