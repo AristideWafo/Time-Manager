@@ -52,3 +52,23 @@ jobs:
       - name: Run golangci-lint
         working-directory: ./back
         run: golangci-lint run --timeout=5m
+      
+  angular-lint:
+    if: contains(github.ref_name, 'cicd') || contains(github.ref_name, 'front_')
+    name: angular-lint
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v5
+        with:
+          node-version: ${{ inputs.node-version }}
+
+      - name: Install dependencies
+        working-directory: ${{ inputs.working-dir-front }}
+        run: npm ci
+
+      - name: Run lint
+        working-directory: ${{ inputs.working-dir-front }}
+        run: ng lint --format=checkstyle --output-file=lint-results.xml
