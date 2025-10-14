@@ -1,7 +1,6 @@
-version: "3.9"
-
 services:
   backend:
+    env_file: "./back/.env"
     build:
       context: ./back
       dockerfile: Dockerfile

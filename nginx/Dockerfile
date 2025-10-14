@@ -1,3 +1,8 @@
-FROM nginx:1.29.1-alpin
+# Utilisez une version réelle de nginx
+FROM nginx:stable-alpine
 
 COPY default.conf /etc/nginx/conf.d/default.conf
+
+EXPOSE 80
+
+CMD ["nginx", "-g", "daemon off;"]
