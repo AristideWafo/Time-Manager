@@ -12,7 +12,7 @@ import (
 func AuthMiddleware() gin.HandlerFunc {
 	return func(context *gin.Context) {
 
-		if context.FullPath() == "/authentification" {
+		if context.FullPath() == "/api/authentification" {
 			context.Next()
 			return
 		}
