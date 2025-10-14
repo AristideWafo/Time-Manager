@@ -71,4 +71,4 @@ jobs:
 
       - name: Run lint
         working-directory: ${{ inputs.working-dir-front }}
-        run: ng lint --format=checkstyle --output-file=lint-results.xml
+        run: npm run lint:ci
