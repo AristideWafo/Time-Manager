@@ -6,6 +6,7 @@ type CreateUserInput struct {
 	Role      string `json:"Role" binding:"required" validate:"required"`
 	Email     string `json:"Email" binding:"required" validate:"required,email"`
 	Password  string `json:"Password" binding:"required" validate:"required"`
+	Team      string `json:"Team"`
 }
 
 type UserOutput struct {

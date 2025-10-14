@@ -17,7 +17,7 @@ type User struct {
 	ShiftStart time.Time     `json:"ShiftStart" bson:"ShiftStart,omitempty"`
 	ShiftEnd   time.Time     `json:"ShiftEnd" bson:"ShiftEnd,omitempty"`
 	CreatedAt  time.Time     `json:"CreatedAt" bson:"CreatedAt" binding:"required" validate:"required"`
-	UpdatedAt  time.Time     `json:"UpdatedAt" bson:"UpdatedAt"`
+	UpdatedAt  time.Time     `json:"UpdatedAt" bson:"UpdatedAt" binding:"required" validate:"required"`
 }
 
 func (user *User) Validate() error {

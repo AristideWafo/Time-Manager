@@ -11,7 +11,7 @@ type Presence struct {
 	Type      string        `json:"Type" binding:"required" validate:"required"`
 	Timestamp time.Time     `json:"Timestamp" bson:"Timestamp" binding:"required" validate:"required"`
 	CreatedAt time.Time     `json:"CreatedAt" bson:"CreatedAt" binding:"required" validate:"required"`
-	UpdatedAt time.Time     `json:"UpdatedAt" bson:"UpdatedAt"`
+	UpdatedAt time.Time     `json:"UpdatedAt" bson:"UpdatedAt" binding:"required" validate:"required"`
 	User      bson.ObjectID `json:"User" bson:"User,omitempty" binding:"required" validate:"required"`
 }
 

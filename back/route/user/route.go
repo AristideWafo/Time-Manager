@@ -2,7 +2,6 @@ package user
 
 import (
 	"TimeManager/model"
-	"TimeManager/repository"
 	"TimeManager/service"
 	"errors"
 	"net/http"
@@ -13,7 +12,7 @@ import (
 )
 
 func RegisterUserRoutes(router *gin.Engine) {
-	user := router.Group("/user")
+	user := router.Group("/api/user")
 	{
 		user.GET("", FetchUser)
 		user.POST("/create", PostUser)
@@ -48,7 +47,7 @@ func FetchUser(context *gin.Context) {
 		return
 	}
 
-	user, err := repository.GetUser(_id)
+	user, err := service.GetUserByID(_id)
 
 	if err != nil {
 		err = context.AbortWithError(http.StatusNotFound, err)
@@ -84,7 +83,7 @@ func PostUser(context *gin.Context) {
 		return
 	}
 
-	created_user, err := repository.CreateUser(user.FirstName, user.LastName, user.Email, user.Password, user.Role)
+	created_user, err := service.CreateUser(user.FirstName, user.LastName, user.Email, user.Password, user.Role, user.Team)
 
 	if err != nil {
 		err = context.AbortWithError(http.StatusConflict, err)

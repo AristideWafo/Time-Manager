@@ -2,7 +2,6 @@ package authentification
 
 import (
 	"TimeManager/model"
-	"TimeManager/repository"
 	"TimeManager/service"
 	"net/http"
 
@@ -11,7 +10,7 @@ import (
 )
 
 func RegisterAuthentificationRoutes(router *gin.Engine) {
-	auth := router.Group("/authentification")
+	auth := router.Group("/api/authentification")
 	{
 		auth.POST("", authentificate)
 	}
@@ -27,7 +26,7 @@ func authentificate(context *gin.Context) {
 		return
 	}
 
-	fetched_user, err := repository.Login(user.Email, user.Password)
+	fetched_user, err := service.Login(user.Email, user.Password)
 
 	if err != nil {
 		err = context.AbortWithError(http.StatusNotFound, err)
