@@ -8,3 +8,7 @@
 ```
 docker compose -f docker-compose-dev.yml up
 ```
+
+```
+npm run lint:fix
+```
