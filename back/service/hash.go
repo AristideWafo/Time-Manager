@@ -14,6 +14,9 @@ func HashPassword(password string) (string, error) {
 	if err != nil {
 		return "", err
 	}
+	if err != nil {
+		return "", err
+	}
 	return string(hashed), err
 }
 
@@ -22,9 +25,6 @@ func CheckPasswordHash(password []byte, hash string) (bool, error) {
 
 	for i := range password {
 		password[i] = 0
-	}
-	if err != nil {
-		return false, err
 	}
 	return err == nil, nil
 }
