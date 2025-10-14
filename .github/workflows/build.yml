@@ -83,7 +83,6 @@ jobs:
         with:
           path: |
             ~/.cache/go-build
-            ~/go/pkg/mod
             ${{ inputs.working-dir-back }}/vendor
           key: ${{ runner.os }}-go-${{ inputs.go-version }}-${{ hashFiles(format('{0}/go.sum', inputs.working-dir-back)) }}
           restore-keys: |
