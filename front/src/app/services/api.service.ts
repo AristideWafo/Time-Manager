@@ -7,25 +7,33 @@ export class ApiService {
 
     constructor(private http: HttpClient) { }
 
-    // Authentification
+    // --- Authentification ---
     login(credentials: { Email: string; Password: string }) {
         return this.http.post<{ token: string }>(`${this.baseUrl}/authentification`, credentials);
     }
 
-    // Utilisateur
-    getUser(_id: string) {
-        return this.http.get(`${this.baseUrl}/user/${_id}`);
+    // --- Utilisateur ---
+    getUser(id: string) {
+        return this.http.get<{ user: any }>(`${this.baseUrl}/user/${id}`);
     }
 
-    updateUser(_id: string, data: any) {
-        return this.http.put(`${this.baseUrl}/user/${_id}`, data);
+    updateUser(id: string, data: any) {
+        // Mapper les champs Angular vers le backend (majuscule)
+        const payload = {
+            FirstName: data.firstName,
+            LastName: data.lastName,
+            Email: data.email,
+            Role: data.role,
+            Team: data.team
+        };
+        return this.http.put(`${this.baseUrl}/user/${id}`, payload);
     }
 
-    deleteUser(_id: string) {
-        return this.http.delete(`${this.baseUrl}/user/${_id}`);
+    deleteUser(id: string) {
+        return this.http.delete(`${this.baseUrl}/user/${id}`);
     }
 
-    // Équipes
+    // --- Équipes ---
     getAllTeams() {
         return this.http.get<any[]>(`${this.baseUrl}/team`);
     }
@@ -42,7 +50,7 @@ export class ApiService {
         return this.http.delete(`${this.baseUrl}/team/${id}`);
     }
 
-    // Présence
+    // --- Présence ---
     postPresence(data: { presence: { Type: string; Timestamp: string } }) {
         return this.http.post(`${this.baseUrl}/presence/create`, data);
     }
