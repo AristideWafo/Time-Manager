@@ -1,218 +1,86 @@
-/* Global layout */
-.profile-container {
-    max-width: 900px;
-    margin: 50px auto;
-    padding: 30px;
-    font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
-    color: #1a1a1a;
-    background-color: #f5f7fa;
+/* Profil info - style pro */
+.profile-info {
+    display: grid;
+    grid-template-columns: 1fr 2fr;
+    gap: 15px 30px;
+    padding: 15px 0;
 }
 
-/* Profile card */
-.profile-card {
-    background: #ffffff;
-    border-radius: 12px;
-    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
-    padding: 30px 40px;
-    transition: box-shadow 0.3s ease;
-}
-
-.profile-card:hover {
-    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.12);
-}
-
-/* Header */
-.profile-header {
+.profile-info div {
     display: flex;
-    justify-content: space-between;
-    align-items: flex-start;
-    margin-bottom: 25px;
-}
-
-.profile-header h1 {
-    color: #003366;
-    font-size: 1.8rem;
-    margin-bottom: 5px;
-}
-
-.profile-header p {
-    color: #6c757d;
-    font-size: 0.95rem;
-}
-
-/* Actions */
-.profile-actions {
-    display: flex;
-    gap: 10px;
-}
-
-/* Content */
-.profile-content {
-    border-top: 1px solid #dee2e6;
-    padding-top: 20px;
-}
-
-.info-row {
-    display: flex;
-    justify-content: space-between;
+    align-items: center;
     padding: 10px 0;
     border-bottom: 1px solid #e9ecef;
 }
 
-.info-row label {
+.profile-info label {
     font-weight: 600;
     color: #003366;
+    min-width: 120px;
+    /* largeur fixe pour aligner les valeurs */
 }
 
-.info-row span {
+.profile-info span {
     color: #212529;
+    font-size: 1rem;
+    word-break: break-word;
 }
 
-/* Formulaire */
-.profile-form {
-    display: flex;
-    flex-direction: column;
-    gap: 15px;
+/* Responsive */
+@media (max-width: 600px) {
+    .profile-info {
+        grid-template-columns: 1fr;
+    }
+
+    .profile-info label {
+        min-width: auto;
+        margin-bottom: 5px;
+    }
+
+    .profile-info div {
+        flex-direction: column;
+        align-items: flex-start;
+    }
 }
 
-.form-group {
-    display: flex;
-    flex-direction: column;
-}
-
-.form-group label {
-    margin-bottom: 5px;
-    color: #003366;
-    font-weight: 600;
-}
-
+/* Amélioration formulaire */
 .profile-form input {
-    padding: 10px;
+    width: 100%;
+    padding: 12px;
+    font-size: 1rem;
     border-radius: 6px;
-    border: 1px solid #ccc;
-    transition: border-color 0.2s ease;
+    border: 1px solid #ced4da;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
 }
 
 .profile-form input:focus {
     border-color: #0056b3;
+    box-shadow: 0 0 5px rgba(0, 86, 179, 0.3);
     outline: none;
 }
 
-/* Form buttons */
+/* Actions du formulaire alignées à droite */
 .form-actions {
     display: flex;
-    justify-content: center;
+    justify-content: flex-end;
     gap: 15px;
-    margin-top: 15px;
-}
-
-/* Buttons */
-.btn {
-    padding: 8px 16px;
-    border-radius: 6px;
-    border: none;
-    cursor: pointer;
-    font-weight: 600;
-    transition: background-color 0.3s ease, transform 0.2s ease;
-}
-
-.btn-primary {
-    background-color: #0056b3;
-    color: #fff;
-}
-
-.btn-primary:hover {
-    background-color: #004080;
-    transform: translateY(-1px);
-}
-
-.btn-secondary {
-    background-color: #6c757d;
-    color: #fff;
-}
-
-.btn-secondary:hover {
-    background-color: #5a6268;
-}
-
-.btn-danger {
-    background-color: #c82333;
-    color: #fff;
-}
-
-.btn-danger:hover {
-    background-color: #a71d2a;
-}
-
-/* Messages */
-.message {
     margin-top: 20px;
+}
+
+/* Boutons cohérents */
+.btn {
+    min-width: 120px;
     text-align: center;
-    padding: 10px;
-    border-radius: 6px;
-    font-weight: 500;
 }
 
-.message.success {
-    background-color: #d4edda;
-    color: #155724;
-    border: 1px solid #c3e6cb;
+/* Messages centrés et pro */
+.message {
+    font-size: 0.95rem;
+    padding: 12px 20px;
+    border-radius: 8px;
 }
 
-.message.error {
-    background-color: #f8d7da;
-    color: #721c24;
-    border: 1px solid #f5c6cb;
-}
-
-/* Modal */
-.modal-overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0, 0, 0, 0.45);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-}
-
-.modal {
-    background: #ffffff;
-    border-radius: 12px;
-    padding: 25px 35px;
-    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
-    max-width: 400px;
-    text-align: center;
-    animation: fadeIn 0.25s ease-in;
-}
-
-.modal h3 {
-    color: #003366;
-    margin-bottom: 10px;
-}
-
-.modal p {
-    color: #495057;
-    margin-bottom: 20px;
-}
-
-.modal-actions {
-    display: flex;
-    justify-content: center;
-    gap: 15px;
-}
-
-/* Animation */
-@keyframes fadeIn {
-    from {
-        opacity: 0;
-        transform: scale(0.97);
-    }
-
-    to {
-        opacity: 1;
-        transform: scale(1);
-    }
+/* Modal actions */
+.modal-actions button {
+    min-width: 140px;
 }
