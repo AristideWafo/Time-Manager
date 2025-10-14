@@ -2,7 +2,6 @@ package presence
 
 import (
 	"TimeManager/model"
-	"TimeManager/repository"
 	"TimeManager/service"
 	"errors"
 	"net/http"
@@ -13,7 +12,7 @@ import (
 )
 
 func RegisterPresenceRoutes(router *gin.Engine) {
-	user := router.Group("/presence")
+	user := router.Group("/api/presence")
 	{
 		user.GET("", GetAllPresences)
 		user.POST("/create", CreatePresence)
@@ -48,7 +47,7 @@ func GetAllPresences(context *gin.Context) {
 		return
 	}
 
-	presences, err := repository.GetAllPresencesByUser(_id)
+	presences, err := service.GetAllPresencesByUserID(_id)
 
 	if err != nil {
 		err = context.AbortWithError(http.StatusNotFound, err)
@@ -94,7 +93,7 @@ func CreatePresence(context *gin.Context) {
 		return
 	}
 
-	created_presence, err := repository.CreatePresence(presence.Type, _id, presence.Timestamp)
+	created_presence, err := service.CreatePresence(presence.Type, _id, presence.Timestamp)
 
 	if err != nil {
 		err = context.AbortWithError(http.StatusConflict, err)
