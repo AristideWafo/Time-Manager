@@ -53,7 +53,7 @@ jobs:
             ${{ runner.os }}-golangci-lint-${{ inputs.go-version }}-
             ${{ runner.os }}-golangci-lint-
 
-      - name: Ensure deps
+      - name: Ensure Go dependencies
         working-directory: ${{ inputs.working-dir-back }}
         run: go mod tidy
 
@@ -63,7 +63,7 @@ jobs:
           echo "$(go env GOPATH)/bin" >> $GITHUB_PATH
 
       - name: Run golangci-lint
-        working-directory: ./back
+        working-directory: ${{ inputs.working-dir-back }}
         run: golangci-lint run --timeout=5m
 
   angular-lint:
@@ -95,7 +95,7 @@ jobs:
           path: |
             ${{ inputs.working-dir-front }}/.eslintcache
             ${{ inputs.working-dir-front }}/node_modules/.cache
-          key: ${{ runner.os }}-eslint-${{ hashFiles(format('{0}/.eslintrc.json', inputs.working-dir-front)) }}-${{ hashFiles(format('{0}/src/**/*.ts', inputs.working-dir-front)) }}
+          key: ${{ runner.os }}-eslint-${{ hashFiles(format('{0}/.eslintrc.json', inputs.working-dir-front)) }}-${{ hashFiles(format('{0}/src/main.ts', inputs.working-dir-front)) }}-${{ hashFiles(format('{0}/src/app/**/*.ts', inputs.working-dir-front)) }}
           restore-keys: |
             ${{ runner.os }}-eslint-
 

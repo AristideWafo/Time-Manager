@@ -42,7 +42,7 @@ jobs:
         with:
           path: |
             ~/.npm
-            front/node_modules
+            ${{ env.FRONT_REPOSITORY }}/node_modules
           key: ${{ runner.os }}-npm-${{ env.NODE_VERSION }}-${{ hashFiles('front/package-lock.json') }}
           restore-keys: |
             ${{ runner.os }}-npm-${{ env.NODE_VERSION }}-
