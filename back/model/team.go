@@ -10,7 +10,7 @@ type Team struct {
 	ID        bson.ObjectID `json:"_id" bson:"_id,omitempty" binding:"required" validate:"required"`
 	Name      string        `json:"Name" bson:"Name" binding:"required" validate:"required"`
 	CreatedAt time.Time     `json:"CreatedAt" bson:"CreatedAt" binding:"required" validate:"required"`
-	UpdatedAt time.Time     `json:"UpdatedAt" bson:"UpdatedAt"`
+	UpdatedAt time.Time     `json:"UpdatedAt" bson:"UpdatedAt" binding:"required" validate:"required"`
 }
 
 func (team *Team) Validate() error {

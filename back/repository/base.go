@@ -14,6 +14,8 @@ import (
 	"go.mongodb.org/mongo-driver/v2/mongo/readpref"
 )
 
+var NULL_ID, _ = bson.ObjectIDFromHex("")
+
 type DbClient struct {
 	Client   *mongo.Client
 	Database *mongo.Database

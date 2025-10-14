@@ -6,56 +6,93 @@ import (
 	"go.mongodb.org/mongo-driver/v2/bson"
 )
 
-// TO DO: DUMMY REPLIES
+func GetOneUser(user *model.User, filter bson.D) error {
 
-var NULL_ID, _ = bson.ObjectIDFromHex("")
-
-func Login(email string, password string) (*model.User, error) {
-
-	user := &model.User{}
-	filter := bson.D{{Key: "Email", Value: email}, {Key: "Password", Value: password}}
-	err := GetOne(filter, UserCollection(), user)
-
-	return user, err
-}
-
-func GetUser(_id bson.ObjectID) (*model.User, error) {
-
-	user := &model.User{}
-	filter := bson.D{{Key: "_id", Value: _id}}
 	err := GetOne(filter, UserCollection(), user)
 
 	if err != nil {
-		return user, err
+		return err
 	}
 
 	if user.Team == NULL_ID {
-		return user, nil
+		return nil
 	}
 
 	filter = bson.D{{Key: "_id", Value: user.Team}}
 	team := &model.Team{}
-	err = GetOne(filter, TeamCollection(), team)
+	return GetOneTeam(team, filter)
 
-	return user, err
 }
 
-func CreateUser(first_name string, last_name string, email string, password string, role string) (*model.User, error) {
-	user := &model.User{
-		FirstName: first_name,
-		LastName:  last_name,
-		Email:     email,
-		Password:  password,
-		Role:      role,
+func GetManyUsers(users *[]*model.User, filter bson.D) error {
+
+	err := GetMany(filter, UserCollection(), users)
+
+	if err != nil {
+		return err
 	}
 
-	err := Save(user, UserCollection())
+	for _, user := range *users {
 
-	return user, err
+		if user.Team == NULL_ID {
+			continue
+		}
+		filter = bson.D{{Key: "_id", Value: user.Team}}
+		team := &model.Team{}
+		err = GetOneTeam(team, filter)
+
+		if err != nil {
+			return err
+		}
+	}
+
+	return nil
+
 }
 
-func UpdateUser(user model.User) (model.User, bool, error) {
-	return user, true, nil
+func SaveUser(user *model.User) error {
+
+	if user.Team == NULL_ID {
+		return Save(user, UserCollection())
+	}
+
+	filter := bson.D{{Key: "_id", Value: user.Team}}
+	team := &model.Team{}
+
+	if err := GetOneTeam(team, filter); err != nil {
+		return err
+	}
+
+	return Save(user, UserCollection())
+
+}
+
+func UpdateUser(user *model.User, update bson.D) error {
+
+	if user.Team != NULL_ID {
+		return Update(user, UserCollection(), update)
+	}
+
+	filter := bson.D{{Key: "_id", Value: user.Team}}
+	current_team := &model.Team{}
+	if err := GetOneTeam(current_team, filter); err != nil {
+		return err
+	}
+
+	err := Update(user, UserCollection(), update)
+
+	if err != nil {
+		return err
+	}
+
+	if user.Team != current_team.ID {
+		current_team = &model.Team{}
+		if err = GetOneTeam(current_team, filter); err != nil {
+			return err
+		}
+	}
+
+	return nil
 }
 
 func DeleteUser(user model.User) (model.User, bool, error) {

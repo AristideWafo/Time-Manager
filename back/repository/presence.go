@@ -2,38 +2,62 @@ package repository
 
 import (
 	"TimeManager/model"
-	"time"
+	"errors"
 
 	"go.mongodb.org/mongo-driver/v2/bson"
 )
 
-func CreatePresence(in_or_out string, user_id bson.ObjectID, timestamp time.Time) (*model.Presence, error) {
+func SavePresence(presence *model.Presence) error {
 
 	user := &model.User{}
-	filter := bson.D{{Key: "_id", Value: user_id}}
-	err := GetOne(filter, UserCollection(), user)
+	filter := bson.D{{Key: "_id", Value: presence.User}}
+	err := GetOneUser(user, filter)
 
 	if err != nil {
-		return &model.Presence{}, err
+		return err
 	}
 
-	presence := &model.Presence{
-		Type:      in_or_out,
-		Timestamp: timestamp,
-		User:      user_id,
-	}
-
-	err = Save(Document(presence), PresenceCollection())
-
-	return presence, err
+	return Save(presence, PresenceCollection())
 }
 
-func GetAllPresencesByUser(user_id bson.ObjectID) (*[]*model.Presence, error) {
+func UpdatePresence(presence *model.Presence, update bson.D) error {
 
-	presences := &[]*model.Presence{}
-	filter := bson.D{{Key: "User", Value: user_id}}
+	for _, elem := range update {
+		if elem.Key == "User" {
+			return errors.New("CANNOT UPDATE PRESENCE")
+		}
+	}
+
+	user := &model.User{}
+	filter := bson.D{{Key: "_id", Value: presence.User}}
+	err := GetOneUser(user, filter)
+
+	if err != nil {
+		return err
+	}
+
+	return Update(presence, UserCollection(), update)
+}
+
+func GetManyPresences(presences *[]*model.Presence, filter bson.D) error {
 
 	err := GetMany(filter, PresenceCollection(), presences)
 
-	return presences, err
+	if err != nil {
+		return err
+	}
+
+	for _, presence := range *presences {
+
+		user := &model.User{}
+		filter := bson.D{{Key: "_id", Value: presence.User}}
+		err = GetOneUser(user, filter)
+
+		if err != nil {
+			return err
+		}
+
+	}
+
+	return nil
 }
