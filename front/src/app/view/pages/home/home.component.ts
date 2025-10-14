@@ -41,6 +41,9 @@ export class HomeComponent implements OnInit {
   }
 
   goToProfile() {
+    const userId = this.getUserIdFromToken();
+    if (!userId) return;
+
     this.router.navigate(['/profile']);
   }
 
@@ -69,16 +72,21 @@ export class HomeComponent implements OnInit {
       return;
     }
 
-    const isEntry = true;
+    const presenceData = {
+      presence: {
+        Type: "Default",
+        Timestamp: new Date().toISOString()
+      }
+    };
 
-    this.apiService.postPointage({ userId, isEntry }).subscribe({
+    this.apiService.postPresence(presenceData).subscribe({
       next: () => {
-        this.message = "Pointage enregistré avec succès ✅";
+        this.message = "Présence enregistrée avec succès ✅";
         setTimeout(() => this.message = null, 3000);
       },
       error: (err: any) => {
-        console.error('Erreur de pointage :', err);
-        this.message = "Erreur lors du pointage ❌";
+        console.error('Erreur lors de l\'enregistrement de la présence :', err);
+        this.message = "Erreur lors de l'enregistrement ❌";
         setTimeout(() => this.message = null, 3000);
       }
     });

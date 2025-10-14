@@ -13,16 +13,16 @@ export class ApiService {
     }
 
     // Utilisateur
-    getUser(id: string) {
-        return this.http.get(`${this.baseUrl}/user/${id}`);
+    getUser(_id: string) {
+        return this.http.get(`${this.baseUrl}/user/${_id}`);
     }
 
-    updateUser(id: string, data: any) {
-        return this.http.put(`${this.baseUrl}/user/${id}`, data);
+    updateUser(_id: string, data: any) {
+        return this.http.put(`${this.baseUrl}/user/${_id}`, data);
     }
 
-    deleteUser(id: string) {
-        return this.http.delete(`${this.baseUrl}/user/${id}`);
+    deleteUser(_id: string) {
+        return this.http.delete(`${this.baseUrl}/user/${_id}`);
     }
 
     // Équipes
@@ -42,8 +42,8 @@ export class ApiService {
         return this.http.delete(`${this.baseUrl}/team/${id}`);
     }
 
-    // Pointage
-    postPointage(data: { userId: string; isEntry: boolean }) {
-        return this.http.post(`${this.baseUrl}/pointage`, data);
+    // Présence
+    postPresence(data: { presence: { Type: string; Timestamp: string } }) {
+        return this.http.post(`${this.baseUrl}/presence/create`, data);
     }
 }

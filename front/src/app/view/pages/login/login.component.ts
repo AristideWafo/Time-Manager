@@ -49,6 +49,7 @@ export class LoginComponent {
           return;
         }
         localStorage.setItem('access_token', token);
+
         this.router.navigate(['/home']);
       },
       error: (err) => {
