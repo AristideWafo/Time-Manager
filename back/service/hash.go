@@ -11,13 +11,20 @@ func HashPassword(password string) (string, error) {
 	for i := range passwordBytes {
 		passwordBytes[i] = 0
 	}
+	if err != nil {
+		return "", err
+	}
 	return string(hashed), err
 }
 
-func CheckPasswordHash(password []byte, hash string) bool {
+func CheckPasswordHash(password []byte, hash string) (bool, error) {
 	err := bcrypt.CompareHashAndPassword([]byte(hash), []byte(password))
+
 	for i := range password {
 		password[i] = 0
 	}
-	return err == nil
+	if err != nil {
+		return false, err
+	}
+	return err == nil, nil
 }
