@@ -1,6 +1,5 @@
 name: Build
 
-
 on:
   workflow_call:
     inputs:
@@ -10,7 +9,7 @@ on:
       working-dir-front:
         required: true
         type: string
-        default: './front'
+        default: "./front"
       working-dir-back:
         required: true
         type: string
@@ -20,7 +19,7 @@ on:
       app-name:
         required: false
         type: string
-        default: 'app'
+        default: "app"
 
 jobs:
   front-build:
@@ -30,13 +29,36 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v5
+
       - name: Set up Node.js
         uses: actions/setup-node@v5
         with:
           node-version: ${{ inputs.node-version }}
+          cache: "npm"
+          cache-dependency-path: ${{ inputs.working-dir-front }}/package-lock.json
+
+      - name: Cache node modules
+        uses: actions/cache@v4
+        with:
+          path: ${{ inputs.working-dir-front }}/node_modules
+          key: ${{ runner.os }}-node-${{ inputs.node-version }}-${{ hashFiles(format('{0}/package-lock.json', inputs.working-dir-front)) }}
+          restore-keys: |
+            ${{ runner.os }}-node-${{ inputs.node-version }}-
+            ${{ runner.os }}-node-
+
+      - name: Cache Angular build cache
+        uses: actions/cache@v4
+        with:
+          path: |
+            ${{ inputs.working-dir-front }}/.angular/cache
+            ${{ inputs.working-dir-front }}/dist
+          key: ${{ runner.os }}-angular-${{ hashFiles(format('{0}/src/**/*.ts', inputs.working-dir-front)) }}-${{ hashFiles(format('{0}/angular.json', inputs.working-dir-front)) }}
+          restore-keys: |
+            ${{ runner.os }}-angular-
+
       - name: Install dependencies
         working-directory: ${{ inputs.working-dir-front }}
-        run: npm ci
+        run: npm ci --prefer-offline
 
       - name: Build Angular project
         working-directory: ${{ inputs.working-dir-front }}
@@ -52,7 +74,29 @@ jobs:
       - name: Set up Go
         uses: actions/setup-go@v6
         with:
-          go-version: ${{ inputs.go-version }}  # Exact version from go.mod
+          go-version: ${{ inputs.go-version }}
+          cache: true
+          cache-dependency-path: ${{ inputs.working-dir-back }}/go.sum
+
+      - name: Cache Go modules and build
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cache/go-build
+            ~/go/pkg/mod
+            ${{ inputs.working-dir-back }}/vendor
+          key: ${{ runner.os }}-go-${{ inputs.go-version }}-${{ hashFiles(format('{0}/go.sum', inputs.working-dir-back)) }}
+          restore-keys: |
+            ${{ runner.os }}-go-${{ inputs.go-version }}-
+            ${{ runner.os }}-go-
+
+      - name: Cache Go build artifacts
+        uses: actions/cache@v4
+        with:
+          path: ${{ inputs.working-dir-back }}/tmp
+          key: ${{ runner.os }}-go-build-${{ hashFiles(format('{0}/**/*.go', inputs.working-dir-back)) }}
+          restore-keys: |
+            ${{ runner.os }}-go-build-
 
       - name: Ensure deps
         working-directory: ${{ inputs.working-dir-back }}

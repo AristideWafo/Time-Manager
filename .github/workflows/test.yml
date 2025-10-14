@@ -27,32 +27,46 @@ jobs:
         uses: actions/checkout@v5
       # - name: Test app
       #   run: echo "Testing for ${{ inputs.go-version }} and ${{ inputs.node-version }}"
-  
+
   go-lint:
     if: contains(github.ref_name, 'cicd') || contains(github.ref_name, 'back_')
     name: go-lint
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v5
-      
+
       - name: Setup Go
         uses: actions/setup-go@v6
         with:
-          go-version: ${{ inputs.go-version }}  # Exact version from go.mod
-      
+          go-version: ${{ inputs.go-version }}
+          cache: true
+          cache-dependency-path: ${{ inputs.working-dir-back }}/go.sum
+
+      - name: Cache golangci-lint
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cache/golangci-lint
+            ~/.cache/go-build
+            ~/go/pkg/mod
+          key: ${{ runner.os }}-golangci-lint-${{ inputs.go-version }}-${{ hashFiles(format('{0}/go.sum', inputs.working-dir-back)) }}
+          restore-keys: |
+            ${{ runner.os }}-golangci-lint-${{ inputs.go-version }}-
+            ${{ runner.os }}-golangci-lint-
+
       - name: Ensure deps
         working-directory: ${{ inputs.working-dir-back }}
         run: go mod tidy
 
       - name: Install golangci-lint
         run: |
-          go install github.com/golangci/golangci-lint/cmd/golangci-lint@latest
+          go install github.com/golangci/golangci-lint/cmd/golangci-lint@v1.54.2
           echo "$(go env GOPATH)/bin" >> $GITHUB_PATH
 
       - name: Run golangci-lint
         working-directory: ./back
         run: golangci-lint run --timeout=5m
-      
+
   angular-lint:
     if: contains(github.ref_name, 'cicd') || contains(github.ref_name, 'front_')
     name: angular-lint
@@ -64,10 +78,31 @@ jobs:
         uses: actions/setup-node@v5
         with:
           node-version: ${{ inputs.node-version }}
+          cache: "npm"
+          cache-dependency-path: ${{ inputs.working-dir-front }}/package-lock.json
+
+      - name: Cache node modules
+        uses: actions/cache@v4
+        with:
+          path: ${{ inputs.working-dir-front }}/node_modules
+          key: ${{ runner.os }}-node-lint-${{ inputs.node-version }}-${{ hashFiles(format('{0}/package-lock.json', inputs.working-dir-front)) }}
+          restore-keys: |
+            ${{ runner.os }}-node-lint-${{ inputs.node-version }}-
+            ${{ runner.os }}-node-lint-
+
+      - name: Cache ESLint
+        uses: actions/cache@v4
+        with:
+          path: |
+            ${{ inputs.working-dir-front }}/.eslintcache
+            ${{ inputs.working-dir-front }}/node_modules/.cache
+          key: ${{ runner.os }}-eslint-${{ hashFiles(format('{0}/.eslintrc.json', inputs.working-dir-front)) }}-${{ hashFiles(format('{0}/src/**/*.ts', inputs.working-dir-front)) }}
+          restore-keys: |
+            ${{ runner.os }}-eslint-
 
       - name: Install dependencies
         working-directory: ${{ inputs.working-dir-front }}
-        run: npm ci
+        run: npm ci --prefer-offline
 
       - name: Run lint
         working-directory: ${{ inputs.working-dir-front }}
