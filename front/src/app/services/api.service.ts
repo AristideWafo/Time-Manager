@@ -7,33 +7,27 @@ export class ApiService {
 
     constructor(private http: HttpClient) { }
 
-    // --- Authentification ---
+    // Authentification
     login(credentials: { Email: string; Password: string }) {
-        return this.http.post<{ token: string }>(`${this.baseUrl}/authentification`, credentials);
+        return this.http.post<{ token: string }>(
+            `${this.baseUrl}/authentification`, credentials
+        );
     }
 
-    // --- Utilisateur ---
-    getUser(id: string) {
-        return this.http.get<{ user: any }>(`${this.baseUrl}/user/${id}`);
+    // Utilisateur connecté via token
+    getUser() {
+        return this.http.get<any>(`${this.baseUrl}/user`);
     }
 
-    updateUser(id: string, data: any) {
-        // Mapper les champs Angular vers le backend (majuscule)
-        const payload = {
-            FirstName: data.firstName,
-            LastName: data.lastName,
-            Email: data.email,
-            Role: data.role,
-            Team: data.team
-        };
-        return this.http.put(`${this.baseUrl}/user/${id}`, payload);
+    updateUser(data: any) {
+        return this.http.put(`${this.baseUrl}/user`, data);
     }
 
-    deleteUser(id: string) {
-        return this.http.delete(`${this.baseUrl}/user/${id}`);
+    deleteUser() {
+        return this.http.delete(`${this.baseUrl}/user`);
     }
 
-    // --- Équipes ---
+    // Équipes
     getAllTeams() {
         return this.http.get<any[]>(`${this.baseUrl}/team`);
     }
@@ -50,7 +44,7 @@ export class ApiService {
         return this.http.delete(`${this.baseUrl}/team/${id}`);
     }
 
-    // --- Présence ---
+    // Présence
     postPresence(data: { presence: { Type: string; Timestamp: string } }) {
         return this.http.post(`${this.baseUrl}/presence/create`, data);
     }

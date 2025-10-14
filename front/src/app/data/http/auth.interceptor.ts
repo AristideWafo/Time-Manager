@@ -13,9 +13,9 @@ export function authTokenInterceptor(req: HttpRequest<unknown>, next: HttpHandle
 
     if (token) {
         clonedReq = req.clone({
-            headers: req.headers.set('Authorization', `Bearer ${token}`)
+            headers: req.headers.set('api_token', token)
         });
-        console.log("🔑 Interceptor : ajout du token", token);
+        console.log("🔑 Interceptor : ajout du token dans api_token", token);
     } else {
         console.warn("⚠️ Interceptor : pas de token trouvé");
     }
