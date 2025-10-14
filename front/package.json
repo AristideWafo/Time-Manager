@@ -9,7 +9,7 @@
     "test": "ng test",
     "lint": "ng lint",
     "lint:fix": "ng lint --fix",
-    "lint:ci": "ng lint --format=checkstyle --output-file=lint-results.xml"
+    "lint:ci": "ng lint --format=json --output-file=lint-results.json"
   },
   "private": true,
   "dependencies": {
