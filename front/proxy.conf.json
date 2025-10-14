@@ -1,22 +1,9 @@
 {
-    "/authentification": {
+    "/api": {
         "target": "http://localhost:8080",
         "secure": false,
-        "changeOrigin": true
-    },
-    "/user": {
-        "target": "http://localhost:8080",
-        "secure": false,
-        "changeOrigin": true
-    },
-    "/team": {
-        "target": "http://localhost:8080",
-        "secure": false,
-        "changeOrigin": true
-    },
-    "/pointage": {
-        "target": "http://localhost:8080",
-        "secure": false,
-        "changeOrigin": true
+        "changeOrigin": true,
+        "logLevel": "debug",
+        "pathRewrite": {}
     }
 }

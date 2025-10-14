@@ -3,12 +3,12 @@ import { HttpClient } from '@angular/common/http';
 
 @Injectable({ providedIn: 'root' })
 export class ApiService {
-    private baseUrl = 'http://localhost:8080';
+    private baseUrl = '/api';
 
     constructor(private http: HttpClient) { }
 
     // Authentification
-    login(credentials: { email: string; password: string }) {
+    login(credentials: { Email: string; Password: string }) {
         return this.http.post<{ token: string }>(`${this.baseUrl}/authentification`, credentials);
     }
 

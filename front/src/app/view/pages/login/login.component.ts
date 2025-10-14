@@ -40,9 +40,9 @@ export class LoginComponent {
     this.error = '';
     this.loading = true;
 
-    this.api.login({ email: this.email, password: this.password }).subscribe({
+    this.api.login({ Email: this.email, Password: this.password }).subscribe({
       next: (res) => {
-        const token = (res as any).token;
+        const token = (res as any).Token;
         if (!token) {
           this.error = 'Réponse invalide du serveur.';
           this.loading = false;
