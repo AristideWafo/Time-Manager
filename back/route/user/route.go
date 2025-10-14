@@ -2,6 +2,7 @@ package user
 
 import (
 	"TimeManager/model"
+	"TimeManager/repository"
 	"TimeManager/service"
 	"errors"
 	"net/http"
@@ -65,6 +66,10 @@ func FetchUser(context *gin.Context) {
 
 	output.ID = user.ID.Hex()
 
+	if user.Team != repository.NULL_ID {
+		output.Team = user.Team.Hex()
+	}
+
 	if err = model.ValidateModel(&output); err != nil {
 		err = context.AbortWithError(http.StatusInternalServerError, err)
 		context.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
@@ -100,6 +105,10 @@ func PostUser(context *gin.Context) {
 	}
 
 	output.ID = created_user.ID.Hex()
+
+	if created_user.Team != repository.NULL_ID {
+		output.Team = created_user.Team.Hex()
+	}
 
 	if err = model.ValidateModel(&output); err != nil {
 		err = context.AbortWithError(http.StatusInternalServerError, err)
