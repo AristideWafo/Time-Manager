@@ -97,10 +97,7 @@ jobs:
       uses: github/codeql-action/init@v3
       with:
         languages: ${{ matrix.language }}
-        # Utiliser le fichier de configuration personnalisé
         config-file: ./.github/codeql-config.yml
-        # Optimiser l'extraction et l'analyse
-        setup-python-dependencies: false
 
     - name: Build Go
       if: matrix.language == 'go'
@@ -132,6 +129,5 @@ jobs:
       uses: github/codeql-action/analyze@v3
       with:
         category: "/language:${{matrix.language}}"
-        # Optimisations pour les performances
         upload: true
         cleanup-level: none
