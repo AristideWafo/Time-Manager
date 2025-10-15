@@ -60,5 +60,5 @@ func UpdateUserByID(_id bson.ObjectID, update bson.D) (*model.User, error) {
 		return user, err
 	}
 
-	return user, repository.UpdateUser(user, update)
+	return user, repository.UpdateOneUser(user, update)
 }

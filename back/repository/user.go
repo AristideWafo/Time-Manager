@@ -67,34 +67,57 @@ func SaveUser(user *model.User) error {
 
 }
 
-func UpdateUser(user *model.User, update bson.D) error {
+func UpdateOneUser(user *model.User, update bson.D) error {
 
-	if user.Team != NULL_ID {
-		return Update(user, UserCollection(), update)
-	}
+	ok := false
 
-	filter := bson.D{{Key: "_id", Value: user.Team}}
-	current_team := &model.Team{}
-	if err := GetOneTeam(current_team, filter); err != nil {
-		return err
-	}
+	for _, elem := range update {
 
-	err := Update(user, UserCollection(), update)
-
-	if err != nil {
-		return err
-	}
-
-	if user.Team != current_team.ID {
-		current_team = &model.Team{}
-		if err = GetOneTeam(current_team, filter); err != nil {
-			return err
+		if elem.Key == "Team" && elem.Value != nil {
+			ok = true
+			break
 		}
 	}
 
-	return nil
+	if !ok {
+		return UpdateOne(user, UserCollection(), update)
+	}
+
+	filter := bson.D{{Key: "_id", Value: user.Team}}
+	team := &model.Team{}
+	if err := GetOneTeam(team, filter); err != nil {
+		return err
+	}
+
+	return UpdateOne(user, UserCollection(), update)
 }
 
-func DeleteUser(user model.User) (model.User, bool, error) {
-	return user, true, nil
+func UpdateManyUsers(filter bson.D, update bson.D) error {
+	ok := false
+
+	for _, elem := range update {
+
+		if elem.Key == "Team" && elem.Value != nil {
+			ok = true
+			break
+		}
+	}
+
+	user := &model.User{}
+
+	if !ok {
+		return UpdateMany(user, filter, UserCollection(), update)
+	}
+
+	team_filter := bson.D{{Key: "_id", Value: user.Team}}
+	team := &model.Team{}
+	if err := GetOneTeam(team, team_filter); err != nil {
+		return err
+	}
+
+	return UpdateMany(user, filter, UserCollection(), update)
+}
+
+func DeleteOneUser(user *model.User) error {
+	return DeleteOne(user, UserCollection())
 }
