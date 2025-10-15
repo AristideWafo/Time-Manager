@@ -18,10 +18,18 @@ func SaveTeam(team *model.Team) error {
 	return Save(team, TeamCollection())
 }
 
-func UpdateTeam(team *model.Team, update bson.D) error {
-	return Update(team, TeamCollection(), update)
+func UpdateOneTeam(team *model.Team, update bson.D) error {
+	return UpdateOne(team, TeamCollection(), update)
 }
 
-func DeleteTeam(team model.Team) error {
-	return nil
+func DeleteOneTeam(team *model.Team) error {
+
+	err := DeleteOne(team, UserCollection())
+
+	if err != nil {
+		return err
+	}
+
+	return UpdateManyUsers(bson.D{{Key: "Team", Value: team.ID}}, bson.D{{Key: "Team", Value: nil}})
+
 }

@@ -9,6 +9,12 @@ type CreateUserInput struct {
 	Team      string `json:"Team"`
 }
 
+type UpdateUserInput struct {
+	FirstName string `json:"FirstName" bson:"FirstName"`
+	LastName  string `json:"LastName" bson:"LastName"`
+	Password  string `json:"Password"`
+}
+
 type UserOutput struct {
 	ID        string `json:"_id" bson:"_id" binding:"required" validate:"required"`
 	FirstName string `json:"FirstName" bson:"FirstName" binding:"required" validate:"required"`

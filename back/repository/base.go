@@ -88,7 +88,7 @@ func Save[document Document](doc document, collection *mongo.Collection) error {
 	return doc.Validate()
 }
 
-func Update[document Document](doc document, collection *mongo.Collection, update bson.D) error {
+func UpdateOne[document Document](doc document, collection *mongo.Collection, update bson.D) error {
 
 	date_update := append(update, bson.D{{Key: "UpdatedAt", Value: time.Now()}}...)
 
@@ -123,6 +123,50 @@ func Update[document Document](doc document, collection *mongo.Collection, updat
 	defer cancel()
 
 	_, err = collection.UpdateOne(ctx, bson.D{{Key: "_id", Value: doc.GetID()}}, full_update)
+
+	return err
+}
+
+func UpdateMany[document Document](empty_doc document, filter bson.D, collection *mongo.Collection, update bson.D) error {
+
+	date_update := append(update, bson.D{{Key: "UpdatedAt", Value: time.Now()}}...)
+	err := GetOne(filter, collection, empty_doc)
+
+	if err != nil {
+		return err
+	}
+
+	doc_fields := reflect.ValueOf(empty_doc).Elem()
+
+	for _, elem := range date_update {
+
+		field := doc_fields.FieldByName(elem.Key)
+
+		if field.IsValid() && field.CanSet() {
+			value := reflect.ValueOf(elem.Value)
+
+			if value.Type().AssignableTo(field.Type()) {
+				field.Set(value)
+			} else {
+				return errors.New("INVALID UPDATE")
+			}
+
+		} else {
+			return errors.New("INVALID UPDATE")
+		}
+	}
+
+	err = empty_doc.Validate()
+
+	if err != nil {
+		return err
+	}
+
+	full_update := bson.D{{Key: "$set", Value: date_update}}
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+
+	_, err = collection.UpdateMany(ctx, filter, full_update)
 
 	return err
 }
@@ -169,6 +213,28 @@ func GetMany[document Document](filter bson.D, collection *mongo.Collection, emp
 			return err
 		}
 	}
+
+	return err
+}
+
+func DeleteOne[document Document](doc document, collection *mongo.Collection) error {
+
+	filter := bson.D{{Key: "_id", Value: doc.GetID()}}
+
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+
+	_, err := collection.DeleteOne(ctx, filter)
+
+	return err
+}
+
+func DeleteMany(filter bson.D, collection *mongo.Collection) error {
+
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+
+	_, err := collection.DeleteOne(ctx, filter)
 
 	return err
 }
