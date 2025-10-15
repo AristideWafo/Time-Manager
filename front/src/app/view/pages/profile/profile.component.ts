@@ -191,6 +191,7 @@ export class ProfileComponent implements OnInit {
     }
 
     this.isLoading = true;
+
     this.apiService.updateUser(this.editProfile).subscribe({
       next: () => {
         this.userProfile = { ...this.editProfile };
@@ -198,11 +199,13 @@ export class ProfileComponent implements OnInit {
         this.isLoading = false;
         this.showMessage('Profil mis à jour avec succès !', 'success');
       },
-      error: () => {
+      error: (err) => {
         this.isLoading = false;
+        console.error('Erreur update', err);
         this.showMessage('Erreur lors de la mise à jour.', 'error');
       }
     });
+
   }
 
   confirmDelete() { this.showDeleteModal = true; }

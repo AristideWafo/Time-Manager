@@ -1,86 +1,87 @@
-/* Profil info - style pro */
+/* Container centré verticalement et horizontalement */
+.profile-container {
+    display: flex;
+    justify-content: center;
+    /* centre horizontalement */
+    align-items: center;
+    /* centre verticalement */
+    min-height: 100vh;
+    /* prend toute la hauteur de l’écran */
+    padding: 20px;
+    font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    background-color: #f5f7fa;
+}
+
+/* Card centrée et responsive */
+.profile-card {
+    background: #ffffff;
+    border-radius: 12px;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+    padding: 30px 40px;
+    max-width: 500px;
+    /* limite largeur de la carte */
+    width: 100%;
+    transition: box-shadow 0.3s ease;
+}
+
+.profile-card:hover {
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.12);
+}
+
+/* Centrage du contenu dans la carte */
+.profile-header,
+.profile-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.profile-actions {
+    margin-top: 15px;
+    display: flex;
+    gap: 10px;
+}
+
+/* Profile info centré */
 .profile-info {
-    display: grid;
-    grid-template-columns: 1fr 2fr;
-    gap: 15px 30px;
-    padding: 15px 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    /* centre les lignes */
+    gap: 10px;
 }
 
 .profile-info div {
     display: flex;
-    align-items: center;
-    padding: 10px 0;
+    justify-content: space-between;
+    width: 100%;
+    max-width: 350px;
+    /* largeur uniforme */
+    padding: 8px 0;
     border-bottom: 1px solid #e9ecef;
 }
 
 .profile-info label {
     font-weight: 600;
     color: #003366;
-    min-width: 120px;
-    /* largeur fixe pour aligner les valeurs */
 }
 
 .profile-info span {
     color: #212529;
     font-size: 1rem;
-    word-break: break-word;
+    text-align: right;
 }
 
-/* Responsive */
-@media (max-width: 600px) {
-    .profile-info {
-        grid-template-columns: 1fr;
-    }
-
-    .profile-info label {
-        min-width: auto;
-        margin-bottom: 5px;
-    }
-
+/* Responsive pour mobile */
+@media (max-width: 500px) {
     .profile-info div {
         flex-direction: column;
-        align-items: flex-start;
+        align-items: center;
+        text-align: center;
     }
-}
 
-/* Amélioration formulaire */
-.profile-form input {
-    width: 100%;
-    padding: 12px;
-    font-size: 1rem;
-    border-radius: 6px;
-    border: 1px solid #ced4da;
-    transition: border-color 0.2s ease, box-shadow 0.2s ease;
-}
-
-.profile-form input:focus {
-    border-color: #0056b3;
-    box-shadow: 0 0 5px rgba(0, 86, 179, 0.3);
-    outline: none;
-}
-
-/* Actions du formulaire alignées à droite */
-.form-actions {
-    display: flex;
-    justify-content: flex-end;
-    gap: 15px;
-    margin-top: 20px;
-}
-
-/* Boutons cohérents */
-.btn {
-    min-width: 120px;
-    text-align: center;
-}
-
-/* Messages centrés et pro */
-.message {
-    font-size: 0.95rem;
-    padding: 12px 20px;
-    border-radius: 8px;
-}
-
-/* Modal actions */
-.modal-actions button {
-    min-width: 140px;
+    .profile-info label,
+    .profile-info span {
+        text-align: center;
+    }
 }
