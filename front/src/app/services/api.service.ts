@@ -45,7 +45,7 @@ export class ApiService {
     }
 
     // Présence
-    postPresence(data: { presence: { Type: string; Timestamp: string } }) {
+    postPresence(data: { Type: string; Timestamp: string; User: string }) {
         return this.http.post(`${this.baseUrl}/presence/create`, data);
     }
 }

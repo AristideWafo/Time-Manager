@@ -57,7 +57,6 @@ export class HomeComponent implements OnInit {
   ) { }
 
   ngOnInit() {
-    console.log("HomeComponent chargé avec succès");
 
     const token = localStorage.getItem('access_token');
     if (token) {
@@ -103,19 +102,21 @@ export class HomeComponent implements OnInit {
     }
 
     const presenceData = {
-      presence: {
-        Type: "Work",
-        Timestamp: new Date().toISOString()
-      }
+      Type: "Work",
+      Timestamp: new Date().toISOString(),
+      User: userId
     };
+
+    console.log("Envoi des données de présence :", presenceData);
 
     this.apiService.postPresence(presenceData).subscribe({
       next: () => {
-        this.message = "Présence enregistrée avec succès.";
+        this.message = "✅ Présence enregistrée avec succès.";
+        console.log("✅ Présence enregistrée avec succès");
         setTimeout(() => this.message = null, 3000);
       },
       error: (err: any) => {
-        console.error("Erreur lors de l'enregistrement :", err);
+        console.error("❌ Erreur lors de l'enregistrement :", err);
         this.message = "Erreur lors de l'enregistrement.";
         setTimeout(() => this.message = null, 3000);
       }
