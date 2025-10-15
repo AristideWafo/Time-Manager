@@ -20,7 +20,7 @@ func SavePresence(presence *model.Presence) error {
 	return Save(presence, PresenceCollection())
 }
 
-func UpdatePresence(presence *model.Presence, update bson.D) error {
+func UpdateOnePresence(presence *model.Presence, update bson.D) error {
 
 	for _, elem := range update {
 		if elem.Key == "User" {
@@ -36,7 +36,7 @@ func UpdatePresence(presence *model.Presence, update bson.D) error {
 		return err
 	}
 
-	return Update(presence, UserCollection(), update)
+	return UpdateOne(presence, UserCollection(), update)
 }
 
 func GetManyPresences(presences *[]*model.Presence, filter bson.D) error {
