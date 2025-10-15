@@ -1,6 +1,8 @@
 name: "CodeQL Analysis"
 
 on:
+  push:
+    branches: [ "main", "dev" ]  # Ajout du push hook requis
   pull_request:
     branches: [ "dev","feat/*","fix/*"  ]
     types: [opened, synchronize, reopened]
@@ -44,7 +46,7 @@ jobs:
       if: matrix.language == 'javascript-typescript'
       working-directory: './front'
       run: |
-        npm npm ci --prefer-offline
+        npm ci --prefer-offline
         npm run build || true
 
     - name: Perform CodeQL Analysis
