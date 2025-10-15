@@ -3,49 +3,48 @@ import { HttpClient } from '@angular/common/http';
 
 @Injectable({ providedIn: 'root' })
 export class ApiService {
+    private baseUrl = '/api';
 
     constructor(private http: HttpClient) { }
 
-    login(credentials: { username: string; password: string }) {
+    // Authentification
+    login(credentials: { Email: string; Password: string }) {
         return this.http.post<{ token: string }>(
-            `/authentification`,
-            credentials
+            `${this.baseUrl}/authentification`, credentials
         );
     }
 
-    getUser(id: number) {
-        return this.http.get(`/user/${id}`);
+    // Utilisateur connecté via token
+    getUser() {
+        return this.http.get<any>(`${this.baseUrl}/user`);
     }
 
-    postUser(data: any) {
-        return this.http.post(`/user/`, data)
+    updateUser(data: any) {
+        return this.http.put(`${this.baseUrl}/user`, data);
     }
 
-    updateUser(id: number, data: any) {
-        return this.http.put(`/user/${id}`, data);
+    deleteUser() {
+        return this.http.delete(`${this.baseUrl}/user`);
     }
 
-    deleteUser(id: number) {
-        return this.http.delete(`/user/${id}`);
+    // Équipes
+    getAllTeams() {
+        return this.http.get<any[]>(`${this.baseUrl}/team`);
     }
 
-    getTeamWorkers(teamId: number) {
-        return this.http.get(`/team/${teamId}/workers`);
+    createTeam(data: any) {
+        return this.http.post(`${this.baseUrl}/team`, data);
     }
 
-    postTeamWorkers(teamId: number, data: any) {
-        return this.http.post(`/team/${teamId}`, data)
+    updateTeam(id: string, data: any) {
+        return this.http.put(`${this.baseUrl}/team/${id}`, data);
     }
 
-    updateTeamWorkers(teamId: number, data: any) {
-        return this.http.put(`/team/${teamId}/workers`, data);
+    deleteTeam(id: string) {
+        return this.http.delete(`${this.baseUrl}/team/${id}`);
     }
 
-    deleteTeamWorkers(teamId: number) {
-        return this.http.delete(`/team/${teamId}`);
-    }
-
-    updatePointage(id: number, data: boolean) {
-        return this.http.put(`/pointage/${id}`, data)
+    postPresence(data: { Type: string; Timestamp: string }) {
+        return this.http.post(`${this.baseUrl}/presence/create`, data);
     }
 }

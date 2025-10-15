@@ -1,8 +1,67 @@
-:host {
-    display: block;
+/* Carte individuelle */
+.card {
+    background-color: #ffffff;
+    padding: 25px;
+    border-radius: 12px;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: center;
+    /* Centrage horizontal */
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
-.home {
-    padding-top: 16px
+.card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 12px 25px rgba(0, 0, 0, 0.12);
 }
 
+.card h2 {
+    font-size: 1.5rem;
+    margin-bottom: 12px;
+    color: #003366;
+    text-align: center;
+    /* Centrer le titre */
+}
+
+.card p {
+    flex-grow: 1;
+    font-size: 0.95rem;
+    margin-bottom: 20px;
+    color: #495057;
+    text-align: center;
+    /* Centrer le texte */
+}
+
+/* Boutons centrés */
+.card button {
+    padding: 10px 18px;
+    background-color: #0056b3;
+    color: #fff;
+    border: none;
+    border-radius: 6px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.card button:hover {
+    background-color: #004080;
+    transform: translateY(-1px);
+}
+
+/* Message centré */
+.message {
+    margin-top: 15px;
+    color: #155724;
+    font-weight: 500;
+    background-color: #d4edda;
+    padding: 10px;
+    border-radius: 6px;
+    border: 1px solid #c3e6cb;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.04);
+    text-align: center;
+    /* Centrer le message */
+    width: 100%;
+}

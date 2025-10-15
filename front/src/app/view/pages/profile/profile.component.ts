@@ -5,13 +5,11 @@ import { ApiService } from '../../../services/api.service';
 import { Router } from '@angular/router';
 
 interface UserProfile {
-  id?: number;
   firstName: string;
   lastName: string;
   email: string;
-  phone?: string;
-  position?: string;
-  department?: string;
+  role: string;
+  team: string;
 }
 
 @Component({
@@ -20,149 +18,113 @@ interface UserProfile {
   imports: [CommonModule, FormsModule],
   styleUrls: ['./profile.component.css'],
   template: `
-  <div class="profile-container">
-    <div class="profile-card">
-      <div class="profile-header">
-        <h1>Mon Profil</h1>
-        <div class="profile-actions">
-          <button 
-            class="btn btn-secondary" 
-            (click)="toggleEditMode()"
-            [disabled]="isLoading">
-            {{ isEditMode ? 'Annuler' : 'Modifier' }}
-          </button>
-          <button 
-            class="btn btn-danger" 
-            (click)="confirmDelete()"
-            [disabled]="isLoading">
-            Supprimer le compte
-          </button>
-        </div>
-      </div>
+    <div class="profile-container">
+      <div class="profile-card">
+        <div class="profile-header">
+          <h1>Mon Profil</h1>
 
-      <div class="profile-content">
-        <!-- Mode lecture -->
-        <div *ngIf="!isEditMode" class="profile-view">
-          <div class="profile-info">
-            <div class="info-item">
-              <label>Prénom :</label>
-              <span>{{ userProfile.firstName || 'Non renseigné' }}</span>
-            </div>
-            <div class="info-item">
-              <label>Nom :</label>
-              <span>{{ userProfile.lastName || 'Non renseigné' }}</span>
-            </div>
-            <div class="info-item">
-              <label>Email :</label>
-              <span>{{ userProfile.email || 'Non renseigné' }}</span>
-            </div>
-            <div class="info-item">
-              <label>Téléphone :</label>
-              <span>{{ userProfile.phone || 'Non renseigné' }}</span>
-            </div>
-            <div class="info-item">
-              <label>Poste :</label>
-              <span>{{ userProfile.position || 'Non renseigné' }}</span>
-            </div>
-            <div class="info-item">
-              <label>Département :</label>
-              <span>{{ userProfile.department || 'Non renseigné' }}</span>
-            </div>
+          <div class="profile-actions">
+            <button
+              class="btn btn-secondary"
+              (click)="toggleEditMode()"
+              [disabled]="isLoading"
+            >
+              {{ isEditMode ? 'Annuler' : 'Modifier' }}
+            </button>
+
+            <button
+              class="btn btn-danger"
+              (click)="confirmDelete()"
+              [disabled]="isLoading"
+            >
+              Supprimer le compte
+            </button>
           </div>
         </div>
 
-        <!-- Mode édition -->
-        <form *ngIf="isEditMode" class="profile-form" (ngSubmit)="updateProfile()">
-          <div class="form-group">
-            <label for="firstName">Prénom *</label>
-            <input 
-              type="text" 
-              id="firstName" 
-              [(ngModel)]="editProfile.firstName" 
-              name="firstName"
-              required>
+        <div class="profile-content">
+          <!-- Vue profil -->
+          <div *ngIf="!isEditMode" class="profile-view">
+            <div class="profile-info">
+              <div>
+                <label>Prénom :</label>
+                <span>{{ userProfile.firstName }}</span>
+              </div>
+
+              <div>
+                <label>Nom :</label>
+                <span>{{ userProfile.lastName }}</span>
+              </div>
+
+              <div>
+                <label>Email :</label>
+                <span>{{ userProfile.email }}</span>
+              </div>
+
+              <div>
+                <label>Rôle :</label>
+                <span>{{ userProfile.role }}</span>
+              </div>
+
+              <div>
+                <label>Équipe :</label>
+                <span>{{ userProfile.team || 'Aucune' }}</span>
+              </div>
+            </div>
           </div>
 
-          <div class="form-group">
-            <label for="lastName">Nom *</label>
-            <input 
-              type="text" 
-              id="lastName" 
-              [(ngModel)]="editProfile.lastName" 
-              name="lastName"
-              required>
-          </div>
+          <!-- Formulaire d’édition -->
+          <form *ngIf="isEditMode" (ngSubmit)="updateProfile()">
+            <div>
+              <label>Prénom *</label>
+              <input [(ngModel)]="editProfile.firstName" name="firstName" required />
+            </div>
 
-          <div class="form-group">
-            <label for="email">Email *</label>
-            <input 
-              type="email" 
-              id="email" 
-              [(ngModel)]="editProfile.email" 
-              name="email"
-              required>
-          </div>
+            <div>
+              <label>Nom *</label>
+              <input [(ngModel)]="editProfile.lastName" name="lastName" required />
+            </div>
 
-          <div class="form-group">
-            <label for="phone">Téléphone</label>
-            <input 
-              type="tel" 
-              id="phone" 
-              [(ngModel)]="editProfile.phone" 
-              name="phone">
-          </div>
+            <div>
+              <label>Email *</label>
+              <input [(ngModel)]="editProfile.email" name="email" required />
+            </div>
 
-          <div class="form-group">
-            <label for="position">Poste</label>
-            <input 
-              type="text" 
-              id="position" 
-              [(ngModel)]="editProfile.position" 
-              name="position">
-          </div>
-
-          <div class="form-group">
-            <label for="department">Département</label>
-            <input 
-              type="text" 
-              id="department" 
-              [(ngModel)]="editProfile.department" 
-              name="department">
-          </div>
-
-          <div class="form-actions">
-            <button type="submit" class="btn btn-primary" [disabled]="isLoading">
+            <button type="submit" [disabled]="isLoading">
               {{ isLoading ? 'Sauvegarde...' : 'Sauvegarder' }}
             </button>
-            <button type="button" class="btn btn-secondary" (click)="toggleEditMode()" [disabled]="isLoading">
+
+            <button
+              type="button"
+              (click)="toggleEditMode()"
+              [disabled]="isLoading"
+            >
+              Annuler
+            </button>
+          </form>
+
+          <div *ngIf="message" [ngClass]="messageType">
+            {{ message }}
+          </div>
+        </div>
+
+        <!-- Modal de suppression -->
+        <div *ngIf="showDeleteModal" class="modal-overlay" (click)="cancelDelete()">
+          <div class="modal" (click)="$event.stopPropagation()">
+            <h3>Confirmer la suppression</h3>
+            <p>Êtes-vous sûr de vouloir supprimer votre compte ?</p>
+
+            <button (click)="deleteProfile()" [disabled]="isLoading">
+              {{ isLoading ? 'Suppression...' : 'Supprimer définitivement' }}
+            </button>
+
+            <button (click)="cancelDelete()" [disabled]="isLoading">
               Annuler
             </button>
           </div>
-        </form>
-      </div>
-
-      <!-- Messages d'erreur/succès -->
-      <div *ngIf="message" class="message" [ngClass]="messageType">
-        {{ message }}
-      </div>
-    </div>
-
-    <!-- Modal de confirmation de suppression -->
-    <div *ngIf="showDeleteModal" class="modal-overlay" (click)="cancelDelete()">
-      <div class="modal" (click)="$event.stopPropagation()">
-        <h3>Confirmer la suppression</h3>
-        <p>Êtes-vous sûr de vouloir supprimer votre compte ? Cette action est irréversible.</p>
-        <div class="modal-actions">
-          <button class="btn btn-danger" (click)="deleteProfile()" [disabled]="isLoading">
-            {{ isLoading ? 'Suppression...' : 'Supprimer définitivement' }}
-          </button>
-          <button class="btn btn-secondary" (click)="cancelDelete()" [disabled]="isLoading">
-            Annuler
-          </button>
         </div>
       </div>
     </div>
-  </div>
   `
 })
 export class ProfileComponent implements OnInit {
@@ -170,9 +132,8 @@ export class ProfileComponent implements OnInit {
     firstName: '',
     lastName: '',
     email: '',
-    phone: '',
-    position: '',
-    department: ''
+    role: '',
+    team: ''
   };
 
   editProfile: UserProfile = { ...this.userProfile };
@@ -182,95 +143,88 @@ export class ProfileComponent implements OnInit {
   messageType: 'success' | 'error' = 'success';
   showDeleteModal = false;
 
-  constructor(
-    private apiService: ApiService,
-    private router: Router
-  ) { }
+  constructor(private apiService: ApiService, private router: Router) { }
 
   ngOnInit() {
+    const token = localStorage.getItem('access_token');
+    if (!token) {
+      this.router.navigate(['/login']);
+      return;
+    }
+
     this.loadProfile();
   }
 
   loadProfile() {
-    // Pour le moment, on simule des données
-    // Quand le backend sera prêt, remplacer par :
-    // this.apiService.getUserProfile(userId).subscribe(...)
-
-    this.userProfile = {
-      id: 1,
-      firstName: 'Druss',
-      lastName: 'Guts',
-      email: 'Druss.guts@gmail.com',
-      phone: '0123456789',
-      position: 'Développeur',
-      department: 'IT'
-    };
-
-    this.editProfile = { ...this.userProfile };
+    this.isLoading = true;
+    this.apiService.getUser().subscribe({
+      next: (res: any) => {
+        const u = res.user || {};
+        this.userProfile = {
+          firstName: u.FirstName || '',
+          lastName: u.LastName || '',
+          email: u.Email || '',
+          role: u.Role || '',
+          team: u.Team || ''
+        };
+        this.editProfile = { ...this.userProfile };
+        this.isLoading = false;
+      },
+      error: () => {
+        this.showMessage('Impossible de charger le profil.', 'error');
+        this.isLoading = false;
+      }
+    });
   }
 
   toggleEditMode() {
     this.isEditMode = !this.isEditMode;
-    if (this.isEditMode) {
-      this.editProfile = { ...this.userProfile };
-    }
+    if (this.isEditMode) this.editProfile = { ...this.userProfile };
     this.clearMessage();
   }
 
   updateProfile() {
-    if (!this.isValidForm()) {
+    if (!this.editProfile.firstName || !this.editProfile.lastName || !this.editProfile.email) {
       this.showMessage('Veuillez remplir tous les champs obligatoires', 'error');
       return;
     }
 
     this.isLoading = true;
-    this.clearMessage();
 
-    // Simulation d'appel API
-    // Quand le backend sera prêt, remplacer par :
-    // this.apiService.updateUserProfile(this.userProfile.id!, this.editProfile).subscribe({
-    //   next: (response) => { ... },
-    //   error: (error) => { ... }
-    // });
+    this.apiService.updateUser(this.editProfile).subscribe({
+      next: () => {
+        this.userProfile = { ...this.editProfile };
+        this.isEditMode = false;
+        this.isLoading = false;
+        this.showMessage('Profil mis à jour avec succès !', 'success');
+      },
+      error: (err) => {
+        this.isLoading = false;
+        console.error('Erreur update', err);
+        this.showMessage('Erreur lors de la mise à jour.', 'error');
+      }
+    });
 
-    setTimeout(() => {
-      this.userProfile = { ...this.editProfile };
-      this.isEditMode = false;
-      this.isLoading = false;
-      this.showMessage('Profil mis à jour avec succès !', 'success');
-    }, 1000);
   }
 
-  confirmDelete() {
-    this.showDeleteModal = true;
-  }
-
-  cancelDelete() {
-    this.showDeleteModal = false;
-  }
+  confirmDelete() { this.showDeleteModal = true; }
+  cancelDelete() { this.showDeleteModal = false; }
 
   deleteProfile() {
     this.isLoading = true;
-
-    // Simulation d'appel API
-    // Quand le backend sera prêt, remplacer par :
-    // this.apiService.deleteUserProfile(this.userProfile.id!).subscribe({
-    //   next: () => { ... },
-    //   error: (error) => { ... }
-    // });
-
-    setTimeout(() => {
-      this.isLoading = false;
-      this.showDeleteModal = false;
-      localStorage.removeItem('access_token');
-      this.router.navigate(['/login']);
-    }, 1000);
-  }
-
-  private isValidForm(): boolean {
-    return !!(this.editProfile.firstName &&
-      this.editProfile.lastName &&
-      this.editProfile.email);
+    this.apiService.deleteUser().subscribe({
+      next: () => {
+        this.isLoading = false;
+        this.showDeleteModal = false;
+        localStorage.removeItem('access_token');
+        this.router.navigate(['/login']);
+      },
+      error: () => {
+        this.isLoading = false;
+        this.showDeleteModal = false;
+        this.showMessage('Impossible de supprimer le profil.', 'error');
+      }
+    });
   }
 
   private showMessage(text: string, type: 'success' | 'error') {
@@ -279,9 +233,5 @@ export class ProfileComponent implements OnInit {
     setTimeout(() => this.clearMessage(), 5000);
   }
 
-  private clearMessage() {
-    this.message = '';
-  }
+  private clearMessage() { this.message = ''; }
 }
-
-

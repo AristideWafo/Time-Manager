@@ -1,17 +1,20 @@
 import { HttpHandlerFn, HttpRequest } from '@angular/common/http';
 
 export function authTokenInterceptor(req: HttpRequest<unknown>, next: HttpHandlerFn) {
-    // Do not add Authorization for login endpoint
+    console.log("➡️ Interceptor : URL =", req.url);
+
     if (req.url.endsWith('/authentification')) {
         return next(req);
     }
 
-    const storedToken = localStorage.getItem('access_token');
-    const reqWithAuth = storedToken
-        ? req.clone({ setHeaders: { Authorization: `Bearer ${storedToken}` } })
-        : req;
+    const token = localStorage.getItem('access_token');
+    let clonedReq = req;
 
-    return next(reqWithAuth);
+    if (token) {
+        clonedReq = req.clone({
+            headers: req.headers.set('api_token', token)
+        });
+    }
+
+    return next(clonedReq);
 }
-
-
