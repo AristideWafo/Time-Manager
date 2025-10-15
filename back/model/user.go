@@ -1,6 +1,7 @@
 package model
 
 import (
+	"errors"
 	"time"
 
 	"go.mongodb.org/mongo-driver/v2/bson"
@@ -20,11 +21,25 @@ type User struct {
 	UpdatedAt  time.Time     `json:"UpdatedAt" bson:"UpdatedAt" binding:"required" validate:"required"`
 }
 
+func ValidateRole(role string) error {
+	if role != "EMPLOYEE" && role != "MANAGER" && role != "ADMIN" {
+		return errors.New("ASSIGNED A NON-EXISTANT ROLE")
+	}
+	return nil
+}
+
 func (user *User) Validate() error {
+
+	if err := ValidateRole(user.Role); err != nil {
+		return err
+	}
 	return ValidateModel(user)
 }
 
 func (user *User) ValidatePreSave() error {
+	if err := ValidateRole(user.Role); err != nil {
+		return err
+	}
 	return ValidatePreSave(user)
 }
 

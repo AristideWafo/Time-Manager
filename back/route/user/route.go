@@ -1,6 +1,7 @@
 package user
 
 import (
+	"TimeManager/middleware"
 	"TimeManager/model"
 	"TimeManager/repository"
 	"TimeManager/service"
@@ -13,7 +14,7 @@ import (
 )
 
 func RegisterUserRoutes(router *gin.Engine) {
-	user := router.Group("/api/user")
+	user := router.Group("/api/user").Use(middleware.AdminMiddleware())
 	{
 		user.GET("", FetchUser)
 		user.POST("/create", PostUser)
