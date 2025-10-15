@@ -7,6 +7,10 @@ on:
   schedule:
     - cron: '24 3 * * 0'
 
+env:
+  FRONT_REPOSITORY: "./front"
+  BACK_REPOSITORY: "./back"
+  
 jobs:
   analyze:
     name: Analyze
@@ -29,8 +33,19 @@ jobs:
       with:
         languages: ${{ matrix.language }}
 
-    - name: Autobuild
-      uses: github/codeql-action/autobuild@v3
+    - name: Build Go
+      if: matrix.language == 'go'
+      working-directory: './back'
+      run: |
+        go mod tidy
+        go build ./...
+
+    - name: Build JS/TS
+      if: matrix.language == 'javascript-typescript'
+      working-directory: './front'
+      run: |
+        npm npm ci --prefer-offline
+        npm run build || true
 
     - name: Perform CodeQL Analysis
       uses: github/codeql-action/analyze@v3
