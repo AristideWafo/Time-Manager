@@ -55,7 +55,6 @@ jobs:
       with:
         path: |
           ~/.cache/go-build
-          ~/go/pkg/mod
           ${{ env.BACK_REPOSITORY }}/vendor
         key: ${{ runner.os }}-go-codeql-${{ env.GO_VERSION }}-${{ hashFiles('back/go.sum') }}
         restore-keys: |
