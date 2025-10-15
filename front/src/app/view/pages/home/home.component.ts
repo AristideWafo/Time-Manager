@@ -2,12 +2,6 @@ import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { ApiService } from '../../../services/api.service';
-import jwt_decode from 'jwt-decode';
-
-interface TokenPayload {
-  sub: string; // ID utilisateur dans le JWT
-  email?: string;
-}
 
 @Component({
   selector: 'app-home',
@@ -57,23 +51,13 @@ export class HomeComponent implements OnInit {
   ) { }
 
   ngOnInit() {
-
     const token = localStorage.getItem('access_token');
-    if (token) {
-      try {
-        const decoded = jwt_decode<TokenPayload>(token);
-        console.log("Token décodé :", decoded);
-      } catch (error) {
-        console.error("Erreur lors du décodage du token :", error);
-      }
-    } else {
+    if (!token) {
       console.warn("Aucun token trouvé dans le localStorage.");
     }
   }
 
   goToProfile() {
-    const userId = this.getUserIdFromToken();
-    if (!userId) return;
     this.router.navigate(['/profile']);
   }
 
@@ -81,30 +65,10 @@ export class HomeComponent implements OnInit {
     this.router.navigate(['/teams']);
   }
 
-  private getUserIdFromToken(): string | null {
-    const token = localStorage.getItem('access_token');
-    if (!token) return null;
-
-    try {
-      const decoded = jwt_decode<TokenPayload>(token);
-      return decoded.sub || null;
-    } catch {
-      return null;
-    }
-  }
-
   pointer() {
-    const userId = this.getUserIdFromToken();
-    if (!userId) {
-      this.message = "Erreur : utilisateur non authentifié.";
-      setTimeout(() => this.message = null, 3000);
-      return;
-    }
-
     const presenceData = {
       Type: "Work",
-      Timestamp: new Date().toISOString(),
-      User: userId
+      Timestamp: new Date().toISOString()
     };
 
     console.log("Envoi des données de présence :", presenceData);
@@ -112,7 +76,6 @@ export class HomeComponent implements OnInit {
     this.apiService.postPresence(presenceData).subscribe({
       next: () => {
         this.message = "✅ Présence enregistrée avec succès.";
-        console.log("✅ Présence enregistrée avec succès");
         setTimeout(() => this.message = null, 3000);
       },
       error: (err: any) => {

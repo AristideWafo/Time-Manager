@@ -3,7 +3,6 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ApiService } from '../../../services/api.service';
 import { Router } from '@angular/router';
-import * as jwtDecodeModule from 'jwt-decode';
 
 interface UserProfile {
   firstName: string;

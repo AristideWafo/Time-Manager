@@ -44,8 +44,7 @@ export class ApiService {
         return this.http.delete(`${this.baseUrl}/team/${id}`);
     }
 
-    // Présence
-    postPresence(data: { Type: string; Timestamp: string; User: string }) {
+    postPresence(data: { Type: string; Timestamp: string }) {
         return this.http.post(`${this.baseUrl}/presence/create`, data);
     }
 }
