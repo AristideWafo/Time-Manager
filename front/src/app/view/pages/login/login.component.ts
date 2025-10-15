@@ -41,14 +41,16 @@ export class LoginComponent {
     this.loading = true;
 
     this.api.login({ Email: this.email, Password: this.password }).subscribe({
-      next: (res) => {
-        const token = (res as any).Token;
-        if (!token) {
-          this.error = 'Réponse invalide du serveur.';
+      next: (res: any) => {
+        // Stockage du token
+        if (!res.Token || !res._id) {
+          this.error = 'Réponse du serveur invalide.';
           this.loading = false;
           return;
         }
-        localStorage.setItem('access_token', token);
+
+        localStorage.setItem('access_token', res.Token);
+        localStorage.setItem('user_id', res._id); //stocke l'ID utilisateur
 
         this.router.navigate(['/home']);
       },

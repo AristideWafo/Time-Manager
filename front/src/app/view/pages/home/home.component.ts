@@ -42,33 +42,32 @@ import { ApiService } from '../../../services/api.service';
   styleUrls: ['./home.component.css']
 })
 export class HomeComponent implements OnInit {
-
   message: string | null = null;
 
-  constructor(
-    private router: Router,
-    private apiService: ApiService
-  ) { }
+  constructor(private router: Router, private apiService: ApiService) { }
 
   ngOnInit() {
     const token = localStorage.getItem('access_token');
-    if (!token) {
-      console.warn("Aucun token trouvé dans le localStorage.");
+    const userId = localStorage.getItem('user_id');
+    if (!token || !userId) {
+      console.warn('Token ou ID utilisateur manquant.');
     }
   }
 
-  goToProfile() {
-    this.router.navigate(['/profile']);
-  }
-
-  goToTeams() {
-    this.router.navigate(['/teams']);
-  }
+  goToProfile() { this.router.navigate(['/profile']); }
+  goToTeams() { this.router.navigate(['/teams']); }
 
   pointer() {
+    const userId = localStorage.getItem('user_id');
+    if (!userId) {
+      this.message = "❌ Impossible de pointer : utilisateur non identifié.";
+      return;
+    }
+
     const presenceData = {
       Type: "Work",
-      Timestamp: new Date().toISOString()
+      Timestamp: new Date().toISOString(),
+      User: userId
     };
 
     console.log("Envoi des données de présence :", presenceData);

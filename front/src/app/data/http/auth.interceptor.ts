@@ -3,7 +3,6 @@ import { HttpHandlerFn, HttpRequest } from '@angular/common/http';
 export function authTokenInterceptor(req: HttpRequest<unknown>, next: HttpHandlerFn) {
     console.log("➡️ Interceptor : URL =", req.url);
 
-    // Ignore login request
     if (req.url.endsWith('/authentification')) {
         return next(req);
     }
