@@ -1,0 +1,42 @@
+name: "CodeQL Config"
+
+# Désactive les règles par défaut pour utiliser une configuration personnalisée
+disable-default-rules: false
+
+# Configuration des requêtes
+queries:
+  - name: security-and-quality
+    uses: security-and-quality
+  - name: security-extended
+    uses: security-extended
+
+# Exclusions pour optimiser les performances
+paths-ignore:
+  - "**/*.test.ts"
+  - "**/*.spec.ts"
+  - "**/node_modules/**"
+  - "**/dist/**"
+  - "**/build/**"
+  - "**/*.min.js"
+  - "**/vendor/**"
+  - "**/tmp/**"
+
+# Chemins à inclure
+paths:
+  - "front/src/**"
+  - "back/**"
+
+# Configuration pour Go
+go:
+  # Analyseur personnalisé pour Go
+  buildmode: "manual"
+  
+# Configuration pour JavaScript/TypeScript
+javascript:
+  # Inclure les dépendances pour une analyse plus complète
+  include-dependencies: false
+  # Optimiser l'extraction
+  extraction:
+    typescript:
+      # Configuration TypeScript optimisée
+      noImplicitAny: true
