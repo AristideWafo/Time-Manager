@@ -3,11 +3,11 @@
     "prod",
     {
       "name": "dev",
-      "prerelease": "beta"
+      "prerelease": true
     },
     {
       "name": "feat/cicd_add_release",
-      "prerelease": "beta"
+      "prerelease": true
     }
   ],
   "plugins": [
