@@ -80,7 +80,7 @@ jobs:
       id-token: write
     uses: ./.github/workflows/packaging.yml
     with:
-      environment: production
+      node-version: "22.13"
 
   deploy:
     name: Deploy to Production

@@ -70,3 +70,15 @@ jobs:
       node-version: "22.13"
       working-dir-front: "./front"
       working-dir-back: "./back"
+  
+  package:
+    name: Package Application
+    needs: [build, test]
+    permissions:
+      contents: read
+      packages: write
+      id-token: write
+    uses: ./.github/workflows/packaging.yml
+    with:
+      node-version: "22.13"
+

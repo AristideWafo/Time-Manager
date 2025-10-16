@@ -103,19 +103,15 @@ jobs:
       if: matrix.language == 'go'
       working-directory: ${{ env.BACK_REPOSITORY }}
       run: |
-        # Utiliser le cache pour go mod
         go mod download
         go mod tidy
-        # Build optimisé pour CodeQL avec flags de performance
         go build -v -ldflags="-s -w" ./...
 
     - name: Build JS/TS  
       if: matrix.language == 'javascript-typescript'
       working-directory: ${{ env.FRONT_REPOSITORY }}
       run: |
-        # Installation avec cache et optimisations
         npm ci --prefer-offline --no-audit --no-fund --silent
-        # Build optimisé pour CodeQL
         npm run build --if-present -- --source-map=false --optimization=false || echo "Build completed with warnings"
 
     # Étape de nettoyage avant analyse pour optimiser les performances
