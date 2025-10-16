@@ -77,19 +77,37 @@ func GetAllPresences(context *gin.Context) {
 
 func CreatePresence(context *gin.Context) {
 
+	claims, exists := context.Get("claims")
+
+	if !exists {
+		err := errors.New("INTERNAL ISSUE WITH TOKEN")
+		err = context.AbortWithError(http.StatusInternalServerError, err)
+		context.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	asserted_claims, ok := claims.(service.TokenClaims)
+
+	if !ok {
+		err := errors.New("INTERNAL ISSUE WITH TOKEN CONTENT")
+		err = context.AbortWithError(http.StatusInternalServerError, err)
+		context.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	_id, err := bson.ObjectIDFromHex(asserted_claims.Subject)
+
+	if err != nil {
+		err = context.AbortWithError(http.StatusInternalServerError, err)
+		context.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
 	var presence CreatePresenceInput
 
 	if err := context.BindJSON(&presence); err != nil {
 		err = context.AbortWithError(http.StatusBadRequest, err)
 		context.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		return
-	}
-
-	_id, err := bson.ObjectIDFromHex(presence.User)
-
-	if err != nil {
-		err = context.AbortWithError(http.StatusInternalServerError, err)
-		context.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 
