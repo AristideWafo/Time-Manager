@@ -67,7 +67,7 @@ jobs:
     uses: ./.github/workflows/test.yml
     with:
       go-version: "1.25.1"
-      node-version: "22.13"
+      node-version: "22.20"
       working-dir-front: "./front"
       working-dir-back: "./back"
   
