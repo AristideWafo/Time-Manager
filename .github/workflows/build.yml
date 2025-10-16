@@ -112,9 +112,9 @@ jobs:
         uses: actions/checkout@v4
         with:
           fetch-depth: 0 
-      - name: verify SonarQube token
-        run: echo ${{ secrets.SONAR_TOKEN }}
+      # - name: verify SonarQube token
+      #   run: echo ${{ vars.SONAR_TOKEN ? "Token found" : "Token not found" }}
       - name: SonarQube Scan
         uses: SonarSource/sonarqube-scan-action@v6
         env:
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+          SONAR_TOKEN: ${{ vars.SONAR_TOKEN }}
