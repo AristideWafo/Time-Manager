@@ -85,6 +85,17 @@ func UpdateUserByID(_id bson.ObjectID, update bson.D) (*model.User, error) {
 	filter := bson.D{{Key: "_id", Value: _id}}
 	err := repository.GetOneUser(user, filter)
 
+	for i := range update {
+		if update[i].Key == "Password" {
+			if password, ok := update[i].Value.(string); ok {
+				update[i].Value, err = HashPassword(password)
+				if err != nil {
+					return user, err
+				}
+			}
+		}
+	}
+
 	if err != nil {
 		return user, err
 	}
