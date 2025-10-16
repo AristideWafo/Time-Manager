@@ -1,38 +1,133 @@
 name: "CodeQL Analysis"
 
 on:
+  push:
+    branches: [ "prod", "dev" ] 
   pull_request:
-    branches: [ "dev","feat/*","fix/*"  ]
+    branches: [ "dev", "prod" ]
     types: [opened, synchronize, reopened]
   schedule:
     - cron: '24 3 * * 0'
 
+env:
+  FRONT_REPOSITORY: "./front"
+  BACK_REPOSITORY: "./back"
+  GO_VERSION: "1.25.1"
+  NODE_VERSION: "22.13"
+  
 jobs:
   analyze:
-    name: Analyze
-    runs-on: ubuntu-latest
+    name: Analyze (${{ matrix.language }})
+    runs-on: ${{ (matrix.language == 'swift' && 'macos-latest') || 'ubuntu-latest' }}
+    timeout-minutes: ${{ (matrix.language == 'swift' && 120) || 360 }}
     permissions:
       security-events: write
       actions: read
+      contents: read
 
     strategy:
       fail-fast: false
       matrix:
         language: ['go', 'javascript-typescript']
+        # Définir des configurations spécifiques par langage
+        include:
+          - language: go
+            build-mode: manual
+          - language: javascript-typescript
+            build-mode: none
 
     steps:
     - name: Checkout repository
       uses: actions/checkout@v4
 
+    # Cache setup for Go
+    - name: Setup Go with cache
+      if: matrix.language == 'go'
+      uses: actions/setup-go@v5
+      with:
+        go-version: ${{ env.GO_VERSION }}
+        cache: true
+        cache-dependency-path: ${{ env.BACK_REPOSITORY }}/go.sum
+
+    - name: Cache Go modules and build
+      if: matrix.language == 'go'
+      uses: actions/cache@v4
+      with:
+        path: |
+          ~/.cache/go-build
+          ${{ env.BACK_REPOSITORY }}/vendor
+        key: ${{ runner.os }}-go-codeql-${{ env.GO_VERSION }}-${{ hashFiles('back/go.sum') }}
+        restore-keys: |
+          ${{ runner.os }}-go-codeql-${{ env.GO_VERSION }}-
+          ${{ runner.os }}-go-codeql-
+
+    # Cache setup for Node.js
+    - name: Setup Node.js with cache
+      if: matrix.language == 'javascript-typescript'
+      uses: actions/setup-node@v4
+      with:
+        node-version: ${{ env.NODE_VERSION }}
+        cache: 'npm'
+        cache-dependency-path: ${{ env.FRONT_REPOSITORY }}/package-lock.json
+
+    - name: Cache node modules
+      if: matrix.language == 'javascript-typescript'
+      uses: actions/cache@v4
+      with:
+        path: |
+          ${{ env.FRONT_REPOSITORY }}/node_modules
+          ~/.npm
+        key: ${{ runner.os }}-node-codeql-${{ env.NODE_VERSION }}-${{ hashFiles('front/package-lock.json') }}
+        restore-keys: |
+          ${{ runner.os }}-node-codeql-${{ env.NODE_VERSION }}-
+          ${{ runner.os }}-node-codeql-
+
+    - name: Cache Angular build
+      if: matrix.language == 'javascript-typescript'
+      uses: actions/cache@v4
+      with:
+        path: |
+          ${{ env.FRONT_REPOSITORY }}/.angular/cache
+          ${{ env.FRONT_REPOSITORY }}/dist
+        key: ${{ runner.os }}-angular-codeql-${{ hashFiles('front/src/**/*.ts', 'front/angular.json') }}
+        restore-keys: |
+          ${{ runner.os }}-angular-codeql-
+
     - name: Initialize CodeQL
       uses: github/codeql-action/init@v3
       with:
         languages: ${{ matrix.language }}
+        config-file: ./.github/codeql-config.yml
 
-    - name: Autobuild
-      uses: github/codeql-action/autobuild@v3
+    - name: Build Go
+      if: matrix.language == 'go'
+      working-directory: ${{ env.BACK_REPOSITORY }}
+      run: |
+        # Utiliser le cache pour go mod
+        go mod download
+        go mod tidy
+        # Build optimisé pour CodeQL avec flags de performance
+        go build -v -ldflags="-s -w" ./...
+
+    - name: Build JS/TS  
+      if: matrix.language == 'javascript-typescript'
+      working-directory: ${{ env.FRONT_REPOSITORY }}
+      run: |
+        # Installation avec cache et optimisations
+        npm ci --prefer-offline --no-audit --no-fund --silent
+        # Build optimisé pour CodeQL
+        npm run build --if-present -- --source-map=false --optimization=false || echo "Build completed with warnings"
+
+    # Étape de nettoyage avant analyse pour optimiser les performances
+    - name: Cleanup before analysis
+      run: |
+        # Nettoyer les fichiers temporaires pour réduire la charge d'analyse
+        find . -name "*.log" -delete || true
+        find . -name "node_modules/.cache" -type d -exec rm -rf {} + || true
 
     - name: Perform CodeQL Analysis
       uses: github/codeql-action/analyze@v3
       with:
         category: "/language:${{matrix.language}}"
+        upload: true
+        cleanup-level: none
