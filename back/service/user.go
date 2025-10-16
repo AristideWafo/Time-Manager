@@ -3,6 +3,8 @@ package service
 import (
 	"TimeManager/model"
 	"TimeManager/repository"
+	"errors"
+	"fmt"
 
 	"go.mongodb.org/mongo-driver/v2/bson"
 )
@@ -10,8 +12,23 @@ import (
 func Login(email string, password string) (*model.User, error) {
 
 	user := &model.User{}
-	filter := bson.D{{Key: "Email", Value: email}, {Key: "Password", Value: password}}
-	return user, repository.GetOneUser(user, filter)
+	filter := bson.D{{Key: "Email", Value: email}}
+
+	err := repository.GetOneUser(user, filter)
+	if err != nil {
+		return nil, fmt.Errorf("user not found: %w", err)
+	}
+	check, err := CheckPasswordHash([]byte(password), user.Password)
+
+	if !check {
+		return &model.User{}, errors.New("incorrect password")
+	}
+
+	if err != nil {
+		return &model.User{}, err
+	}
+
+	return user, err
 }
 
 func GetUserByID(_id bson.ObjectID) (*model.User, error) {
@@ -32,6 +49,18 @@ func CreateUser(first_name string, last_name string, email string, password stri
 		Role:      role,
 	}
 
+	password, err := HashPassword(password)
+
+	if err != nil {
+		return &model.User{}, err
+	}
+
+	if password == "" {
+		return &model.User{}, errors.New("hashing failed, password returned empty")
+	}
+
+	user.Password = password
+
 	if team_name == "" {
 		return user, repository.SaveUser(user)
 	}
@@ -39,7 +68,7 @@ func CreateUser(first_name string, last_name string, email string, password stri
 	team := &model.Team{}
 	filter := bson.D{{Key: "Name", Value: team_name}}
 
-	err := repository.GetOneTeam(team, filter)
+	err = repository.GetOneTeam(team, filter)
 
 	if err != nil {
 		return &model.User{}, err
