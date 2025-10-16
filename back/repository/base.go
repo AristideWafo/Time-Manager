@@ -14,8 +14,6 @@ import (
 	"go.mongodb.org/mongo-driver/v2/mongo/readpref"
 )
 
-var NULL_ID, _ = bson.ObjectIDFromHex("")
-
 type DbClient struct {
 	Client   *mongo.Client
 	Database *mongo.Database
@@ -88,7 +86,7 @@ func Save[document Document](doc document, collection *mongo.Collection) error {
 	return doc.Validate()
 }
 
-func UpdateOne[document Document](doc document, collection *mongo.Collection, update bson.D) error {
+func UpdateOne[document Document](doc document, collection *mongo.Collection, update bson.D, unset bson.D) error {
 
 	date_update := append(update, bson.D{{Key: "UpdatedAt", Value: time.Now()}}...)
 
@@ -112,13 +110,25 @@ func UpdateOne[document Document](doc document, collection *mongo.Collection, up
 		}
 	}
 
+	for _, elem := range unset {
+
+		field := doc_fields.FieldByName(elem.Key)
+
+		if field.IsValid() && field.CanSet() {
+			field.Set(reflect.Zero(field.Type()))
+
+		} else {
+			return errors.New("INVALID UPDATE")
+		}
+	}
+
 	err := doc.Validate()
 
 	if err != nil {
 		return err
 	}
 
-	full_update := bson.D{{Key: "$set", Value: date_update}}
+	full_update := bson.D{{Key: "$set", Value: date_update}, {Key: "$unset", Value: unset}}
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 
@@ -127,7 +137,7 @@ func UpdateOne[document Document](doc document, collection *mongo.Collection, up
 	return err
 }
 
-func UpdateMany[document Document](empty_doc document, filter bson.D, collection *mongo.Collection, update bson.D) error {
+func UpdateMany[document Document](empty_doc document, filter bson.D, collection *mongo.Collection, update bson.D, unset bson.D) error {
 
 	date_update := append(update, bson.D{{Key: "UpdatedAt", Value: time.Now()}}...)
 	err := GetOne(filter, collection, empty_doc)
@@ -156,13 +166,25 @@ func UpdateMany[document Document](empty_doc document, filter bson.D, collection
 		}
 	}
 
+	for _, elem := range unset {
+
+		field := doc_fields.FieldByName(elem.Key)
+
+		if field.IsValid() && field.CanSet() {
+			field.Set(reflect.Zero(field.Type()))
+
+		} else {
+			return errors.New("INVALID UPDATE")
+		}
+	}
+
 	err = empty_doc.Validate()
 
 	if err != nil {
 		return err
 	}
 
-	full_update := bson.D{{Key: "$set", Value: date_update}}
+	full_update := bson.D{{Key: "$set", Value: date_update}, {Key: "$unset", Value: unset}}
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 

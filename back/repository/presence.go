@@ -36,7 +36,7 @@ func UpdateOnePresence(presence *model.Presence, update bson.D) error {
 		return err
 	}
 
-	return UpdateOne(presence, UserCollection(), update)
+	return UpdateOne(presence, UserCollection(), update, bson.D{})
 }
 
 func GetManyPresences(presences *[]*model.Presence, filter bson.D) error {

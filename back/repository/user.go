@@ -2,6 +2,7 @@ package repository
 
 import (
 	"TimeManager/model"
+	"errors"
 
 	"go.mongodb.org/mongo-driver/v2/bson"
 )
@@ -14,7 +15,7 @@ func GetOneUser(user *model.User, filter bson.D) error {
 		return err
 	}
 
-	if user.Team == NULL_ID {
+	if user.Team == bson.NilObjectID {
 		return nil
 	}
 
@@ -34,7 +35,7 @@ func GetManyUsers(users *[]*model.User, filter bson.D) error {
 
 	for _, user := range *users {
 
-		if user.Team == NULL_ID {
+		if user.Team == bson.NilObjectID {
 			continue
 		}
 		filter = bson.D{{Key: "_id", Value: user.Team}}
@@ -52,7 +53,7 @@ func GetManyUsers(users *[]*model.User, filter bson.D) error {
 
 func SaveUser(user *model.User) error {
 
-	if user.Team == NULL_ID {
+	if user.Team == bson.NilObjectID {
 		return Save(user, UserCollection())
 	}
 
@@ -69,53 +70,78 @@ func SaveUser(user *model.User) error {
 
 func UpdateOneUser(user *model.User, update bson.D) error {
 
-	ok := false
+	team_update := false
+	unset := bson.D{}
+	var ok bool
 
-	for _, elem := range update {
+	for index, elem := range update {
 
-		if elem.Key == "Team" && elem.Value != nil {
-			ok = true
+		if elem.Key == "Team" && elem.Value != "" {
+			team_update = true
+			if !ok {
+				return errors.New("INVALID TEAM UPDATE")
+			}
+			break
+		}
+
+		if elem.Key == "Team" && elem.Value == "" {
+			unset = bson.D{{Key: "Team", Value: ""}}
+			update = append(update[:index], update[index+1:]...)
 			break
 		}
 	}
 
-	if !ok {
-		return UpdateOne(user, UserCollection(), update)
+	if !team_update {
+		return UpdateOne(user, UserCollection(), update, unset)
 	}
 
-	filter := bson.D{{Key: "_id", Value: user.Team}}
+	filter := bson.D{{Key: "_id", Value: user.ID}}
 	team := &model.Team{}
 	if err := GetOneTeam(team, filter); err != nil {
 		return err
 	}
 
-	return UpdateOne(user, UserCollection(), update)
+	return UpdateOne(user, UserCollection(), update, unset)
 }
 
 func UpdateManyUsers(filter bson.D, update bson.D) error {
-	ok := false
 
-	for _, elem := range update {
+	team_update := false
+	unset := bson.D{}
+	var team_id bson.ObjectID
+	var ok bool
 
-		if elem.Key == "Team" && elem.Value != nil {
-			ok = true
+	for index, elem := range update {
+
+		if elem.Key == "Team" && elem.Value != "" {
+			team_update = true
+			team_id, ok = elem.Value.(bson.ObjectID)
+			if !ok {
+				return errors.New("INVALID TEAM UPDATE")
+			}
+			break
+		}
+
+		if elem.Key == "Team" && elem.Value == "" {
+			unset = bson.D{{Key: "Team", Value: ""}}
+			update = append(update[:index], update[index+1:]...)
 			break
 		}
 	}
 
 	user := &model.User{}
 
-	if !ok {
-		return UpdateMany(user, filter, UserCollection(), update)
+	if !team_update {
+		return UpdateMany(user, filter, UserCollection(), update, unset)
 	}
 
-	team_filter := bson.D{{Key: "_id", Value: user.Team}}
+	team_filter := bson.D{{Key: "_id", Value: team_id}}
 	team := &model.Team{}
 	if err := GetOneTeam(team, team_filter); err != nil {
 		return err
 	}
 
-	return UpdateMany(user, filter, UserCollection(), update)
+	return UpdateMany(user, filter, UserCollection(), update, unset)
 }
 
 func DeleteOneUser(user *model.User) error {
