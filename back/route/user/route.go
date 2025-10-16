@@ -172,7 +172,13 @@ func UpdateUser(context *gin.Context) {
 		}
 
 		if user.Password != "" {
-			update = append(update, bson.D{{Key: "Password", Value: user.Password}}...)
+			newPassword, err := service.HashPassword(user.Password)
+			if err != nil {
+				err = context.AbortWithError(http.StatusInternalServerError, err)
+				context.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+				return
+			}
+			update = append(update, bson.D{{Key: "Password", Value: newPassword}}...)
 		}
 
 		fetched_user, err = service.UpdateUserByID(_id, update)
