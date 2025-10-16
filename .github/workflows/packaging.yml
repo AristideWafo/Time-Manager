@@ -15,7 +15,7 @@ env:
 
 jobs:
   packaging:
-    if: github.event.pull_request.merged == true && (contains(github.event.pull_request.head.ref, 'front') || contains(github.event.pull_request.head.ref, 'back'))
+    # if: github.event.pull_request.merged == true && (contains(github.event.pull_request.head.ref, 'front') || contains(github.event.pull_request.head.ref, 'back'))
     runs-on: ubuntu-latest
 
     steps:
