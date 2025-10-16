@@ -69,7 +69,7 @@ interface UserProfile {
           </div>
 
           <!-- Formulaire d’édition -->
-          <form *ngIf="isEditMode" (ngSubmit)="updateProfile()">
+          <form *ngIf="isEditMode" class="profile-edit" (ngSubmit)="updateProfile()">
             <div>
               <label>Prénom *</label>
               <input [(ngModel)]="editProfile.firstName" name="firstName" required />
@@ -85,13 +85,15 @@ interface UserProfile {
               <input [(ngModel)]="editProfile.password" name="password" type="password" required />
             </div>
 
-            <button type="submit" [disabled]="isLoading">
-              {{ isLoading ? 'Sauvegarde...' : 'Sauvegarder' }}
-            </button>
+            <div class="profile-actions">
+              <button type="submit" class="primary" [disabled]="isLoading">
+                {{ isLoading ? 'Sauvegarde...' : 'Sauvegarder' }}
+              </button>
 
-            <button type="button" (click)="toggleEditMode()" [disabled]="isLoading">
-              Annuler
-            </button>
+              <button type="button" class="secondary" (click)="toggleEditMode()" [disabled]="isLoading">
+                Annuler
+              </button>
+            </div>
           </form>
 
           <div *ngIf="message" [ngClass]="messageType">
@@ -174,11 +176,6 @@ export class ProfileComponent implements OnInit {
   }
 
   updateProfile() {
-    if (!this.editProfile.firstName || !this.editProfile.lastName || !this.editProfile.password) {
-      this.showMessage('Veuillez remplir tous les champs obligatoires', 'error');
-      return;
-    }
-
     this.isLoading = true;
 
     const updateData = {
