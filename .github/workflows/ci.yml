@@ -80,5 +80,5 @@ jobs:
       id-token: write
     uses: ./.github/workflows/packaging.yml
     with:
-      node-version: "22.13"
+      node-version: "22.20"
 
