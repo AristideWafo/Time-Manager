@@ -104,3 +104,15 @@ jobs:
       - name: Build Go project
         working-directory: ${{ inputs.working-dir-back }}
         run: go build -o ${{ inputs.app-name }} .
+  sonarqube:
+    name: SonarQube
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+        with:
+          fetch-depth: 0 
+      - name: SonarQube Scan
+        uses: SonarSource/sonarqube-scan-action@v6
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
