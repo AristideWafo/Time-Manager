@@ -1,0 +1,30 @@
+{
+  "name": "time-manager",
+  "version": "0.0.0-development",
+  "description": "![Go Version](https://img.shields.io/badge/Go-1.25.1-blue?logo=go)\r ![Built with](https://img.shields.io/badge/Built%20With-Docker-blue?logo=docker)\r <!-- [![OpenSSF Best Practices](https://bestpractices.coreinfrastructure.org/projects/0000/badge)](https://bestpractices.coreinfrastructure.org/) -->\r [![CI Build](https://github.com/AristideWafo/Time-Manager/actions/workflows/ci.yml/badge.svg)](https://github.com/AristideWafo/Time-Manager/actions/workflows/ci.yml)\r [![CodeQL](https://github.com/AristideWafo/Time-Manager/actions/workflows/codeql.yml/badge.svg)](https://github.com/AristideWafo/Time-Manager/actions/workflows/codeql.yml)",
+  "scripts": {
+    "semantic-release": "semantic-release"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/AristideWafo/Time-Manager.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@semantic-release/changelog": "^6.0.3",
+    "@semantic-release/commit-analyzer": "^13.0.1",
+    "@semantic-release/git": "^10.0.1",
+    "@semantic-release/github": "^12.0.0",
+    "@semantic-release/release-notes-generator": "^14.1.0",
+    "conventional-changelog-conventionalcommits": "^9.1.0",
+    "cz-conventional-changelog": "^3.3.0",
+    "semantic-release": "^25.0.0"
+  },
+  "config": {
+    "commitizen": {
+      "path": "./node_modules/cz-conventional-changelog"
+    }
+  }
+}
