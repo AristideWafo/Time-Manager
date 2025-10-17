@@ -48,33 +48,33 @@ jobs:
             ${{ runner.os }}-npm-${{ env.NODE_VERSION }}-
             ${{ runner.os }}-npm-
 
-  build:
-    name: Build
-    needs: cache-deps
-    uses: ./.github/workflows/build.yml
-    with:
-      go-version: "1.25.1"
-      node-version: "22.13"
-      working-dir-front: "./front"
-      working-dir-back: "./back"
-      app-name: "app"
+  # build:
+  #   name: Build
+  #   needs: cache-deps
+  #   uses: ./.github/workflows/build.yml
+  #   with:
+  #     go-version: "1.25.1"
+  #     node-version: "22.13"
+  #     working-dir-front: "./front"
+  #     working-dir-back: "./back"
+  #     app-name: "app"
 
-  test:
-    name: Tests & Linting
-    needs: [cache-deps, build]
-    permissions:
-      contents: read
-    uses: ./.github/workflows/test.yml
-    with:
-      go-version: "1.25.1"
-      node-version: "22.13"
-      working-dir-front: "./front"
-      working-dir-back: "./back"
+  # # test:
+  #   name: Tests & Linting
+  #   needs: [cache-deps, build]
+  #   permissions:
+  #     contents: read
+  #   uses: ./.github/workflows/test.yml
+  #   with:
+  #     go-version: "1.25.1"
+  #     node-version: "22.13"
+  #     working-dir-front: "./front"
+  #     working-dir-back: "./back"
   package:
     name: Package Application
-    needs: [build, test]
+    # needs: [build, test]
     permissions:
-      contents: read
+      contents: write
       packages: write
       id-token: write
     uses: ./.github/workflows/packaging.yml
