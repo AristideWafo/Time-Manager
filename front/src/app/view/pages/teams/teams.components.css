@@ -1,73 +1,136 @@
+/* --- Conteneur principal --- */
 .teams {
-    padding: 20px;
-    font-family: 'Arial', sans-serif;
-    background-color: #f5f5f5;
-    border-radius: 10px;
-    max-width: 500px;
-    margin: 20px auto;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    background: #ffffff;
+    border-radius: 16px;
+    padding: 30px 35px;
+    max-width: 520px;
+    margin: 40px auto;
+    font-family: 'Inter', 'Segoe UI', Roboto, sans-serif;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+    border: 1px solid rgba(0, 0, 0, 0.05);
+    transition: box-shadow 0.3s ease, transform 0.25s ease;
+}
+
+.teams:hover {
+    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.1);
+    transform: translateY(-3px);
+}
+
+/* --- Titre --- */
+.teams h2 {
+    text-align: center;
+    font-size: 1.6rem;
+    font-weight: 600;
+    color: #0a2540;
+    margin-bottom: 25px;
+}
+
+/* --- Formulaire d’ajout d’équipe --- */
+.team-form {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-bottom: 25px;
 }
 
 .team-form input {
-    padding: 8px 12px;
-    margin-right: 8px;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-    outline: none;
-    transition: border-color 0.3s;
+    flex: 1;
+    min-width: 180px;
+    padding: 10px 12px;
+    border: 1px solid #d0d7de;
+    border-radius: 8px;
+    background-color: #f8f9fa;
+    font-size: 0.95rem;
+    transition: all 0.25s ease;
 }
 
 .team-form input:focus {
+    background-color: #fff;
     border-color: #007bff;
+    box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.15);
+    outline: none;
 }
 
+/* --- Bouton d’ajout --- */
 .team-form button {
-    padding: 8px 15px;
-    background-color: #007bff;
+    padding: 10px 20px;
+    background: linear-gradient(135deg, #007bff, #0062cc);
     color: #fff;
     border: none;
-    border-radius: 5px;
+    border-radius: 8px;
+    font-weight: 600;
     cursor: pointer;
-    transition: background-color 0.3s, transform 0.2s;
+    transition: all 0.25s ease;
+    box-shadow: 0 4px 10px rgba(0, 123, 255, 0.25);
 }
 
 .team-form button:hover {
-    background-color: #0056b3;
+    background: linear-gradient(135deg, #0069d9, #0056b3);
     transform: translateY(-2px);
+    box-shadow: 0 6px 14px rgba(0, 123, 255, 0.3);
 }
 
+/* --- Liste des équipes --- */
 ul {
     list-style: none;
     padding: 0;
+    margin: 0;
 }
 
 li {
     margin: 10px 0;
-    padding: 10px;
+    padding: 12px 15px;
     background-color: #ffffff;
-    border-radius: 5px;
+    border: 1px solid #e9ecef;
+    border-radius: 10px;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
-    transition: transform 0.2s;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04);
+    transition: all 0.25s ease;
 }
 
 li:hover {
     transform: translateX(5px);
+    background-color: #f8f9fa;
 }
 
-button {
-    padding: 5px 10px;
-    background-color: #dc3545;
+/* --- Boutons de suppression --- */
+li button {
+    padding: 6px 12px;
+    background: linear-gradient(135deg, #dc3545, #b02a37);
     color: #fff;
     border: none;
-    border-radius: 5px;
+    border-radius: 6px;
+    font-weight: 600;
     cursor: pointer;
-    transition: background-color 0.3s, transform 0.2s;
+    transition: all 0.25s ease;
 }
 
-button:hover {
-    background-color: #a71d2a;
+li button:hover {
+    background: linear-gradient(135deg, #b02a37, #842029);
     transform: translateY(-2px);
+}
+
+/* --- Responsive --- */
+@media (max-width: 500px) {
+    .teams {
+        padding: 24px 20px;
+    }
+
+    .team-form {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .team-form button {
+        width: 100%;
+    }
+
+    li {
+        flex-direction: column;
+        text-align: center;
+        gap: 8px;
+    }
 }

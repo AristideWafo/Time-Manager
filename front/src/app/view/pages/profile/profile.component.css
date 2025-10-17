@@ -1,69 +1,81 @@
-/* Container centré verticalement et horizontalement */
+/* --- Container principal --- */
 .profile-container {
     display: flex;
     justify-content: center;
-    /* centre horizontalement */
     align-items: center;
-    /* centre verticalement */
     min-height: 100vh;
-    /* prend toute la hauteur de l’écran */
     padding: 20px;
-    font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
-    background-color: #f5f7fa;
+    font-family: 'Inter', 'Segoe UI', Roboto, sans-serif;
+    background: linear-gradient(135deg, #eef2f7, #ffffff);
 }
 
-/* Card centrée et responsive */
+/* --- Carte de profil --- */
 .profile-card {
     background: #ffffff;
-    border-radius: 12px;
-    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
-    padding: 30px 40px;
-    max-width: 500px;
-    /* limite largeur de la carte */
+    border-radius: 18px;
+    box-shadow: 0 6px 22px rgba(0, 0, 0, 0.08);
+    padding: 40px 45px;
+    max-width: 520px;
     width: 100%;
-    transition: box-shadow 0.3s ease;
+    border: 1px solid rgba(0, 0, 0, 0.04);
+    transition: all 0.3s ease;
 }
 
 .profile-card:hover {
-    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.12);
+    box-shadow: 0 10px 32px rgba(0, 0, 0, 0.12);
+    transform: translateY(-3px);
 }
 
-/* Centrage du contenu dans la carte */
-.profile-header,
-.profile-content {
+/* --- En-tête du profil --- */
+.profile-header {
     display: flex;
     flex-direction: column;
     align-items: center;
+    text-align: center;
+    margin-bottom: 25px;
 }
 
-.profile-actions {
-    margin-top: 15px;
-    display: flex;
-    gap: 10px;
+.profile-header h1 {
+    font-size: 1.8rem;
+    font-weight: 600;
+    color: #0a2540;
+    margin-bottom: 6px;
 }
 
-/* Profile info centré */
+.profile-header p {
+    color: #6c757d;
+    font-size: 0.95rem;
+}
+
+/* --- Informations utilisateur --- */
 .profile-info {
     display: flex;
     flex-direction: column;
     align-items: center;
-    /* centre les lignes */
-    gap: 10px;
+    width: 100%;
+    gap: 12px;
+    margin-bottom: 20px;
 }
 
 .profile-info div {
     display: flex;
     justify-content: space-between;
     width: 100%;
-    max-width: 350px;
-    /* largeur uniforme */
-    padding: 8px 0;
+    max-width: 360px;
+    padding: 10px 0;
     border-bottom: 1px solid #e9ecef;
+    transition: background-color 0.2s ease;
+}
+
+.profile-info div:hover {
+    background-color: #f8f9fa;
+    border-radius: 6px;
 }
 
 .profile-info label {
     font-weight: 600;
     color: #003366;
+    font-size: 0.95rem;
 }
 
 .profile-info span {
@@ -72,8 +84,55 @@
     text-align: right;
 }
 
-/* Responsive pour mobile */
+/* --- Actions --- */
+.profile-actions {
+    margin-top: 15px;
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-top: 25px;
+}
+
+.profile-actions button {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 0.95rem;
+    cursor: pointer;
+    transition: all 0.25s ease;
+}
+
+/* --- Boutons stylés --- */
+.profile-actions .primary {
+    background: linear-gradient(135deg, #007bff, #0062cc);
+    color: #fff;
+    box-shadow: 0 4px 10px rgba(0, 123, 255, 0.25);
+}
+
+.profile-actions .primary:hover {
+    background: linear-gradient(135deg, #0069d9, #0056b3);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 14px rgba(0, 123, 255, 0.3);
+}
+
+.profile-actions .secondary {
+    background-color: #f8f9fa;
+    color: #003366;
+    border: 1px solid #d0d7de;
+}
+
+.profile-actions .secondary:hover {
+    background-color: #e9ecef;
+}
+
+/* --- Responsive --- */
 @media (max-width: 500px) {
+    .profile-card {
+        padding: 28px 20px;
+    }
+
     .profile-info div {
         flex-direction: column;
         align-items: center;
@@ -84,4 +143,54 @@
     .profile-info span {
         text-align: center;
     }
+
+    .profile-header h1 {
+        font-size: 1.5rem;
+    }
+}
+
+/* --- Formulaire d’édition --- */
+.profile-edit {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    gap: 12px;
+    margin-bottom: 20px;
+}
+
+.profile-edit div {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+    max-width: 360px;
+    padding: 10px 0;
+    border-bottom: 1px solid #e9ecef;
+    transition: background-color 0.2s ease;
+}
+
+.profile-edit div:hover {
+    background-color: #f8f9fa;
+    border-radius: 6px;
+}
+
+.profile-edit label {
+    font-weight: 600;
+    color: #003366;
+    font-size: 0.95rem;
+}
+
+.profile-edit input {
+    font-size: 1rem;
+    padding: 4px 8px;
+    border: 1px solid #d0d7de;
+    border-radius: 6px;
+    width: 180px;
+    text-align: right;
+}
+
+.profile-edit input:focus {
+    outline: none;
+    border-color: #007bff;
+    box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.2);
 }

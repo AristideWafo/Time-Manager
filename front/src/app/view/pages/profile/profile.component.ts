@@ -7,7 +7,7 @@ import { Router } from '@angular/router';
 interface UserProfile {
   firstName: string;
   lastName: string;
-  email: string;
+  password?: string;
   role: string;
   team: string;
 }
@@ -57,11 +57,6 @@ interface UserProfile {
               </div>
 
               <div>
-                <label>Email :</label>
-                <span>{{ userProfile.email }}</span>
-              </div>
-
-              <div>
                 <label>Rôle :</label>
                 <span>{{ userProfile.role }}</span>
               </div>
@@ -74,7 +69,7 @@ interface UserProfile {
           </div>
 
           <!-- Formulaire d’édition -->
-          <form *ngIf="isEditMode" (ngSubmit)="updateProfile()">
+          <form *ngIf="isEditMode" class="profile-edit" (ngSubmit)="updateProfile()">
             <div>
               <label>Prénom *</label>
               <input [(ngModel)]="editProfile.firstName" name="firstName" required />
@@ -86,21 +81,19 @@ interface UserProfile {
             </div>
 
             <div>
-              <label>Email *</label>
-              <input [(ngModel)]="editProfile.email" name="email" required />
+              <label>Mot de passe *</label>
+              <input [(ngModel)]="editProfile.password" name="password" type="password" required />
             </div>
 
-            <button type="submit" [disabled]="isLoading">
-              {{ isLoading ? 'Sauvegarde...' : 'Sauvegarder' }}
-            </button>
+            <div class="profile-actions">
+              <button type="submit" class="primary" [disabled]="isLoading">
+                {{ isLoading ? 'Sauvegarde...' : 'Sauvegarder' }}
+              </button>
 
-            <button
-              type="button"
-              (click)="toggleEditMode()"
-              [disabled]="isLoading"
-            >
-              Annuler
-            </button>
+              <button type="button" class="secondary" (click)="toggleEditMode()" [disabled]="isLoading">
+                Annuler
+              </button>
+            </div>
           </form>
 
           <div *ngIf="message" [ngClass]="messageType">
@@ -131,7 +124,7 @@ export class ProfileComponent implements OnInit {
   userProfile: UserProfile = {
     firstName: '',
     lastName: '',
-    email: '',
+    password: '',
     role: '',
     team: ''
   };
@@ -163,11 +156,10 @@ export class ProfileComponent implements OnInit {
         this.userProfile = {
           firstName: u.FirstName || '',
           lastName: u.LastName || '',
-          email: u.Email || '',
           role: u.Role || '',
           team: u.Team || ''
         };
-        this.editProfile = { ...this.userProfile };
+        this.editProfile = { ...this.userProfile, password: '' };
         this.isLoading = false;
       },
       error: () => {
@@ -179,19 +171,22 @@ export class ProfileComponent implements OnInit {
 
   toggleEditMode() {
     this.isEditMode = !this.isEditMode;
-    if (this.isEditMode) this.editProfile = { ...this.userProfile };
+    if (this.isEditMode) this.editProfile = { ...this.userProfile, password: '' };
     this.clearMessage();
   }
 
   updateProfile() {
-    if (!this.editProfile.firstName || !this.editProfile.lastName || !this.editProfile.email) {
-      this.showMessage('Veuillez remplir tous les champs obligatoires', 'error');
-      return;
-    }
-
     this.isLoading = true;
 
-    this.apiService.updateUser(this.editProfile).subscribe({
+    const updateData = {
+      FirstName: this.editProfile.firstName,
+      LastName: this.editProfile.lastName,
+      Password: this.editProfile.password,
+      Role: this.userProfile.role,
+      Team: this.userProfile.team
+    };
+
+    this.apiService.updateUser(updateData).subscribe({
       next: () => {
         this.userProfile = { ...this.editProfile };
         this.isEditMode = false;
@@ -204,7 +199,6 @@ export class ProfileComponent implements OnInit {
         this.showMessage('Erreur lors de la mise à jour.', 'error');
       }
     });
-
   }
 
   confirmDelete() { this.showDeleteModal = true; }
