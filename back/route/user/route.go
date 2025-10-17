@@ -3,7 +3,6 @@ package user
 import (
 	"TimeManager/middleware"
 	"TimeManager/model"
-	"TimeManager/repository"
 	"TimeManager/service"
 	"errors"
 	"net/http"
@@ -68,7 +67,7 @@ func FetchUser(context *gin.Context) {
 
 	output.ID = user.ID.Hex()
 
-	if user.Team != repository.NULL_ID {
+	if user.Team != bson.NilObjectID {
 		output.Team = user.Team.Hex()
 	}
 
@@ -108,7 +107,7 @@ func PostUser(context *gin.Context) {
 
 	output.ID = created_user.ID.Hex()
 
-	if created_user.Team != repository.NULL_ID {
+	if created_user.Team != bson.NilObjectID {
 		output.Team = created_user.Team.Hex()
 	}
 
@@ -149,9 +148,9 @@ func UpdateUser(context *gin.Context) {
 		return
 	}
 
-	var user UpdateUserInput
+	var input UpdateUserInput
 
-	if err := context.BindJSON(&user); err != nil {
+	if err := context.BindJSON(&input); err != nil {
 		err = context.AbortWithError(http.StatusBadRequest, err)
 		context.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
@@ -159,20 +158,20 @@ func UpdateUser(context *gin.Context) {
 
 	fetched_user := &model.User{}
 
-	if user.FirstName != "" || user.LastName == "" || user.Password == "" {
+	if input.FirstName != "" || input.LastName != "" || input.Password != "" {
 
 		update := bson.D{}
 
-		if user.FirstName != "" {
-			update = append(update, bson.D{{Key: "FirstName", Value: user.FirstName}}...)
+		if input.FirstName != "" {
+			update = append(update, bson.D{{Key: "FirstName", Value: input.FirstName}}...)
 		}
 
-		if user.LastName != "" {
-			update = append(update, bson.D{{Key: "LastName", Value: user.LastName}}...)
+		if input.LastName != "" {
+			update = append(update, bson.D{{Key: "LastName", Value: input.LastName}}...)
 		}
 
-		if user.Password != "" {
-			update = append(update, bson.D{{Key: "Password", Value: user.Password}}...)
+		if input.Password != "" {
+			update = append(update, bson.D{{Key: "Password", Value: input.Password}}...)
 		}
 
 		fetched_user, err = service.UpdateUserByID(_id, update)
@@ -197,7 +196,7 @@ func UpdateUser(context *gin.Context) {
 
 	output.ID = fetched_user.ID.Hex()
 
-	if fetched_user.Team != repository.NULL_ID {
+	if fetched_user.Team != bson.NilObjectID {
 		output.Team = fetched_user.Team.Hex()
 	}
 
