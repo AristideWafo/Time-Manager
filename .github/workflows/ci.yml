@@ -9,7 +9,7 @@ env:
 
 on:
   push:
-    branches: ["feat/*", "fix/*"]
+    branches: ["feat/*", "fix/*","testrelease"]
   pull_request:
     types: [opened, synchronize, reopened] # Ajout de synchronize pour cache optimal
     branches: ["dev", "feat/*", "fix/*"]
