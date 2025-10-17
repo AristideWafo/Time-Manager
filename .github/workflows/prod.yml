@@ -75,12 +75,14 @@ jobs:
     name: Package Application
     needs: [build, test, security-scan, sonarqube]
     permissions:
-      contents: read
+      contents: write
       packages: write
       id-token: write
     uses: ./.github/workflows/packaging.yml
     with:
-      environment: production
+      node-version: "22.20"
+      working-dir-front: "./front"
+      working-dir-back: "./back"
 
   deploy:
     name: Deploy to Production
