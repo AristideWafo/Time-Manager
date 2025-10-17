@@ -1,0 +1,395 @@
+{
+    "swagger": "2.0",
+    "info": {
+        "title": "Time-Manager API",
+        "contact": {},
+        "version": "0.1"
+    },
+    "host": "localhost:8080",
+    "paths": {
+        "/api/authentification": {
+            "post": {
+                "description": "Authenticates a user using email and password, and returns a JWT token if successful",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Authentication"
+                ],
+                "summary": "Authenticate a user",
+                "parameters": [
+                    {
+                        "description": "User credentials",
+                        "name": "user",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/authentification.AuthentificationUserInput"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/authentification.AuthentificationUserOutput"
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid input"
+                    },
+                    "404": {
+                        "description": "User not found or wrong credentials"
+                    },
+                    "500": {
+                        "description": "Internal server error"
+                    }
+                }
+            }
+        },
+        "/api/presence": {
+            "get": {
+                "description": "Returns all presences belonging to the user identified by the JWT token.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Presence"
+                ],
+                "summary": "Return all presences for the authenticated user",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/presence.PresenceOutput"
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "User not found"
+                    },
+                    "500": {
+                        "description": "Internal server error"
+                    }
+                }
+            }
+        },
+        "/api/presence/create": {
+            "post": {
+                "description": "Create a new presence entry for the authenticated user. Returns conflict if duplicate presence exists.// @Tags         Presence",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "summary": "Create a new presence record",
+                "parameters": [
+                    {
+                        "description": "Presence to create",
+                        "name": "presence",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/presence.CreatePresenceInput"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/presence.PresenceOutput"
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid input"
+                    },
+                    "409": {
+                        "description": "Conflict : presence with same information already exists"
+                    },
+                    "500": {
+                        "description": "Internal server error"
+                    }
+                }
+            }
+        },
+        "/api/user": {
+            "get": {
+                "description": "Fetch a single user and returns its info if successful",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "User"
+                ],
+                "summary": "Fetch a single user",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/user.UserOutput"
+                        }
+                    },
+                    "404": {
+                        "description": "User not found"
+                    },
+                    "500": {
+                        "description": "Internal server error"
+                    }
+                }
+            }
+        },
+        "/api/user/create": {
+            "post": {
+                "description": "Create a single new user from a specific user Input. Will return an error if user already exists.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "User"
+                ],
+                "summary": "Create a single new user",
+                "parameters": [
+                    {
+                        "description": "User to create",
+                        "name": "user",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/user.CreateUserInput"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/user.UserOutput"
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid input"
+                    },
+                    "409": {
+                        "description": "Conflict : user already exists"
+                    },
+                    "500": {
+                        "description": "Internal server error"
+                    }
+                }
+            }
+        },
+        "/api/user/update": {
+            "post": {
+                "description": "Update a single existing user from a specific user Input. Will return corresponding user if no modification is done",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "User"
+                ],
+                "summary": "Update a single existing user",
+                "parameters": [
+                    {
+                        "description": "User fields to update",
+                        "name": "user",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/user.UpdateUserInput"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/user.UserOutput"
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid input"
+                    },
+                    "500": {
+                        "description": "Internal server error"
+                    }
+                }
+            }
+        }
+    },
+    "definitions": {
+        "authentification.AuthentificationUserInput": {
+            "type": "object",
+            "required": [
+                "Email",
+                "Password"
+            ],
+            "properties": {
+                "Email": {
+                    "type": "string"
+                },
+                "Password": {
+                    "type": "string"
+                }
+            }
+        },
+        "authentification.AuthentificationUserOutput": {
+            "type": "object",
+            "required": [
+                "Email",
+                "FirstName",
+                "LastName",
+                "Role",
+                "Token",
+                "_id"
+            ],
+            "properties": {
+                "Email": {
+                    "type": "string"
+                },
+                "FirstName": {
+                    "type": "string"
+                },
+                "LastName": {
+                    "type": "string"
+                },
+                "Role": {
+                    "type": "string"
+                },
+                "Team": {
+                    "type": "string"
+                },
+                "Token": {
+                    "type": "string"
+                },
+                "_id": {
+                    "type": "string"
+                }
+            }
+        },
+        "presence.CreatePresenceInput": {
+            "type": "object",
+            "required": [
+                "Timestamp",
+                "Type"
+            ],
+            "properties": {
+                "Timestamp": {
+                    "type": "string"
+                },
+                "Type": {
+                    "type": "string"
+                }
+            }
+        },
+        "presence.PresenceOutput": {
+            "type": "object",
+            "required": [
+                "Timestamp",
+                "Type"
+            ],
+            "properties": {
+                "Timestamp": {
+                    "type": "string"
+                },
+                "Type": {
+                    "type": "string"
+                }
+            }
+        },
+        "user.CreateUserInput": {
+            "type": "object",
+            "required": [
+                "Email",
+                "FirstName",
+                "LastName",
+                "Password",
+                "Role"
+            ],
+            "properties": {
+                "Email": {
+                    "type": "string"
+                },
+                "FirstName": {
+                    "type": "string"
+                },
+                "LastName": {
+                    "type": "string"
+                },
+                "Password": {
+                    "type": "string"
+                },
+                "Role": {
+                    "type": "string"
+                },
+                "Team": {
+                    "type": "string"
+                }
+            }
+        },
+        "user.UpdateUserInput": {
+            "type": "object",
+            "properties": {
+                "FirstName": {
+                    "type": "string"
+                },
+                "LastName": {
+                    "type": "string"
+                },
+                "Password": {
+                    "type": "string"
+                }
+            }
+        },
+        "user.UserOutput": {
+            "type": "object",
+            "required": [
+                "Email",
+                "FirstName",
+                "LastName",
+                "Role",
+                "_id"
+            ],
+            "properties": {
+                "Email": {
+                    "type": "string"
+                },
+                "FirstName": {
+                    "type": "string"
+                },
+                "LastName": {
+                    "type": "string"
+                },
+                "Role": {
+                    "type": "string"
+                },
+                "Team": {
+                    "type": "string"
+                },
+                "_id": {
+                    "type": "string"
+                }
+            }
+        }
+    },
+    "securityDefinitions": {
+        "BasicAuth": {
+            "type": "basic"
+        }
+    }
+}

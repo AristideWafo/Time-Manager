@@ -21,6 +21,16 @@ func RegisterUserRoutes(router *gin.Engine) {
 	}
 }
 
+// FetchUser godoc
+//
+//	@Summary		Fetch a single user
+//	@Description	Fetch a single user and returns its info if successful
+//	@Tags			User
+//	@Produce		json
+//	@Success		200		{object}	UserOutput
+//	@Failure		404		"User not found"
+//	@Failure		500		"Internal server error"
+//	@Router			/api/user [get]
 func FetchUser(context *gin.Context) {
 
 	claims, exists := context.Get("claims")
@@ -80,6 +90,19 @@ func FetchUser(context *gin.Context) {
 	context.JSON(http.StatusOK, gin.H{"user": output})
 }
 
+// PostUser godoc
+//
+//	@Summary		Create a single new user
+//	@Description	Create a single new user from a specific user Input. Will return an error if user already exists.
+//	@Tags			User
+//	@Accept			json
+//	@Produce		json
+//	@Param			user	body		CreateUserInput	true	"User to create"
+//	@Success		200		{object}	UserOutput
+//	@Failure		400		"Invalid input"
+//	@Failure		409		"Conflict : user already exists"
+//	@Failure		500		"Internal server error"
+//	@Router			/api/user/create [post]
 func PostUser(context *gin.Context) {
 	var user CreateUserInput
 
@@ -120,6 +143,18 @@ func PostUser(context *gin.Context) {
 	context.JSON(http.StatusOK, gin.H{"user": output})
 }
 
+// UpdateUser godoc
+//
+//	@Summary		Update a single existing user
+//	@Description	Update a single existing user from a specific user Input. Will return corresponding user if no modification is done
+//	@Tags			User
+//	@Accept			json
+//	@Produce		json
+//	@Param			user	body		UpdateUserInput	true	"User fields to update"
+//	@Success		200		{object}	UserOutput
+//	@Failure		400		"Invalid input"
+//	@Failure		500		"Internal server error"
+//	@Router			/api/user/update [post]
 func UpdateUser(context *gin.Context) {
 
 	claims, exists := context.Get("claims")

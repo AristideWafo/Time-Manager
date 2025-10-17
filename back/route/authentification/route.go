@@ -16,6 +16,19 @@ func RegisterAuthentificationRoutes(router *gin.Engine) {
 	}
 }
 
+// authentificate godoc
+//
+//	@Summary		Authenticate a user
+//	@Description	Authenticates a user using email and password, and returns a JWT token if successful
+//	@Tags			Authentication
+//	@Accept			json
+//	@Produce		json
+//	@Param			user	body		AuthentificationUserInput	true	"User credentials"
+//	@Success		200		{object}	AuthentificationUserOutput
+//	@Failure		400		"Invalid input"
+//	@Failure		404		"User not found or wrong credentials"
+//	@Failure		500		"Internal server error"
+//	@Router			/api/authentification [post]
 func authentificate(context *gin.Context) {
 
 	var user AuthentificationUserInput

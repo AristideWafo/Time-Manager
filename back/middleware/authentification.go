@@ -3,6 +3,7 @@ package middleware
 import (
 	"errors"
 	"net/http"
+	"strings"
 
 	"github.com/gin-gonic/gin"
 
@@ -12,7 +13,7 @@ import (
 func AuthMiddleware() gin.HandlerFunc {
 	return func(context *gin.Context) {
 
-		if context.FullPath() == "/api/authentification" {
+		if context.FullPath() == "/api/authentification" || strings.HasPrefix(context.Request.URL.Path, "/swagger/") {
 			context.Next()
 			return
 		}

@@ -19,6 +19,17 @@ func RegisterPresenceRoutes(router *gin.Engine) {
 	}
 }
 
+// GetAllPresences godoc
+//
+//	@Summary		Return all presences for the authenticated user
+//	@Description	Returns all presences belonging to the user identified by the JWT token.
+//	@Tags			Presence
+//	@Accept			json
+//	@Produce		json
+//	@Success		200		{array}	PresenceOutput
+//	@Failure		404		"User not found"
+//	@Failure		500		"Internal server error"
+//	@Router			/api/presence [get]
 func GetAllPresences(context *gin.Context) {
 
 	claims, exists := context.Get("claims")
@@ -75,6 +86,18 @@ func GetAllPresences(context *gin.Context) {
 	context.JSON(http.StatusOK, gin.H{"user": output})
 }
 
+// CreatePresence godoc
+//
+//	@Summary		Create a new presence record
+//	@Description	Create a new presence entry for the authenticated user. Returns conflict if duplicate presence exists.// @Tags         Presence
+//	@Accept			json
+//	@Produce		json
+//	@Param			presence	body		CreatePresenceInput	true	"Presence to create"
+//	@Success		200			{object}	PresenceOutput
+//	@Failure		400			"Invalid input"
+//	@Failure		409			"Conflict : presence with same information already exists"
+//	@Failure		500			"Internal server error"
+//	@Router			/api/presence/create [post]
 func CreatePresence(context *gin.Context) {
 
 	claims, exists := context.Get("claims")
