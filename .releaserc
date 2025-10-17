@@ -4,10 +4,6 @@
     {
       "name": "dev",
       "prerelease": true
-    },
-    {
-      "name": "feat/cicd_add_release",
-      "prerelease": true
     }
   ],
   "plugins": [
