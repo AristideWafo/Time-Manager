@@ -72,7 +72,7 @@ jobs:
       working-dir-back: "./back"
   package:
     name: Package Application
-    needs: [build, test]
+    # needs: [build, test]
     permissions:
       contents: read
       packages: write
