@@ -1,6 +1,6 @@
 {
   "name": "time-manager",
-  "version": "0.0.0-development",
+  "version": "1.0.0-testrelease.1",
   "description": "![Go Version](https://img.shields.io/badge/Go-1.25.1-blue?logo=go)\r ![Built with](https://img.shields.io/badge/Built%20With-Docker-blue?logo=docker)\r <!-- [![OpenSSF Best Practices](https://bestpractices.coreinfrastructure.org/projects/0000/badge)](https://bestpractices.coreinfrastructure.org/) -->\r [![CI Build](https://github.com/AristideWafo/Time-Manager/actions/workflows/ci.yml/badge.svg)](https://github.com/AristideWafo/Time-Manager/actions/workflows/ci.yml)\r [![CodeQL](https://github.com/AristideWafo/Time-Manager/actions/workflows/codeql.yml/badge.svg)](https://github.com/AristideWafo/Time-Manager/actions/workflows/codeql.yml)",
   "scripts": {
     "semantic-release": "semantic-release"
