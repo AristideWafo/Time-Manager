@@ -405,7 +405,6 @@ Ce projet est sous licence **MIT**. Voir le fichier [LICENSE](LICENSE) pour plus
 
 <div align="center">
 
-**Fait avec ❤️ par [Aristide WAFO](https://github.com/AristideWafo)**
 
 ⭐ **N'oubliez pas de donner une étoile si ce projet vous a aidé !** ⭐
 
