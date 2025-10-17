@@ -6,17 +6,21 @@ on:
       node-version:
         required: true
         type: string
-
-env:
-  REGISTRY: ghcr.io
-  IMAGE_NAME_BACK: ${{ github.repository }}/backend
-  IMAGE_NAME_FRONT: ${{ github.repository }}/frontend
-  IMAGE_NAME_NGINX: ${{ github.repository }}/nginx
+      working-dir-front:
+        required: true
+        type: string
+      working-dir-back:
+        required: true
+        type: string
 
 jobs:
-  packaging:
-    # if: github.event.pull_request.merged == true && (contains(github.event.pull_request.head.ref, 'front') || contains(github.event.pull_request.head.ref, 'back'))
+
+  semantic-release:
+    name: Semantic Release
     runs-on: ubuntu-latest
+    outputs:
+      new-release-published: ${{ steps.semantic.outputs.new-release-published }}
+      new-release-version: ${{ steps.semantic.outputs.new-release-version }}
 
     steps:
       - name: Checkout
@@ -26,14 +30,31 @@ jobs:
         uses: actions/setup-node@v5
         with:
           node-version: "${{ inputs.node-version }}"
+          cache: "npm"
+          cache-dependency-path: package-lock.json
 
       - name: Install dependencies
         run: npm ci
 
       - name: Release
+        id: semantic
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: npx semantic-release
+  packaging:
+    name: Docker Packaging
+    runs-on: ubuntu-latest
+    needs: semantic-release    
+    if: always() && (needs.semantic-release.outputs.new-release-published == 'true' || github.event_name == 'push')
+    strategy:
+      matrix:
+        component: [back, nginx]
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
 
       - name: Log in to GitHub Container Registry
         uses: docker/login-action@v3
@@ -41,25 +62,27 @@ jobs:
           registry: ghcr.io
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Extract metadata
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ghcr.io/${{ github.repository }}/${{ matrix.component }}
+          tags: |
+            type=ref,event=branch
+            type=ref,event=pr
+            type=semver,pattern={{version}},value=${{ needs.semantic-release.outputs.new-release-version }}
+            type=semver,pattern={{major}}.{{minor}},value=${{ needs.semantic-release.outputs.new-release-version }}
+            type=raw,value=latest,enable={{is_default_branch}}
           
-      - name: Build image
-        run: |
-          if [[ "${{ github.ref_name }}" == *front* || "${{ github.ref_name }}" == *cicd* ]]; then
-            docker build -t $REGISTRY/${IMAGE_NAME_FRONT,,}:latest ./front
-          elif [[ "${{ github.ref_name }}" == *back* || "${{ github.ref_name }}" == *cicd* ]]; then
-            docker build -t $REGISTRY/${IMAGE_NAME_BACK,,}:latest ./back
-            docker build -t $REGISTRY/${IMAGE_NAME_NGINX,,}:latest ./nginx
-          else
-            echo "no match"
-          fi
-                
-      - name: Push image
-        run: |
-          if [[ "${{ github.ref_name }}" == *front* || "${{ github.ref_name }}" == *cicd* ]]; then
-            docker push $REGISTRY/${IMAGE_NAME_FRONT,,}:latest
-          elif [[ "${{ github.ref_name }}" == *back* || "${{ github.ref_name }}" == *cicd* ]]; then
-            docker push $REGISTRY/${IMAGE_NAME_BACK,,}:latest
-            docker push $REGISTRY/${IMAGE_NAME_NGINX,,}:latest
-          else
-            echo "no match"
-          fi
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v6
+        with:
+          context: ./${{ matrix.component == 'back' && inputs.working-dir-back || 'nginx' }}
+          file: ./${{ (matrix.component == 'back' && inputs.working-dir-back || 'nginx') }}/Dockerfile
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}, 
+          platforms: linux/amd64
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
