@@ -143,7 +143,6 @@ func UpdateTeam(context *gin.Context) {
 		return
 	}
 
-	fetched_team := &model.Team{}
 	fetched_team, err := service.GetTeamByName(input.CurrentName)
 
 	if _, err := service.GetTeamByName(input.NewName); err == nil {
