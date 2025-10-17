@@ -23,7 +23,7 @@ on:
 
 jobs:
   front-build:
-    if: contains(github.ref_name, 'cicd') || contains(github.ref_name, 'front_')
+    if: contains(github.ref_name, 'testrelease') || contains(github.ref_name, 'front_')
     name: front-build
     runs-on: ubuntu-latest
     steps:
@@ -64,7 +64,7 @@ jobs:
         working-directory: ${{ inputs.working-dir-front }}
         run: npm run build -- --configuration production
   back-build:
-    if: contains(github.ref_name, 'cicd') || contains(github.ref_name, 'back_')
+    if: contains(github.ref_name, 'testrelease') || contains(github.ref_name, 'back_')
     name: back-build
     runs-on: ubuntu-latest
     steps:

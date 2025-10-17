@@ -29,7 +29,7 @@ jobs:
       #   run: echo "Testing for ${{ inputs.go-version }} and ${{ inputs.node-version }}"
 
   go-lint:
-    if: contains(github.ref_name, 'cicd') || contains(github.ref_name, 'back_')
+    if: contains(github.ref_name, 'testrelease') || contains(github.ref_name, 'back_')
     name: go-lint
     runs-on: ubuntu-latest
     steps:
@@ -67,7 +67,7 @@ jobs:
         run: golangci-lint run --timeout=5m
 
   angular-lint:
-    if: contains(github.ref_name, 'cicd') || contains(github.ref_name, 'front_')
+    if: contains(github.ref_name, 'testrelease') || contains(github.ref_name, 'front_')
     name: angular-lint
     runs-on: ubuntu-latest
     steps:
