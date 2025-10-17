@@ -66,43 +66,43 @@ jobs:
         working-directory: ${{ inputs.working-dir-back }}
         run: golangci-lint run --timeout=5m
 
-  # angular-lint:
-    # if: contains(github.ref_name, 'cicd') || contains(github.ref_name, 'front_')
-    # name: angular-lint
-    # runs-on: ubuntu-latest
-    # steps:
-    #   - uses: actions/checkout@v5
+  angular-lint:
+    if: contains(github.ref_name, 'cicd') || contains(github.ref_name, 'front_')
+    name: angular-lint
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
 
-    #   - name: Setup Node.js
-    #     uses: actions/setup-node@v5
-    #     with:
-    #       node-version: ${{ inputs.node-version }}
-    #       cache: "npm"
-    #       cache-dependency-path: ${{ inputs.working-dir-front }}/package-lock.json
+      - name: Setup Node.js
+        uses: actions/setup-node@v5
+        with:
+          node-version: ${{ inputs.node-version }}
+          cache: "npm"
+          cache-dependency-path: ${{ inputs.working-dir-front }}/package-lock.json
 
-    #   - name: Cache node modules
-    #     uses: actions/cache@v4
-    #     with:
-    #       path: ${{ inputs.working-dir-front }}/node_modules
-    #       key: ${{ runner.os }}-node-lint-${{ inputs.node-version }}-${{ hashFiles(format('{0}/package-lock.json', inputs.working-dir-front)) }}
-    #       restore-keys: |
-    #         ${{ runner.os }}-node-lint-${{ inputs.node-version }}-
-    #         ${{ runner.os }}-node-lint-
+      - name: Cache node modules
+        uses: actions/cache@v4
+        with:
+          path: ${{ inputs.working-dir-front }}/node_modules
+          key: ${{ runner.os }}-node-lint-${{ inputs.node-version }}-${{ hashFiles(format('{0}/package-lock.json', inputs.working-dir-front)) }}
+          restore-keys: |
+            ${{ runner.os }}-node-lint-${{ inputs.node-version }}-
+            ${{ runner.os }}-node-lint-
 
-    #   - name: Cache ESLint
-    #     uses: actions/cache@v4
-    #     with:
-    #       path: |
-    #         ${{ inputs.working-dir-front }}/.eslintcache
-    #         ${{ inputs.working-dir-front }}/node_modules/.cache
-    #       key: ${{ runner.os }}-eslint-${{ hashFiles(format('{0}/.eslintrc.json', inputs.working-dir-front)) }}-${{ hashFiles(format('{0}/src/main.ts', inputs.working-dir-front)) }}-${{ hashFiles(format('{0}/src/app/**/*.ts', inputs.working-dir-front)) }}
-    #       restore-keys: |
-    #         ${{ runner.os }}-eslint-
+      - name: Cache ESLint
+        uses: actions/cache@v4
+        with:
+          path: |
+            ${{ inputs.working-dir-front }}/.eslintcache
+            ${{ inputs.working-dir-front }}/node_modules/.cache
+          key: ${{ runner.os }}-eslint-${{ hashFiles(format('{0}/.eslintrc.json', inputs.working-dir-front)) }}-${{ hashFiles(format('{0}/src/main.ts', inputs.working-dir-front)) }}-${{ hashFiles(format('{0}/src/app/**/*.ts', inputs.working-dir-front)) }}
+          restore-keys: |
+            ${{ runner.os }}-eslint-
 
-    #   - name: Install dependencies
-    #     working-directory: ${{ inputs.working-dir-front }}
-    #     run: npm ci --prefer-offline
+      - name: Install dependencies
+        working-directory: ${{ inputs.working-dir-front }}
+        run: npm ci --prefer-offline
 
-    #   - name: Run lint
-    #     working-directory: ${{ inputs.working-dir-front }}
-    #     run: npm run lint:ci
+      - name: Run lint
+        working-directory: ${{ inputs.working-dir-front }}
+        run: npm run lint:ci
