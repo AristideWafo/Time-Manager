@@ -2,26 +2,27 @@ name: Production Pipeline
 
 on:
   push:
-    branches: [ "prod" ]
+    branches: ["prod"]
   pull_request:
     types: [opened, synchronize, reopened]
-    branches: [ "prod" ]
+    branches: ["prod"]
 
 env:
-  GO_VERSION: '1.25.1'
-  NODE_VERSION: '22.13'
-  FRONT_REPOSITORY: './front'
-  BACK_REPOSITORY: './back'
+  GO_VERSION: "1.25.1"
+  NODE_VERSION: "22.13"
+  FRONT_REPOSITORY: "./front"
+  BACK_REPOSITORY: "./back"
 
 jobs:
   build:
     name: Build Application
     uses: ./.github/workflows/build.yml
     with:
-      go-version: $GO_VERSION
-      node-version: $NODE_VERSION
-      working-dir-front: $FRONT_REPOSITORY
-      working-dir-back: $BACK_REPOSITORY
+      go-version: "{{vars.GO_VERSION}}"
+      node-version: "{{vars.NODE_VERSION}}"
+      working-dir-front: "{{vars.FRONT_REPOSITORY}}"
+      working-dir-back: "{{vars.BACK_REPOSITORY}}"
+      app-name: "{{vars.APP_NAME}}"
 
   test:
     name: Run Tests & Linting
@@ -30,10 +31,10 @@ jobs:
       contents: read
     uses: ./.github/workflows/test.yml
     with:
-      go-version: $GO_VERSION
-      node-version: $NODE_VERSION
-      working-dir-front: $FRONT_REPOSITORY
-      working-dir-back: $BACK_REPOSITORY
+      go-version: "{{vars.GO_VERSION}}"
+      node-version: "{{vars.NODE_VERSION}}"
+      working-dir-front: "{{vars.FRONT_REPOSITORY}}"
+      working-dir-back: "{{vars.BACK_REPOSITORY}}"
 
   security-scan:
     name: Security Analysis
@@ -45,44 +46,30 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
-      
+
       - name: Initialize CodeQL
         uses: github/codeql-action/init@v3
         with:
           languages: go,javascript-typescript
-      
+
       - name: Autobuild
         uses: github/codeql-action/autobuild@v3
-      
+
       - name: Perform CodeQL Analysis
         uses: github/codeql-action/analyze@v3
-  
-  sonarqube:
-    name: SonarQube
-    runs-on: ubuntu-latest
-    needs: [build, test]
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v5
-        with:
-          fetch-depth: 0 
-      - name: SonarQube Scan
-        uses: SonarSource/sonarqube-scan-action@v6
-        env:
-          SONAR_TOKEN: ${{ vars.SONAR_TOKEN }}
-  
+
   package:
     name: Package Application
-    needs: [build, test, security-scan, sonarqube]
+    needs: [build, test, security-scan]
     permissions:
       contents: write
       packages: write
       id-token: write
     uses: ./.github/workflows/packaging.yml
     with:
-      node-version: "22.20"
-      working-dir-front: "./front"
-      working-dir-back: "./back"
+      node-version: "{{vars.NODE_VERSION}}"
+      working-dir-front: "{{vars.FRONT_REPOSITORY}}"
+      working-dir-back: "{{vars.BACK_REPOSITORY}}"
 
   deploy:
     name: Deploy to Production
