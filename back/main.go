@@ -5,6 +5,7 @@ import (
 	"TimeManager/repository"
 	"TimeManager/route/authentification"
 	"TimeManager/route/presence"
+	"TimeManager/route/team"
 	"TimeManager/route/user"
 
 	"log"
@@ -43,6 +44,7 @@ func main() {
 
 	authentification.RegisterAuthentificationRoutes(router)
 	user.RegisterUserRoutes(router)
+	team.RegisterTeamRoutes(router)
 	presence.RegisterPresenceRoutes(router)
 
 	router.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
