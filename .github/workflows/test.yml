@@ -107,3 +107,13 @@ jobs:
         working-directory: ${{ inputs.working-dir-front }}
         run:  npm run lint:ci
 
+      - name: Check for lint errors
+        working-directory: ${{ inputs.working-dir-front }}
+        run: |
+          ERRORS=$(jq '[.[].errorCount] | add' lint-results.json)
+          if [ "$ERRORS" -gt 0 ]; then
+            echo "❌ $ERRORS lint error(s) found"
+            exit 1
+          else
+            echo "✅ No lint errors found"
+          fi
