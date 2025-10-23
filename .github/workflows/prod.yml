@@ -16,20 +16,20 @@ env:
 jobs:
   build:
     name: Build Application
-    uses: ./.github/workflows/jobs/build.yml
+    uses: ./.github/workflows/build.yml
     with:
-      go-version: "{{vars.GO_VERSION}}"
-      node-version: "{{vars.NODE_VERSION}}"
-      working-dir-front: "{{vars.FRONT_REPOSITORY}}"
-      working-dir-back: "{{vars.BACK_REPOSITORY}}"
-      app-name: "{{vars.APP_NAME}}"
+      go-version: ${{ vars.GO_VERSION }}
+      node-version: ${{ vars.NODE_VERSION }}
+      working-dir-front: ${{ vars.FRONT_REPOSITORY }}
+      working-dir-back: ${{ vars.BACK_REPOSITORY }}
+      app-name: ${{ vars.APP_NAME }}
 
   test:
     name: Run Tests & Linting
     needs: [build]
     permissions:
       contents: read
-    uses: ./.github/workflows/jobs/test.yml
+    uses: ./.github/workflows/test.yml
     with:
       go-version: ${{ vars.GO_VERSION }}
       node-version: ${{ vars.NODE_VERSION }}
@@ -65,7 +65,7 @@ jobs:
       contents: write
       packages: write
       id-token: write
-    uses: ./.github/workflows/jobs/packaging.yml
+    uses: ./.github/workflows/packaging.yml
     with:
       node-version: ${{ vars.NODE_VERSION }}
       working-dir-front: ${{ vars.FRONT_REPOSITORY }}
@@ -75,6 +75,6 @@ jobs:
     name: Deploy to Production
     needs: [package]
     if: github.ref == 'refs/heads/prod' && github.event_name == 'push'
-    uses: ./.github/workflows/jobs/deploy.yml
+    uses: ./.github/workflows/deploy.yml
     with:
       environment: production
