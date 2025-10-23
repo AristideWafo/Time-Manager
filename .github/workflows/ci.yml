@@ -8,11 +8,6 @@ on:
     branches: ["dev", "feat/*", "fix/*"]
 
 jobs:
-  echo:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Echo Job
-        run: echo "${{ secrets.SONAR_TOKEN }}"
   cache-deps:
     name: Cache Dependencies
     runs-on: ubuntu-latest
@@ -49,7 +44,7 @@ jobs:
   build:
     name: Build
     needs: cache-deps
-    uses: ./.github/workflows/build.yml
+    uses: ./.github/workflows/jobs/build.yml
     with:
       go-version: ${{ vars.GO_VERSION }}
       node-version: ${{ vars.NODE_VERSION }}
@@ -62,7 +57,7 @@ jobs:
     needs: [cache-deps, build]
     permissions:
       contents: read
-    uses: ./.github/workflows/test.yml
+    uses: ./.github/workflows/jobs/test.yml
     with:
       go-version: ${{ vars.GO_VERSION }}
       node-version: ${{ vars.NODE_VERSION }}
