@@ -46,11 +46,11 @@ jobs:
     needs: cache-deps
     uses: ./.github/workflows/build.yml
     with:
-      go-version: "{{vars.GO_VERSION}}"
-      node-version: "{{vars.NODE_VERSION}}"
-      working-dir-front: "{{vars.FRONT_REPOSITORY}}"
-      working-dir-back: "{{vars.BACK_REPOSITORY}}"
-      app-name: "{{vars.APP_NAME}}"
+      go-version: ${{ vars.GO_VERSION }}
+      node-version: ${{ vars.NODE_VERSION }}
+      working-dir-front: ${{ vars.FRONT_REPOSITORY }}
+      working-dir-back: ${{ vars.BACK_REPOSITORY }}
+      app-name: ${{ vars.APP_NAME }}
 
   test:
     name: Tests & Linting
@@ -59,7 +59,7 @@ jobs:
       contents: read
     uses: ./.github/workflows/test.yml
     with:
-      go-version: "{{vars.GO_VERSION}}"
-      node-version: "{{vars.NODE_VERSION}}"
-      working-dir-front: "{{vars.FRONT_REPOSITORY}}"
-      working-dir-back: "{{vars.BACK_REPOSITORY}}"
+      go-version: "${{ vars.GO_VERSION }}"
+      node-version: "${{ vars.NODE_VERSION }}"
+      working-dir-front: "${{ vars.FRONT_REPOSITORY }}"
+      working-dir-back: "${{ vars.BACK_REPOSITORY }}"
