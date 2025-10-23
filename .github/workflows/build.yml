@@ -1,0 +1,106 @@
+name: Build
+
+on:
+  workflow_call:
+    inputs:
+      go-version:
+        required: true
+        type: string
+      working-dir-front:
+        required: true
+        type: string
+        default: "./front"
+      working-dir-back:
+        required: true
+        type: string
+      node-version:
+        required: true
+        type: string
+      app-name:
+        required: false
+        type: string
+        default: "app"
+
+jobs:
+  front-build:
+    if: contains(github.ref_name, 'cicd') || contains(github.ref_name, 'front_')
+    name: front-build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v5
+        with:
+          node-version: ${{ inputs.node-version }}
+          cache: "npm"
+          cache-dependency-path: ${{ inputs.working-dir-front }}/package-lock.json
+
+      - name: Cache node modules
+        uses: actions/cache@v4
+        with:
+          path: ${{ inputs.working-dir-front }}/node_modules
+          key: ${{ runner.os }}-node-${{ inputs.node-version }}-${{ hashFiles(format('{0}/package-lock.json', inputs.working-dir-front)) }}
+          restore-keys: |
+            ${{ runner.os }}-node-${{ inputs.node-version }}-
+            ${{ runner.os }}-node-
+
+      - name: Cache Angular build cache
+        uses: actions/cache@v4
+        with:
+          path: |
+            ${{ inputs.working-dir-front }}/.angular/cache
+            ${{ inputs.working-dir-front }}/dist
+          key: ${{ runner.os }}-angular-${{ hashFiles(format('{0}/src/**/*.ts', inputs.working-dir-front)) }}-${{ hashFiles(format('{0}/angular.json', inputs.working-dir-front)) }}
+          restore-keys: |
+            ${{ runner.os }}-angular-
+
+      - name: Install dependencies
+        working-directory: ${{ inputs.working-dir-front }}
+        run: npm ci --prefer-offline
+
+      - name: Build Angular project
+        working-directory: ${{ inputs.working-dir-front }}
+        run: npm run build -- --configuration production
+  back-build:
+    if: contains(github.ref_name, 'cicd') || contains(github.ref_name, 'back_')
+    name: back-build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+
+      - name: Set up Go
+        uses: actions/setup-go@v6
+        with:
+          go-version: ${{ inputs.go-version }}
+          cache: true
+          cache-dependency-path: ${{ inputs.working-dir-back }}/go.sum
+
+      - name: Cache Go modules and build
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cache/go-build
+            ${{ inputs.working-dir-back }}/vendor
+          key: ${{ runner.os }}-go-${{ inputs.go-version }}-${{ hashFiles(format('{0}/go.sum', inputs.working-dir-back)) }}
+          restore-keys: |
+            ${{ runner.os }}-go-${{ inputs.go-version }}-
+            ${{ runner.os }}-go-
+
+      - name: Cache Go build artifacts
+        uses: actions/cache@v4
+        with:
+          path: ${{ inputs.working-dir-back }}/tmp
+          key: ${{ runner.os }}-go-build-${{ hashFiles(format('{0}/**/*.go', inputs.working-dir-back)) }}
+          restore-keys: |
+            ${{ runner.os }}-go-build-
+
+      - name: Ensure deps
+        working-directory: ${{ inputs.working-dir-back }}
+        run: go mod tidy
+
+      - name: Build Go project
+        working-directory: ${{ inputs.working-dir-back }}
+        run: go build -o ${{ inputs.app-name }} .

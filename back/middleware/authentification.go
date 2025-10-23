@@ -1,0 +1,42 @@
+package middleware
+
+import (
+	"errors"
+	"net/http"
+	"strings"
+
+	"github.com/gin-gonic/gin"
+
+	"TimeManager/service"
+)
+
+func AuthMiddleware() gin.HandlerFunc {
+	return func(context *gin.Context) {
+
+		if context.FullPath() == "/api/authentification" || strings.HasPrefix(context.Request.URL.Path, "/swagger/") {
+			context.Next()
+			return
+		}
+
+		token := context.Request.Header.Get("api_token")
+
+		if token == "" {
+			err := errors.New("NO TOKEN GIVEN")
+			err = context.AbortWithError(http.StatusBadRequest, err)
+			context.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+			return
+		}
+
+		claims, err := service.ValidateToken(token)
+
+		if err == nil {
+			context.Set("claims", claims)
+			context.Next()
+			return
+		}
+
+		err = context.AbortWithError(http.StatusBadRequest, err)
+		context.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+
+	}
+}

@@ -1,0 +1,267 @@
+definitions:
+  authentification.AuthentificationUserInput:
+    properties:
+      Email:
+        type: string
+      Password:
+        type: string
+    required:
+    - Email
+    - Password
+    type: object
+  authentification.AuthentificationUserOutput:
+    properties:
+      _id:
+        type: string
+      Email:
+        type: string
+      FirstName:
+        type: string
+      LastName:
+        type: string
+      Role:
+        type: string
+      Team:
+        type: string
+      Token:
+        type: string
+    required:
+    - Email
+    - FirstName
+    - LastName
+    - Role
+    - Token
+    - _id
+    type: object
+  presence.CreatePresenceInput:
+    properties:
+      Timestamp:
+        type: string
+      Type:
+        type: string
+    required:
+    - Timestamp
+    - Type
+    type: object
+  presence.PresenceOutput:
+    properties:
+      Timestamp:
+        type: string
+      Type:
+        type: string
+    required:
+    - Timestamp
+    - Type
+    type: object
+  user.CreateUserInput:
+    properties:
+      Email:
+        type: string
+      FirstName:
+        type: string
+      LastName:
+        type: string
+      Password:
+        type: string
+      Role:
+        type: string
+      Team:
+        type: string
+    required:
+    - Email
+    - FirstName
+    - LastName
+    - Password
+    - Role
+    type: object
+  user.UpdateUserInput:
+    properties:
+      FirstName:
+        type: string
+      LastName:
+        type: string
+      Password:
+        type: string
+    type: object
+  user.UserOutput:
+    properties:
+      _id:
+        type: string
+      Email:
+        type: string
+      FirstName:
+        type: string
+      LastName:
+        type: string
+      Role:
+        type: string
+      Team:
+        type: string
+    required:
+    - Email
+    - FirstName
+    - LastName
+    - Role
+    - _id
+    type: object
+host: localhost:8080
+info:
+  contact: {}
+  title: Time-Manager API
+  version: "0.1"
+paths:
+  /api/authentification:
+    post:
+      consumes:
+      - application/json
+      description: Authenticates a user using email and password, and returns a JWT
+        token if successful
+      parameters:
+      - description: User credentials
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/authentification.AuthentificationUserInput'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/authentification.AuthentificationUserOutput'
+        "400":
+          description: Invalid input
+        "404":
+          description: User not found or wrong credentials
+        "500":
+          description: Internal server error
+      summary: Authenticate a user
+      tags:
+      - Authentication
+  /api/presence:
+    get:
+      consumes:
+      - application/json
+      description: Returns all presences belonging to the user identified by the JWT
+        token.
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/presence.PresenceOutput'
+            type: array
+        "404":
+          description: User not found
+        "500":
+          description: Internal server error
+      summary: Return all presences for the authenticated user
+      tags:
+      - Presence
+  /api/presence/create:
+    post:
+      consumes:
+      - application/json
+      description: Create a new presence entry for the authenticated user. Returns
+        conflict if duplicate presence exists.// @Tags         Presence
+      parameters:
+      - description: Presence to create
+        in: body
+        name: presence
+        required: true
+        schema:
+          $ref: '#/definitions/presence.CreatePresenceInput'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/presence.PresenceOutput'
+        "400":
+          description: Invalid input
+        "409":
+          description: 'Conflict : presence with same information already exists'
+        "500":
+          description: Internal server error
+      summary: Create a new presence record
+  /api/user:
+    get:
+      description: Fetch a single user and returns its info if successful
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/user.UserOutput'
+        "404":
+          description: User not found
+        "500":
+          description: Internal server error
+      summary: Fetch a single user
+      tags:
+      - User
+  /api/user/create:
+    post:
+      consumes:
+      - application/json
+      description: Create a single new user from a specific user Input. Will return
+        an error if user already exists.
+      parameters:
+      - description: User to create
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/user.CreateUserInput'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/user.UserOutput'
+        "400":
+          description: Invalid input
+        "409":
+          description: 'Conflict : user already exists'
+        "500":
+          description: Internal server error
+      summary: Create a single new user
+      tags:
+      - User
+  /api/user/update:
+    post:
+      consumes:
+      - application/json
+      description: Update a single existing user from a specific user Input. Will
+        return corresponding user if no modification is done
+      parameters:
+      - description: User fields to update
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/user.UpdateUserInput'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/user.UserOutput'
+        "400":
+          description: Invalid input
+        "500":
+          description: Internal server error
+      summary: Update a single existing user
+      tags:
+      - User
+securityDefinitions:
+  BasicAuth:
+    type: basic
+swagger: "2.0"

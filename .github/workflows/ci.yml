@@ -1,0 +1,66 @@
+name: CI for Dev Operations
+
+on:
+  push:
+    branches: ["feat/*", "fix/*"]
+  pull_request:
+    types: [opened, synchronize, reopened] # Ajout de synchronize pour cache optimal
+    branches: ["dev", "feat/*", "fix/*"]
+
+jobs:
+  cache-deps:
+    if: contains(github.ref_name, 'back_') || contains(github.ref_name, 'front_')
+    name: Cache Dependencies
+    runs-on: ubuntu-latest
+    outputs:
+      go-cache-hit: ${{ steps.go-cache.outputs.cache-hit }}
+      npm-cache-hit: ${{ steps.npm-cache.outputs.cache-hit }}
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: Cache Go dependencies
+        id: go-cache
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cache/go-build
+            ~/go/pkg/mod
+          key: ${{ runner.os }}-go-${{ vars.GO_VERSION }}-${{ hashFiles('back/go.sum') }}
+          restore-keys: |
+            ${{ runner.os }}-go-${{ vars.GO_VERSION }}-
+            ${{ runner.os }}-go-
+
+      - name: Cache npm dependencies
+        id: npm-cache
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.npm
+            ${{ vars.FRONT_REPOSITORY }}/node_modules
+          key: ${{ runner.os }}-npm-${{ vars.NODE_VERSION }}-${{ hashFiles('front/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-npm-${{ vars.NODE_VERSION }}-
+            ${{ runner.os }}-npm-
+
+  build:
+    name: Build
+    needs: cache-deps
+    uses: ./.github/workflows/build.yml
+    with:
+      go-version: ${{ vars.GO_VERSION }}
+      node-version: ${{ vars.NODE_VERSION }}
+      working-dir-front: ${{ vars.FRONT_REPOSITORY }}
+      working-dir-back: ${{ vars.BACK_REPOSITORY }}
+      app-name: ${{ vars.APP_NAME }}
+
+  test:
+    name: Tests & Linting
+    needs: [cache-deps, build]
+    permissions:
+      contents: read
+    uses: ./.github/workflows/test.yml
+    with:
+      go-version: ${{ vars.GO_VERSION }}
+      node-version: ${{ vars.NODE_VERSION }}
+      working-dir-front: ${{ vars.FRONT_REPOSITORY }}
+      working-dir-back: ${{ vars.BACK_REPOSITORY }}

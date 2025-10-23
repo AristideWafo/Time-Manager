@@ -1,0 +1,85 @@
+# Git
+.git
+.gitignore
+README.md
+.gitattributes
+
+# CI/CD
+.github/
+.gitlab-ci.yml
+Jenkinsfile
+
+# Documentation
+*.md
+docs/
+documentation/
+
+# IDE et éditeurs
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Binaires Go
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+main
+app
+*.test
+*.out
+
+# Dossiers de build et cache
+bin/
+build/
+dist/
+target/
+vendor/
+.cache/
+
+# Tests et coverage
+*.cover
+*.prof
+coverage.html
+coverage.out
+coverage.txt
+
+# Logs
+*.log
+logs/
+log/
+
+# Variables d'environnement et config
+.env
+.env.local
+.env.*.local
+*.env
+config.local.*
+
+# OS spécifiques
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+desktop.ini
+
+# Temporaires
+tmp/
+temp/
+*.tmp
+*.temp
+
+# Air (live reload pour Go)
+.air.toml
+tmp/
+
+# Dockerfile et compose (éviter récursion)
+Dockerfile*
+docker-compose*.yml
+.dockerignore

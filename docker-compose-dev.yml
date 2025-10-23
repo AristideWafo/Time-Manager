@@ -1,0 +1,35 @@
+services:
+  backend:
+    env_file: "./back/.env"
+    build:
+      context: ./back
+      dockerfile: Dockerfile
+    ports:
+      - "8080:8080"
+    networks:
+      - internal
+
+  frontend:
+    build:
+      context: ./front
+      dockerfile: Dockerfile.dev
+    ports:
+      - "4200:4200"
+    networks:
+      - internal
+
+  nginx:
+    build:
+      context: ./nginx
+      dockerfile: Dockerfile
+    ports:
+      - "80:80"
+    depends_on:
+      - backend
+      - frontend
+    networks:
+      - internal
+
+networks:
+  internal:
+    driver: bridge
