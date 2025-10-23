@@ -105,7 +105,7 @@ jobs:
 
       - name: Run lint
         working-directory: ${{ inputs.working-dir-front }}
-        run:  npm run lint:ci
+        run:  npm run lint:ci || true
 
       - name: Check for lint errors
         working-directory: ${{ inputs.working-dir-front }}
