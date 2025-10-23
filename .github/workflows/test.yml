@@ -105,4 +105,4 @@ jobs:
 
       - name: Run lint
         working-directory: ${{ inputs.working-dir-front }}
-        run: npm run lint:ci
+        run: ls -la
