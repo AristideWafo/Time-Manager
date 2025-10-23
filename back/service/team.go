@@ -3,7 +3,6 @@ package service
 import (
 	"TimeManager/model"
 	"TimeManager/repository"
-	"fmt"
 
 	"go.mongodb.org/mongo-driver/v2/bson"
 )
@@ -33,8 +32,6 @@ func UpdateTeam(name string, update bson.D) (*model.Team, error) {
 	if err != nil {
 		return team, err
 	}
-
-	fmt.Printf("%v", update)
 
 	return team, repository.UpdateOneTeam(team, update)
 }
