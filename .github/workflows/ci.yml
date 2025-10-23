@@ -16,6 +16,7 @@ on:
 
 jobs:
   cache-deps:
+    if: contains(github.ref_name, 'back_') || contains(github.ref_name, 'front_')
     name: Cache Dependencies
     runs-on: ubuntu-latest
     outputs:
