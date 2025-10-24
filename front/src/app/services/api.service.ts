@@ -20,7 +20,7 @@ export class ApiService {
     }
 
     updateUser(data: any) {
-        return this.http.post(`${this.baseUrl}/user/update`, data);
+        return this.http.put(`${this.baseUrl}/user`, data);
     }
 
     deleteUser() {
@@ -46,5 +46,9 @@ export class ApiService {
 
     postPresence(data: { Type: string; Timestamp: string }) {
         return this.http.post(`${this.baseUrl}/presence/create`, data);
+    }
+
+    getPresence() {
+        return this.http.get(`${this.baseUrl}/presence`);
     }
 }
