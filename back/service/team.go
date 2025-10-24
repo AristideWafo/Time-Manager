@@ -35,3 +35,19 @@ func UpdateTeam(name string, update bson.D) (*model.Team, error) {
 
 	return team, repository.UpdateOneTeam(team, update)
 }
+
+func GetTeamUsers(_id bson.ObjectID) ([]*model.User, error) {
+	list_users := []*model.User{}
+
+	filter := bson.D{{Key: "Team", Value: _id}}
+	err := repository.GetManyUsers(&list_users, filter)
+	if err != nil {
+		return []*model.User{}, err
+	}
+
+	if list_users == nil {
+		list_users = []*model.User{}
+	}
+
+	return list_users, err
+}
