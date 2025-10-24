@@ -3,6 +3,7 @@ package team
 import (
 	"TimeManager/middleware"
 	"TimeManager/model"
+	"TimeManager/route/user"
 	"TimeManager/service"
 	"errors"
 	"net/http"
@@ -10,6 +11,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/jinzhu/copier"
 	"go.mongodb.org/mongo-driver/v2/bson"
+	"go.mongodb.org/mongo-driver/v2/mongo"
 )
 
 func RegisterTeamRoutes(router *gin.Engine) {
@@ -18,6 +20,7 @@ func RegisterTeamRoutes(router *gin.Engine) {
 		team.GET("/:name", FetchTeam)
 		team.POST("/create", PostTeam)
 		team.PUT("/update", UpdateTeam)
+		team.GET("/:name/users", FetchAllUserFromTeam)
 	}
 }
 
@@ -189,4 +192,65 @@ func UpdateTeam(context *gin.Context) {
 
 	context.JSON(http.StatusOK, gin.H{"team": output})
 
+}
+
+// FetchAllUserFromTeam godoc
+//
+//		@Summary		Return all users from a team
+//		@Description	Return all users from the specified team. Will return an error if team doesn't exist. Will return an empty array if not user is in the team
+//		@Tags			Team
+//		@Produce		json
+//		@Success		200		{array}		user.UsersInput
+//		@Failure		400		"Invalid input"
+//	 	@Failure		404		"Team Not Found"
+//		@Failure		500		"Internal server error"
+//		@Router			/api/team/:name/users [get]
+func FetchAllUserFromTeam(context *gin.Context) {
+	name := context.Param("name")
+
+	if name == "" {
+		err := errors.New("team name must be specified")
+		err = context.AbortWithError(http.StatusBadRequest, err)
+		context.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	team, err := service.GetTeamByName(name)
+	if err != nil {
+		if err == mongo.ErrNoDocuments {
+			err = context.AbortWithError(http.StatusNotFound, err)
+			context.JSON(http.StatusNotFound, gin.H{"error": err.Error()})
+			return
+		}
+	}
+
+	_id := team.ID
+	user_list, err := service.GetTeamUsers(_id)
+
+	if err != nil {
+		err = context.AbortWithError(http.StatusInternalServerError, err)
+		context.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	var output []user.UserOutput
+
+	if err = copier.Copy(&output, user_list); err != nil {
+		err = context.AbortWithError(http.StatusInternalServerError, err)
+		context.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	for i := range output {
+		output[i].ID = user_list[i].ID.Hex()
+		output[i].Team = user_list[i].Team.Hex()
+
+		if err := model.ValidateModel(&output[i]); err != nil {
+			err = context.AbortWithError(http.StatusInternalServerError, err)
+			context.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+			return
+		}
+	}
+
+	context.JSON(http.StatusOK, gin.H{"team": output})
 }

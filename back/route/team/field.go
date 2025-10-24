@@ -13,3 +13,7 @@ type UpdateTeamInput struct {
 	CurrentName string `json:"CurrentName" bson:"CurrentName" binding:"required" validate:"required"`
 	NewName     string `json:"NewName" bson:"NewName" binding:"required" validate:"required"`
 }
+
+type RequestedTeamInput struct {
+	Name string `json:"Name" bson:"Name" binding:"required" validate:"required"`
+}
