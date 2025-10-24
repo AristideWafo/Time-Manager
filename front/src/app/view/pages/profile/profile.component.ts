@@ -186,6 +186,8 @@ export class ProfileComponent implements OnInit {
       Team: this.userProfile.team
     };
 
+    console.log(updateData.Password)
+
     this.apiService.updateUser(updateData).subscribe({
       next: () => {
         this.userProfile = { ...this.editProfile };
