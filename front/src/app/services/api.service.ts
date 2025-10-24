@@ -20,7 +20,7 @@ export class ApiService {
     }
 
     updateUser(data: any) {
-        return this.http.post(`${this.baseUrl}/user/update`, data);
+        return this.http.put(`${this.baseUrl}/user`, data);
     }
 
     deleteUser() {
