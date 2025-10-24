@@ -36,6 +36,14 @@ import { ApiService } from '../../../services/api.service';
         <button (click)="pointer()">Pointer</button>
         <p *ngIf="message" class="message">{{ message }}</p>
       </div>
+
+      <!-- Statistiques -->
+      <div class="card">
+        <h2>Statistiques</h2>
+        <p>Consultez vos présences et temps de travail.</p>
+        <button (click)="goToStats()">Voir les statistiques</button>
+      </div>
+
     </div>
   </section>
   `,
@@ -56,6 +64,10 @@ export class HomeComponent implements OnInit {
 
   goToProfile() { this.router.navigate(['/profile']); }
   goToTeams() { this.router.navigate(['/teams']); }
+  goToStats() {
+    this.router.navigate(['/presence-stats']);
+  }
+
 
   pointer() {
     const userId = localStorage.getItem('user_id');
