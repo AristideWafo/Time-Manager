@@ -12,6 +12,13 @@ import { ApiService } from '../../../services/api.service';
     <header class="dashboard-header">
       <h1>Tableau de bord</h1>
       <p>Gestion du temps et suivi des présences</p>
+
+      <!--  Message personnalisé -->
+      <div class="welcome-box" *ngIf="firstName && lastName && role">
+         Bonjour <strong>{{ firstName }} {{ lastName }}</strong> !
+        <br>
+        <span class="role">Votre rôle : <strong>{{ role }}</strong></span>
+      </div>
     </header>
 
     <div class="dashboard-cards">
@@ -43,7 +50,6 @@ import { ApiService } from '../../../services/api.service';
         <p>Consultez vos présences et temps de travail.</p>
         <button (click)="goToStats()">Voir les statistiques</button>
       </div>
-
     </div>
   </section>
   `,
@@ -51,21 +57,30 @@ import { ApiService } from '../../../services/api.service';
 })
 export class HomeComponent implements OnInit {
   message: string | null = null;
+  firstName: string | null = null;
+  lastName: string | null = null;
+  role: string | null = null;
 
   constructor(private router: Router, private apiService: ApiService) { }
 
   ngOnInit() {
     const token = localStorage.getItem('access_token');
     const userId = localStorage.getItem('user_id');
+
+    // ✅ Récupération des infos utilisateur depuis le stockage local
+    this.firstName = localStorage.getItem('FirstName');
+    this.lastName = localStorage.getItem('LastName');
+    this.role = localStorage.getItem('Role');
+
     if (!token || !userId) {
       console.warn('Token ou ID utilisateur manquant.');
+      this.router.navigate(['/login']);
     }
   }
 
   goToProfile() { this.router.navigate(['/profile']); }
   goToTeams() { this.router.navigate(['/teams']); }
   goToStats() { this.router.navigate(['/presence-stats']); }
-
 
   pointer() {
     const userId = localStorage.getItem('user_id');
