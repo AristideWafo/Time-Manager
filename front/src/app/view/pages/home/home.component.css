@@ -95,3 +95,18 @@
         font-size: 1.25rem;
     }
 }
+
+.welcome-box {
+    background-color: #eef6ff;
+    border-left: 4px solid #007bff;
+    padding: 12px 16px;
+    margin-top: 16px;
+    border-radius: 8px;
+    font-size: 16px;
+    color: #333;
+}
+
+.welcome-box .role {
+    color: #555;
+    font-style: italic;
+}
