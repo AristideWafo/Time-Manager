@@ -64,9 +64,7 @@ export class HomeComponent implements OnInit {
 
   goToProfile() { this.router.navigate(['/profile']); }
   goToTeams() { this.router.navigate(['/teams']); }
-  goToStats() {
-    this.router.navigate(['/presence-stats']);
-  }
+  goToStats() { this.router.navigate(['/presence-stats']); }
 
 
   pointer() {

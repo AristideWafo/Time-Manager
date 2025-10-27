@@ -83,6 +83,7 @@ export class PresenceStatsComponent implements OnInit {
     if (this.presences.length === 0) return;
 
     const presenceByDay: { [key: string]: Presence[] } = {};
+    const MS_PER_HOUR = 3600000;
     this.presences.forEach(p => {
       const day = new Date(p.Timestamp).toISOString().slice(0, 10);
       if (!presenceByDay[day]) presenceByDay[day] = [];
@@ -100,7 +101,7 @@ export class PresenceStatsComponent implements OnInit {
       for (let i = 0; i < dayPresences.length - 1; i += 2) {
         const start = new Date(dayPresences[i].Timestamp).getTime();
         const end = new Date(dayPresences[i + 1].Timestamp).getTime();
-        totalHours += (end - start) / (1000 * 60 * 60);
+        totalHours += (end - start) / MS_PER_HOUR;
       }
       daysCount++;
     }
