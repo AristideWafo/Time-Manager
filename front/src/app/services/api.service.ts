@@ -19,6 +19,11 @@ export class ApiService {
         return this.http.get<any>(`${this.baseUrl}/user`);
     }
 
+    getAllUsers() {
+        return this.http.get<any[]>(`${this.baseUrl}/users`);
+    }
+
+
     updateUser(data: any) {
         return this.http.post(`${this.baseUrl}/user/update`, data);
     }
@@ -27,7 +32,15 @@ export class ApiService {
         return this.http.delete(`${this.baseUrl}/user`);
     }
 
+    createUser(data: any) {
+        return this.http.post(`${this.baseUrl}/user/create`, data);
+    }
+
     // Équipes
+    getTeamById(id: string) {
+        return this.http.get<any>(`${this.baseUrl}/team/${id}`);
+    }
+
     getAllTeams() {
         return this.http.get<any[]>(`${this.baseUrl}/team`);
     }

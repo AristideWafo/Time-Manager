@@ -61,6 +61,10 @@ export class LoginComponent {
         localStorage.setItem('Role', res.Role);
         localStorage.setItem('FirstName', res.FirstName);
         localStorage.setItem('LastName', res.LastName);
+        localStorage.setItem('Team', res.Team);
+
+        console.log("Utilisateur connecté :", res);
+
 
         this.router.navigate(['/home']);
       },

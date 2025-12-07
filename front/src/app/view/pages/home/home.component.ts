@@ -50,6 +50,14 @@ import { ApiService } from '../../../services/api.service';
         <p>Consultez vos présences et temps de travail.</p>
         <button (click)="goToStats()">Voir les statistiques</button>
       </div>
+
+      <!--create user -->
+      <div class="card">
+        <h2>Créer utilisateur</h2>
+        <p>Ajoutez un nouvel utilisateur à l'équipe.</p>
+        <button (click)="goToCreateUser()">Créer un utilisateur</button>
+    </div>
+
     </div>
   </section>
   `,
@@ -81,6 +89,7 @@ export class HomeComponent implements OnInit {
   goToProfile() { this.router.navigate(['/profile']); }
   goToTeams() { this.router.navigate(['/teams']); }
   goToStats() { this.router.navigate(['/presence-stats']); }
+  goToCreateUser() { this.router.navigate(['/create-user']); }
 
   pointer() {
     const userId = localStorage.getItem('user_id');
