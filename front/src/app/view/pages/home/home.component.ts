@@ -13,6 +13,8 @@ import { ApiService } from '../../../services/api.service';
       <h1>Tableau de bord</h1>
       <p>Gestion du temps et suivi des présences</p>
 
+      <button class="logout-button" (click)="logout()">Déconnexion</button>
+
       <!--  Message personnalisé -->
       <div class="welcome-box" *ngIf="firstName && lastName && role">
          Bonjour <strong>{{ firstName }} {{ lastName }}</strong> !
@@ -75,7 +77,7 @@ export class HomeComponent implements OnInit {
     const token = localStorage.getItem('access_token');
     const userId = localStorage.getItem('user_id');
 
-    // ✅ Récupération des infos utilisateur depuis le stockage local
+    // Récupération des infos utilisateur depuis le stockage local
     this.firstName = localStorage.getItem('FirstName');
     this.lastName = localStorage.getItem('LastName');
     this.role = localStorage.getItem('Role');
@@ -90,6 +92,18 @@ export class HomeComponent implements OnInit {
   goToTeams() { this.router.navigate(['/teams']); }
   goToStats() { this.router.navigate(['/presence-stats']); }
   goToCreateUser() { this.router.navigate(['/create-user']); }
+
+  logout() {
+    // Supprime toutes les informations de l'utilisateur dans le localStorage
+    localStorage.removeItem('access_token');
+    localStorage.removeItem('user_id');
+    localStorage.removeItem('FirstName');
+    localStorage.removeItem('LastName');
+    localStorage.removeItem('Role');
+
+    this.router.navigate(['/login']);
+  }
+
 
   pointer() {
     const userId = localStorage.getItem('user_id');
