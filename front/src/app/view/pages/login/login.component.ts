@@ -66,7 +66,16 @@ export class LoginComponent {
         console.log("Utilisateur connecté :", res);
 
 
-        this.router.navigate(['/home']);
+        if (res.Role === 'ADMIN') {
+          this.router.navigate(['/admin-home']);
+        }
+        else if (res.Role === 'MANAGER') {
+          this.router.navigate(['/manager-home']);
+        }
+        else {
+          this.router.navigate(['/employee-home']);
+        }
+
       },
       error: (err) => {
         console.error('❌ Erreur lors de la connexion :', err);
