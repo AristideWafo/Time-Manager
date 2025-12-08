@@ -3,9 +3,11 @@ package service
 import (
 	"errors"
 	"fmt"
+	"net/http"
 	"os"
 	"time"
 
+	"github.com/gin-gonic/gin"
 	"github.com/golang-jwt/jwt/v5"
 	"go.mongodb.org/mongo-driver/v2/bson"
 )
@@ -57,4 +59,35 @@ func ValidateToken(tokenString string) (TokenClaims, error) {
 	}
 
 	return *claims, nil
+}
+
+func DecryptIDFromContextClaim(context *gin.Context) (bson.ObjectID, error) {
+
+	claims, exists := context.Get("claims")
+
+	if !exists {
+		err := errors.New("INTERNAL ISSUE WITH TOKEN")
+		err = context.AbortWithError(http.StatusInternalServerError, err)
+		context.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return bson.NilObjectID, err
+	}
+
+	asserted_claims, ok := claims.(TokenClaims)
+
+	if !ok {
+		err := errors.New("INTERNAL ISSUE WITH TOKEN CONTENT")
+		err = context.AbortWithError(http.StatusInternalServerError, err)
+		context.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return bson.NilObjectID, err
+	}
+
+	_id, err := bson.ObjectIDFromHex(asserted_claims.Subject)
+
+	if err != nil {
+		err = context.AbortWithError(http.StatusInternalServerError, err)
+		context.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return bson.NilObjectID, err
+	}
+
+	return _id, nil
 }

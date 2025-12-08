@@ -9,6 +9,7 @@ import (
 
 func GetTeamByName(name string) (*model.Team, error) {
 	team := &model.Team{}
+	print(name)
 	filter := bson.D{{Key: "Name", Value: name}}
 
 	return team, repository.GetOneTeam(team, filter)

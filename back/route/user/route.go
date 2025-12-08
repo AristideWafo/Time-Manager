@@ -4,7 +4,6 @@ import (
 	"TimeManager/middleware"
 	"TimeManager/model"
 	"TimeManager/service"
-	"errors"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -21,7 +20,7 @@ func RegisterUserRoutes(router *gin.Engine) {
 	}
 }
 
-// FetchUser godoc
+// FetchUser
 //
 //	@Summary		Fetch a single user
 //	@Description	Fetch a single user and returns its info if successful
@@ -33,29 +32,9 @@ func RegisterUserRoutes(router *gin.Engine) {
 //	@Router			/api/user [get]
 func FetchUser(context *gin.Context) {
 
-	claims, exists := context.Get("claims")
-
-	if !exists {
-		err := errors.New("INTERNAL ISSUE WITH TOKEN")
-		err = context.AbortWithError(http.StatusInternalServerError, err)
-		context.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-		return
-	}
-
-	asserted_claims, ok := claims.(service.TokenClaims)
-
-	if !ok {
-		err := errors.New("INTERNAL ISSUE WITH TOKEN CONTENT")
-		err = context.AbortWithError(http.StatusInternalServerError, err)
-		context.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-		return
-	}
-
-	_id, err := bson.ObjectIDFromHex(asserted_claims.Subject)
+	_id, err := service.DecryptIDFromContextClaim(context)
 
 	if err != nil {
-		err = context.AbortWithError(http.StatusInternalServerError, err)
-		context.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 
@@ -90,7 +69,7 @@ func FetchUser(context *gin.Context) {
 	context.JSON(http.StatusOK, gin.H{"user": output})
 }
 
-// PostUser godoc
+// PostUser
 //
 //	@Summary		Create a single new user
 //	@Description	Create a single new user from a specific user Input. Will return an error if user already exists.
@@ -104,6 +83,7 @@ func FetchUser(context *gin.Context) {
 //	@Failure		500		"Internal server error"
 //	@Router			/api/user/create [post]
 func PostUser(context *gin.Context) {
+
 	var user CreateUserInput
 
 	if err := context.BindJSON(&user); err != nil {
@@ -143,7 +123,7 @@ func PostUser(context *gin.Context) {
 	context.JSON(http.StatusOK, gin.H{"user": output})
 }
 
-// UpdateUser godoc
+// UpdateUser
 //
 //	@Summary		Update a single existing user
 //	@Description	Update a single existing user from a specific user Input. Will return corresponding user if no modification is done
@@ -157,29 +137,9 @@ func PostUser(context *gin.Context) {
 //	@Router			/api/user/update [post]
 func UpdateUser(context *gin.Context) {
 
-	claims, exists := context.Get("claims")
-
-	if !exists {
-		err := errors.New("INTERNAL ISSUE WITH TOKEN")
-		err = context.AbortWithError(http.StatusInternalServerError, err)
-		context.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-		return
-	}
-
-	asserted_claims, ok := claims.(service.TokenClaims)
-
-	if !ok {
-		err := errors.New("INTERNAL ISSUE WITH TOKEN CONTENT")
-		err = context.AbortWithError(http.StatusInternalServerError, err)
-		context.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-		return
-	}
-
-	_id, err := bson.ObjectIDFromHex(asserted_claims.Subject)
+	_id, err := service.DecryptIDFromContextClaim(context)
 
 	if err != nil {
-		err = context.AbortWithError(http.StatusInternalServerError, err)
-		context.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 
