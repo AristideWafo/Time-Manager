@@ -53,6 +53,26 @@ definitions:
     - Timestamp
     - Type
     type: object
+  team.TeamOutput:
+    properties:
+      _id:
+        type: string
+      Name:
+        type: string
+    required:
+    - Name
+    - _id
+    type: object
+  team.UpdateTeamInput:
+    properties:
+      CurrentName:
+        type: string
+      NewName:
+        type: string
+    required:
+    - CurrentName
+    - NewName
+    type: object
   user.CreateUserInput:
     properties:
       Email:
@@ -166,7 +186,7 @@ paths:
       consumes:
       - application/json
       description: Create a new presence entry for the authenticated user. Returns
-        conflict if duplicate presence exists.// @Tags         Presence
+        conflict if duplicate presence exists.
       parameters:
       - description: Presence to create
         in: body
@@ -188,6 +208,102 @@ paths:
         "500":
           description: Internal server error
       summary: Create a new presence record
+      tags:
+      - Presence
+  /api/team/:name:
+    get:
+      description: Fetch a single team and returns its info if successful
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/team.TeamOutput'
+        "400":
+          description: Invalid Input
+        "404":
+          description: Team not found
+        "500":
+          description: Internal server error
+      summary: Fetch a single team
+      tags:
+      - Team
+  /api/team/:name/users:
+    get:
+      description: Return all users from the specified team. Will return an error
+        if team doesn't exist. Will return an empty array if no user is in the team
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/user.UserOutput'
+            type: array
+        "400":
+          description: Invalid input
+        "404":
+          description: Team Not Found
+        "500":
+          description: Internal server error
+      summary: Return all users from a team
+      tags:
+      - Team
+  /api/team/create:
+    post:
+      consumes:
+      - application/json
+      description: Create a single new team from a specific team Input. Will return
+        an error if team with same name already exists.
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/team.TeamOutput'
+        "400":
+          description: Invalid input
+        "409":
+          description: 'Conflict : team already exists'
+        "500":
+          description: Internal server error
+      summary: Create a single new team
+      tags:
+      - Team
+  /api/team/update:
+    put:
+      consumes:
+      - application/json
+      description: Update a single existing team from a specific team Input. Will
+        return corresponding team if no modification is done
+      parameters:
+      - description: Current team name and New team name
+        in: body
+        name: team
+        required: true
+        schema:
+          $ref: '#/definitions/team.UpdateTeamInput'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/team.TeamOutput'
+        "400":
+          description: Invalid input
+        "404":
+          description: Team not found
+        "409":
+          description: 'Conflict : team already exists'
+        "500":
+          description: Internal server error
+      summary: Update a single existing team
+      tags:
+      - Team
   /api/user:
     get:
       description: Fetch a single user and returns its info if successful

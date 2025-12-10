@@ -20,11 +20,11 @@ func RegisterTeamRoutes(router *gin.Engine) {
 		team.GET("/:name", FetchTeam)
 		team.POST("/create", PostTeam)
 		team.PUT("/update", UpdateTeam)
-		team.GET("/:name/users", FetchAllUserFromTeam)
+		team.GET("/users/:name", FetchAllUserFromTeam)
 	}
 }
 
-// FetchTeam godoc
+// FetchTeam
 //
 //	@Summary		Fetch a single team
 //	@Description	Fetch a single team and returns its info if successful
@@ -34,7 +34,7 @@ func RegisterTeamRoutes(router *gin.Engine) {
 //	@Failure		400		"Invalid Input"
 //	@Failure		404		"Team not found"
 //	@Failure		500		"Internal server error"
-//	@Router			/api/team/:name [get]
+//	@Router			/api/team/name [get]
 func FetchTeam(context *gin.Context) {
 	name := context.Param("name")
 
@@ -72,14 +72,14 @@ func FetchTeam(context *gin.Context) {
 
 }
 
-// PostTeam godoc
+// PostTeam
 //
 //	@Summary		Create a single new team
 //	@Description	Create a single new team from a specific team Input. Will return an error if team with same name already exists.
 //	@Tags			Team
 //	@Accept			json
 //	@Produce		json
-//	@Param			team	body		CreateTeamInput	true	"Team to create"
+//	@body			CreateTeamInput	true	"Team to create"
 //	@Success		200		{object}	TeamOutput
 //	@Failure		400		"Invalid input"
 //	@Failure		409		"Conflict : team already exists"
@@ -122,7 +122,7 @@ func PostTeam(context *gin.Context) {
 
 }
 
-// UpdateTeam godoc
+// UpdateTeam
 //
 //	@Summary		Update a single existing team
 //	@Description	Update a single existing team from a specific team Input. Will return corresponding team if no modification is done
@@ -194,17 +194,17 @@ func UpdateTeam(context *gin.Context) {
 
 }
 
-// FetchAllUserFromTeam godoc
+// FetchAllUserFromTeam
 //
-//		@Summary		Return all users from a team
-//		@Description	Return all users from the specified team. Will return an error if team doesn't exist. Will return an empty array if not user is in the team
-//		@Tags			Team
-//		@Produce		json
-//		@Success		200		{array}		user.UsersInput
-//		@Failure		400		"Invalid input"
-//	 	@Failure		404		"Team Not Found"
-//		@Failure		500		"Internal server error"
-//		@Router			/api/team/:name/users [get]
+//	@Summary		Return all users from a team
+//	@Description	Return all users from the specified team. Will return an error if team doesn't exist. Will return an empty array if no user is in the team
+//	@Tags			Team
+//	@Produce		json
+//	@Success		200		{array}		user.UserOutput
+//	@Failure		400		"Invalid input"
+//	@Failure		404		"Team Not Found"
+//	@Failure		500		"Internal server error"
+//	@Router			/api/team/users/name [get]
 func FetchAllUserFromTeam(context *gin.Context) {
 	name := context.Param("name")
 

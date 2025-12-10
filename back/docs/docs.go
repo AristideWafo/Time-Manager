@@ -92,12 +92,15 @@ const docTemplate = `{
         },
         "/api/presence/create": {
             "post": {
-                "description": "Create a new presence entry for the authenticated user. Returns conflict if duplicate presence exists.// @Tags         Presence",
+                "description": "Create a new presence entry for the authenticated user. Returns conflict if duplicate presence exists.",
                 "consumes": [
                     "application/json"
                 ],
                 "produces": [
                     "application/json"
+                ],
+                "tags": [
+                    "Presence"
                 ],
                 "summary": "Create a new presence record",
                 "parameters": [
@@ -123,6 +126,145 @@ const docTemplate = `{
                     },
                     "409": {
                         "description": "Conflict : presence with same information already exists"
+                    },
+                    "500": {
+                        "description": "Internal server error"
+                    }
+                }
+            }
+        },
+        "/api/team/:name": {
+            "get": {
+                "description": "Fetch a single team and returns its info if successful",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Team"
+                ],
+                "summary": "Fetch a single team",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/team.TeamOutput"
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid Input"
+                    },
+                    "404": {
+                        "description": "Team not found"
+                    },
+                    "500": {
+                        "description": "Internal server error"
+                    }
+                }
+            }
+        },
+        "/api/team/:name/users": {
+            "get": {
+                "description": "Return all users from the specified team. Will return an error if team doesn't exist. Will return an empty array if no user is in the team",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Team"
+                ],
+                "summary": "Return all users from a team",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/user.UserOutput"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid input"
+                    },
+                    "404": {
+                        "description": "Team Not Found"
+                    },
+                    "500": {
+                        "description": "Internal server error"
+                    }
+                }
+            }
+        },
+        "/api/team/create": {
+            "post": {
+                "description": "Create a single new team from a specific team Input. Will return an error if team with same name already exists.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Team"
+                ],
+                "summary": "Create a single new team",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/team.TeamOutput"
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid input"
+                    },
+                    "409": {
+                        "description": "Conflict : team already exists"
+                    },
+                    "500": {
+                        "description": "Internal server error"
+                    }
+                }
+            }
+        },
+        "/api/team/update": {
+            "put": {
+                "description": "Update a single existing team from a specific team Input. Will return corresponding team if no modification is done",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Team"
+                ],
+                "summary": "Update a single existing team",
+                "parameters": [
+                    {
+                        "description": "Current team name and New team name",
+                        "name": "team",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/team.UpdateTeamInput"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/team.TeamOutput"
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid input"
+                    },
+                    "404": {
+                        "description": "Team not found"
+                    },
+                    "409": {
+                        "description": "Conflict : team already exists"
                     },
                     "500": {
                         "description": "Internal server error"
@@ -316,6 +458,36 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "Type": {
+                    "type": "string"
+                }
+            }
+        },
+        "team.TeamOutput": {
+            "type": "object",
+            "required": [
+                "Name",
+                "_id"
+            ],
+            "properties": {
+                "Name": {
+                    "type": "string"
+                },
+                "_id": {
+                    "type": "string"
+                }
+            }
+        },
+        "team.UpdateTeamInput": {
+            "type": "object",
+            "required": [
+                "CurrentName",
+                "NewName"
+            ],
+            "properties": {
+                "CurrentName": {
+                    "type": "string"
+                },
+                "NewName": {
                     "type": "string"
                 }
             }

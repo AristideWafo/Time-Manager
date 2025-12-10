@@ -7,6 +7,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/jinzhu/copier"
+	"go.mongodb.org/mongo-driver/v2/bson"
 )
 
 func RegisterAuthentificationRoutes(router *gin.Engine) {
@@ -16,7 +17,7 @@ func RegisterAuthentificationRoutes(router *gin.Engine) {
 	}
 }
 
-// authentificate godoc
+// authentificate
 //
 //	@Summary		Authenticate a user
 //	@Description	Authenticates a user using email and password, and returns a JWT token if successful
@@ -65,6 +66,10 @@ func authentificate(context *gin.Context) {
 
 	output.Token = token
 	output.ID = fetched_user.ID.Hex()
+
+	if fetched_user.Team != bson.NilObjectID {
+		output.Team = fetched_user.Team.Hex()
+	}
 
 	if err = model.ValidateModel(&output); err != nil {
 		err = context.AbortWithError(http.StatusInternalServerError, err)
