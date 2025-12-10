@@ -3,12 +3,10 @@ package presence
 import (
 	"TimeManager/model"
 	"TimeManager/service"
-	"errors"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
 	"github.com/jinzhu/copier"
-	"go.mongodb.org/mongo-driver/v2/bson"
 )
 
 func RegisterPresenceRoutes(router *gin.Engine) {
@@ -19,7 +17,7 @@ func RegisterPresenceRoutes(router *gin.Engine) {
 	}
 }
 
-// GetAllPresences godoc
+// GetAllPresences
 //
 //	@Summary		Return all presences for the authenticated user
 //	@Description	Returns all presences belonging to the user identified by the JWT token.
@@ -32,29 +30,9 @@ func RegisterPresenceRoutes(router *gin.Engine) {
 //	@Router			/api/presence [get]
 func GetAllPresences(context *gin.Context) {
 
-	claims, exists := context.Get("claims")
-
-	if !exists {
-		err := errors.New("INTERNAL ISSUE WITH TOKEN")
-		err = context.AbortWithError(http.StatusInternalServerError, err)
-		context.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-		return
-	}
-
-	asserted_claims, ok := claims.(service.TokenClaims)
-
-	if !ok {
-		err := errors.New("INTERNAL ISSUE WITH TOKEN CONTENT")
-		err = context.AbortWithError(http.StatusInternalServerError, err)
-		context.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-		return
-	}
-
-	_id, err := bson.ObjectIDFromHex(asserted_claims.Subject)
+	_id, err := service.DecryptIDFromContextClaim(context)
 
 	if err != nil {
-		err = context.AbortWithError(http.StatusInternalServerError, err)
-		context.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 
@@ -86,43 +64,24 @@ func GetAllPresences(context *gin.Context) {
 	context.JSON(http.StatusOK, gin.H{"user": output})
 }
 
-// CreatePresence godoc
+// CreatePresence
 //
-//	@Summary		Create a new presence record
-//	@Description	Create a new presence entry for the authenticated user. Returns conflict if duplicate presence exists.// @Tags         Presence
-//	@Accept			json
-//	@Produce		json
-//	@Param			presence	body		CreatePresenceInput	true	"Presence to create"
-//	@Success		200			{object}	PresenceOutput
-//	@Failure		400			"Invalid input"
-//	@Failure		409			"Conflict : presence with same information already exists"
-//	@Failure		500			"Internal server error"
-//	@Router			/api/presence/create [post]
+// @Summary Create a new presence record
+// @Description Create a new presence entry for the authenticated user. Returns conflict if duplicate presence exists.
+// @Tags Presence
+// @Accept json
+// @Produce json
+// @Param presence body CreatePresenceInput true "Presence to create"
+// @Success 200 {object} PresenceOutput
+// @Failure 400 "Invalid input"
+// @Failure 409 "Conflict : presence with same information already exists"
+// @Failure 500 "Internal server error"
+// @Router /api/presence/create [post]
 func CreatePresence(context *gin.Context) {
 
-	claims, exists := context.Get("claims")
-
-	if !exists {
-		err := errors.New("INTERNAL ISSUE WITH TOKEN")
-		err = context.AbortWithError(http.StatusInternalServerError, err)
-		context.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-		return
-	}
-
-	asserted_claims, ok := claims.(service.TokenClaims)
-
-	if !ok {
-		err := errors.New("INTERNAL ISSUE WITH TOKEN CONTENT")
-		err = context.AbortWithError(http.StatusInternalServerError, err)
-		context.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-		return
-	}
-
-	_id, err := bson.ObjectIDFromHex(asserted_claims.Subject)
+	_id, err := service.DecryptIDFromContextClaim(context)
 
 	if err != nil {
-		err = context.AbortWithError(http.StatusInternalServerError, err)
-		context.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 
