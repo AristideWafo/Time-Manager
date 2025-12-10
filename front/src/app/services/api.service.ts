@@ -36,26 +36,20 @@ export class ApiService {
         return this.http.post(`${this.baseUrl}/user/create`, data);
     }
 
-    // Équipes
-    getTeamById(id: string) {
-        return this.http.get<any>(`${this.baseUrl}/team/${id}`);
+    // Équipes (TEAM)
+
+    getTeamByName(name: string) {
+        return this.http.get<any>(`${this.baseUrl}/getTeamByName?name=${name}`);
     }
 
-    getAllTeams() {
-        return this.http.get<any[]>(`${this.baseUrl}/team`);
+    updateTeam(name: string, data: any) {
+        return this.http.put(`${this.baseUrl}/updateTeam?name=${name}`, data);
     }
 
-    createTeam(data: any) {
-        return this.http.post(`${this.baseUrl}/team`, data);
+    getTeamUsers(name: string) {
+        return this.http.get<any[]>(`${this.baseUrl}/getTeamUsers?name=${name}`);
     }
 
-    updateTeam(id: string, data: any) {
-        return this.http.put(`${this.baseUrl}/team/${id}`, data);
-    }
-
-    deleteTeam(id: string) {
-        return this.http.delete(`${this.baseUrl}/team/${id}`);
-    }
 
     postPresence(data: { Type: string; Timestamp: string }) {
         return this.http.post(`${this.baseUrl}/presence/create`, data);
