@@ -52,21 +52,16 @@ th {
     margin-bottom: 16px;
 }
 
-.export-btn {
-    background-color: #3f51b5;
-    color: white;
-    border: none;
-    border-radius: 8px;
-    padding: 8px 16px;
-    cursor: pointer;
-    font-weight: bold;
-    transition: background-color 0.2s ease;
-}
-
 .export-btn.csv {
     background-color: #2e7d32;
 }
 
 .export-btn:hover {
     filter: brightness(1.1);
+}
+
+.chart-wrapper {
+    width: 100%;
+    height: 400px;
+    position: relative;
 }

@@ -10,19 +10,18 @@ export class ApiService {
     // Authentification
     login(credentials: { Email: string; Password: string }) {
         return this.http.post<{ token: string }>(
-            `${this.baseUrl}/authentification`, credentials
+            `${this.baseUrl}/authentification`,
+            credentials
         );
     }
 
-    // Utilisateur connecté via token
     getUser() {
         return this.http.get<any>(`${this.baseUrl}/user`);
     }
 
     getAllUsers() {
-        return this.http.get<any[]>(`${this.baseUrl}/users`);
+        return this.http.get<any[]>('/api/users');
     }
-
 
     updateUser(data: any) {
         return this.http.post(`${this.baseUrl}/user/update`, data);
@@ -36,21 +35,7 @@ export class ApiService {
         return this.http.post(`${this.baseUrl}/user/create`, data);
     }
 
-    // Équipes (TEAM)
-
-    getTeamByName(name: string) {
-        return this.http.get<any>(`${this.baseUrl}/getTeamByName?name=${name}`);
-    }
-
-    updateTeam(name: string, data: any) {
-        return this.http.put(`${this.baseUrl}/updateTeam?name=${name}`, data);
-    }
-
-    getTeamUsers(name: string) {
-        return this.http.get<any[]>(`${this.baseUrl}/getTeamUsers?name=${name}`);
-    }
-
-
+    // Presence
     postPresence(data: { Type: string; Timestamp: string }) {
         return this.http.post(`${this.baseUrl}/presence/create`, data);
     }
@@ -58,4 +43,27 @@ export class ApiService {
     getPresence() {
         return this.http.get(`${this.baseUrl}/presence`);
     }
+
+    // TEAMS  
+
+    getTeamByName(name: string) {
+        return this.http.get(`${this.baseUrl}/team/${name}`);
+    }
+
+    createTeam(data: any) {
+        return this.http.post(`${this.baseUrl}/team/create`, data);
+    }
+
+    updateTeam(data: any) {
+        return this.http.put(`${this.baseUrl}/team/update`, data);
+    }
+
+    getTeamUsers(name: string) {
+        return this.http.get<any[]>(`${this.baseUrl}/team/users/${name}`);
+    }
+
+    getAllTeams() {
+        return this.http.get<any[]>(`${this.baseUrl}/team`);
+    }
+
 }
