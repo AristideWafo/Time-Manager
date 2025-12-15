@@ -96,6 +96,17 @@ func UpdateUserByID(_id bson.ObjectID, update bson.D) (*model.User, error) {
 				return user, errors.New("error : password is not a string")
 			}
 		}
+
+		if update[i].Key == "Team" {
+			if team_id, ok := update[i].Value.(string); ok {
+				update[i].Value, err = bson.ObjectIDFromHex(team_id)
+				if err != nil {
+					return user, err
+				}
+			} else if !ok {
+				return user, errors.New("error : invalid team Id")
+			}
+		}
 	}
 
 	if err != nil {

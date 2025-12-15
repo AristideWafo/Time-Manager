@@ -1,4 +1,49 @@
 definitions:
+  admin.CreateTeamInput:
+    properties:
+      Name:
+        type: string
+    required:
+    - Name
+    type: object
+  admin.CreateUserInput:
+    properties:
+      Email:
+        type: string
+      FirstName:
+        type: string
+      LastName:
+        type: string
+      Password:
+        type: string
+      Role:
+        type: string
+      Team:
+        type: string
+    required:
+    - Email
+    - FirstName
+    - LastName
+    - Password
+    - Role
+    type: object
+  admin.UpdateTeamInput:
+    properties:
+      CurrentName:
+        type: string
+      NewName:
+        type: string
+    required:
+    - CurrentName
+    - NewName
+    type: object
+  admin.UpdateUserTeamInput:
+    properties:
+      TeamId:
+        type: string
+    required:
+    - TeamId
+    type: object
   authentification.AuthentificationUserInput:
     properties:
       Email:
@@ -53,7 +98,7 @@ definitions:
     - Timestamp
     - Type
     type: object
-  team.TeamOutput:
+  teams.TeamOutput:
     properties:
       _id:
         type: string
@@ -63,38 +108,7 @@ definitions:
     - Name
     - _id
     type: object
-  team.UpdateTeamInput:
-    properties:
-      CurrentName:
-        type: string
-      NewName:
-        type: string
-    required:
-    - CurrentName
-    - NewName
-    type: object
-  user.CreateUserInput:
-    properties:
-      Email:
-        type: string
-      FirstName:
-        type: string
-      LastName:
-        type: string
-      Password:
-        type: string
-      Role:
-        type: string
-      Team:
-        type: string
-    required:
-    - Email
-    - FirstName
-    - LastName
-    - Password
-    - Role
-    type: object
-  user.UpdateUserInput:
+  users.UpdateUserInput:
     properties:
       FirstName:
         type: string
@@ -103,7 +117,7 @@ definitions:
       Password:
         type: string
     type: object
-  user.UserOutput:
+  users.UserOutput:
     properties:
       _id:
         type: string
@@ -130,6 +144,273 @@ info:
   title: Time-Manager API
   version: "0.1"
 paths:
+  /api/admin/{id}:
+    get:
+      description: Fetch a single user and returns its info if successful
+      parameters:
+      - description: User id
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/users.UserOutput'
+        "400":
+          description: Invalid input
+          schema:
+            type: string
+        "404":
+          description: User not found
+          schema:
+            type: string
+        "500":
+          description: Internal server error
+          schema:
+            type: string
+      security:
+      - ApiKeyAuth: []
+      summary: Fetch a single user by id
+      tags:
+      - Admin
+  /api/admin/all/team:
+    get:
+      description: Returns a list of all teams
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/teams.TeamOutput'
+            type: array
+        "500":
+          description: Internal server error
+          schema:
+            type: string
+      security:
+      - ApiKeyAuth: []
+      summary: Get all teams
+      tags:
+      - Admin
+  /api/admin/all/user:
+    get:
+      description: Returns a list of all users
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/users.UserOutput'
+            type: array
+        "500":
+          description: Internal server error
+          schema:
+            type: string
+      security:
+      - ApiKeyAuth: []
+      summary: Get all users
+      tags:
+      - Admin
+  /api/admin/team/create:
+    post:
+      consumes:
+      - application/json
+      description: Create a single new team from a specific team Input. Will return
+        an error if team with same name already exists.
+      parameters:
+      - description: Team to create
+        in: body
+        name: team
+        required: true
+        schema:
+          $ref: '#/definitions/admin.CreateTeamInput'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/teams.TeamOutput'
+        "400":
+          description: Invalid input
+          schema:
+            type: string
+        "409":
+          description: 'Conflict : team already exists'
+          schema:
+            type: string
+        "500":
+          description: Internal server error
+          schema:
+            type: string
+      security:
+      - ApiKeyAuth: []
+      summary: Create a single new team
+      tags:
+      - Admin
+  /api/admin/team/update:
+    put:
+      consumes:
+      - application/json
+      description: Update a single existing team from a specific team Input. Will
+        return corresponding team if no modification is done
+      parameters:
+      - description: Current team name and New team name
+        in: body
+        name: team
+        required: true
+        schema:
+          $ref: '#/definitions/admin.UpdateTeamInput'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/teams.TeamOutput'
+        "400":
+          description: Invalid input
+          schema:
+            type: string
+        "404":
+          description: Team not found
+          schema:
+            type: string
+        "409":
+          description: 'Conflict : team already exists'
+          schema:
+            type: string
+        "500":
+          description: Internal server error
+          schema:
+            type: string
+      security:
+      - ApiKeyAuth: []
+      summary: Update a single existing team
+      tags:
+      - Admin
+  /api/admin/team/users/{name}:
+    get:
+      description: Return all users from the specified team. Will return an error
+        if team doesn't exist. Will return an empty array if no user is in the team
+      parameters:
+      - description: Team name
+        in: path
+        name: name
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/users.UserOutput'
+            type: array
+        "400":
+          description: Invalid input
+          schema:
+            type: string
+        "404":
+          description: Team not found
+          schema:
+            type: string
+        "500":
+          description: Internal server error
+          schema:
+            type: string
+      security:
+      - ApiKeyAuth: []
+      summary: Return all users from a team
+      tags:
+      - Admin
+  /api/admin/update/team/user/{id}:
+    put:
+      consumes:
+      - application/json
+      description: Update the team of a user identified by id
+      parameters:
+      - description: User id
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Team to associate with the user
+        in: body
+        name: team
+        required: true
+        schema:
+          $ref: '#/definitions/admin.UpdateUserTeamInput'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/users.UserOutput'
+        "400":
+          description: Invalid input
+          schema:
+            type: string
+        "404":
+          description: User not found
+          schema:
+            type: string
+        "500":
+          description: Internal server error
+          schema:
+            type: string
+      security:
+      - ApiKeyAuth: []
+      summary: Update a user's team
+      tags:
+      - Admin
+  /api/admin/user/create:
+    post:
+      consumes:
+      - application/json
+      description: Create a single new user from a specific user Input. Will return
+        an error if user already exists.
+      parameters:
+      - description: User to create
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/admin.CreateUserInput'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/users.UserOutput'
+        "400":
+          description: Invalid input
+          schema:
+            type: string
+        "409":
+          description: 'Conflict : user already exists'
+          schema:
+            type: string
+        "500":
+          description: Internal server error
+          schema:
+            type: string
+      security:
+      - ApiKeyAuth: []
+      summary: Create a single new user
+      tags:
+      - Admin
   /api/authentification:
     post:
       consumes:
@@ -159,10 +440,74 @@ paths:
       summary: Authenticate a user
       tags:
       - Authentication
+  /api/manager/team/user/presence/{id}:
+    get:
+      description: Returns all presence records for the specified user if the user
+        belongs to the manager's team
+      parameters:
+      - description: User id
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/presence.PresenceOutput'
+            type: array
+        "400":
+          description: Invalid input / not member of team
+          schema:
+            type: string
+        "404":
+          description: User not found
+          schema:
+            type: string
+        "500":
+          description: Internal server error
+          schema:
+            type: string
+      security:
+      - ApiKeyAuth: []
+      summary: Get presences for a user
+      tags:
+      - Manager
+  /api/manager/team/users/{name}:
+    get:
+      description: Return all users belonging to the team the manager manages (team
+        is derived from the manager's token/claim)
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/users.UserOutput'
+            type: array
+        "400":
+          description: Invalid input
+          schema:
+            type: string
+        "404":
+          description: Not found
+          schema:
+            type: string
+        "500":
+          description: Internal server error
+          schema:
+            type: string
+      security:
+      - ApiKeyAuth: []
+      summary: Return all users from the manager's team
+      tags:
+      - Manager
   /api/presence:
     get:
-      consumes:
-      - application/json
       description: Returns all presences belonging to the user identified by the JWT
         token.
       produces:
@@ -176,8 +521,14 @@ paths:
             type: array
         "404":
           description: User not found
+          schema:
+            type: string
         "500":
           description: Internal server error
+          schema:
+            type: string
+      security:
+      - ApiKeyAuth: []
       summary: Return all presences for the authenticated user
       tags:
       - Presence
@@ -203,14 +554,22 @@ paths:
             $ref: '#/definitions/presence.PresenceOutput'
         "400":
           description: Invalid input
+          schema:
+            type: string
         "409":
           description: 'Conflict : presence with same information already exists'
+          schema:
+            type: string
         "500":
           description: Internal server error
+          schema:
+            type: string
+      security:
+      - ApiKeyAuth: []
       summary: Create a new presence record
       tags:
       - Presence
-  /api/team/:name:
+  /api/team/name:
     get:
       description: Fetch a single team and returns its info if successful
       produces:
@@ -219,89 +578,16 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/team.TeamOutput'
+            $ref: '#/definitions/teams.TeamOutput'
         "400":
           description: Invalid Input
         "404":
           description: Team not found
         "500":
           description: Internal server error
+      security:
+      - ApiKeyAuth: []
       summary: Fetch a single team
-      tags:
-      - Team
-  /api/team/:name/users:
-    get:
-      description: Return all users from the specified team. Will return an error
-        if team doesn't exist. Will return an empty array if no user is in the team
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            items:
-              $ref: '#/definitions/user.UserOutput'
-            type: array
-        "400":
-          description: Invalid input
-        "404":
-          description: Team Not Found
-        "500":
-          description: Internal server error
-      summary: Return all users from a team
-      tags:
-      - Team
-  /api/team/create:
-    post:
-      consumes:
-      - application/json
-      description: Create a single new team from a specific team Input. Will return
-        an error if team with same name already exists.
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/team.TeamOutput'
-        "400":
-          description: Invalid input
-        "409":
-          description: 'Conflict : team already exists'
-        "500":
-          description: Internal server error
-      summary: Create a single new team
-      tags:
-      - Team
-  /api/team/update:
-    put:
-      consumes:
-      - application/json
-      description: Update a single existing team from a specific team Input. Will
-        return corresponding team if no modification is done
-      parameters:
-      - description: Current team name and New team name
-        in: body
-        name: team
-        required: true
-        schema:
-          $ref: '#/definitions/team.UpdateTeamInput'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/team.TeamOutput'
-        "400":
-          description: Invalid input
-        "404":
-          description: Team not found
-        "409":
-          description: 'Conflict : team already exists'
-        "500":
-          description: Internal server error
-      summary: Update a single existing team
       tags:
       - Team
   /api/user:
@@ -313,41 +599,18 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/user.UserOutput'
+            $ref: '#/definitions/users.UserOutput'
         "404":
           description: User not found
-        "500":
-          description: Internal server error
-      summary: Fetch a single user
-      tags:
-      - User
-  /api/user/create:
-    post:
-      consumes:
-      - application/json
-      description: Create a single new user from a specific user Input. Will return
-        an error if user already exists.
-      parameters:
-      - description: User to create
-        in: body
-        name: user
-        required: true
-        schema:
-          $ref: '#/definitions/user.CreateUserInput'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
           schema:
-            $ref: '#/definitions/user.UserOutput'
-        "400":
-          description: Invalid input
-        "409":
-          description: 'Conflict : user already exists'
+            type: string
         "500":
           description: Internal server error
-      summary: Create a single new user
+          schema:
+            type: string
+      security:
+      - ApiKeyAuth: []
+      summary: Fetch a single user
       tags:
       - User
   /api/user/update:
@@ -362,22 +625,30 @@ paths:
         name: user
         required: true
         schema:
-          $ref: '#/definitions/user.UpdateUserInput'
+          $ref: '#/definitions/users.UpdateUserInput'
       produces:
       - application/json
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/user.UserOutput'
+            $ref: '#/definitions/users.UserOutput'
         "400":
           description: Invalid input
+          schema:
+            type: string
         "500":
           description: Internal server error
+          schema:
+            type: string
+      security:
+      - ApiKeyAuth: []
       summary: Update a single existing user
       tags:
       - User
 securityDefinitions:
-  BasicAuth:
-    type: basic
+  ApiKeyAuth:
+    in: header
+    name: api_token
+    type: apiKey
 swagger: "2.0"

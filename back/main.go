@@ -3,10 +3,11 @@ package main
 import (
 	"TimeManager/middleware"
 	"TimeManager/repository"
+	"TimeManager/route/admin"
 	"TimeManager/route/authentification"
-	"TimeManager/route/presence"
-	"TimeManager/route/team"
-	"TimeManager/route/user"
+	"TimeManager/route/public/presence"
+	teams "TimeManager/route/public/team"
+	users "TimeManager/route/public/user"
 
 	"log"
 	"os"
@@ -24,7 +25,9 @@ import (
 
 //	@host	localhost:8080
 
-//	@securityDefinitions.basic	BasicAuth
+// @securityDefinitions.apikey ApiKeyAuth
+// @in header
+// @name api_token
 
 func init() {
 	if os.Getenv("ENV") != "production" && os.Getenv("ENV") != "docker" {
@@ -43,9 +46,10 @@ func main() {
 	router.Use(middleware.AuthMiddleware())
 
 	authentification.RegisterAuthentificationRoutes(router)
-	user.RegisterUserRoutes(router)
-	team.RegisterTeamRoutes(router)
+	users.RegisterUserRoutes(router)
+	teams.RegisterTeamRoutes(router)
 	presence.RegisterPresenceRoutes(router)
+	admin.RegisterAdminRoutes(router)
 
 	router.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 

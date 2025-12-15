@@ -59,7 +59,7 @@ func BasePrivilegesMiddleWare(context *gin.Context, privileges []string, concern
 
 func ManagerMiddleware() gin.HandlerFunc {
 	return func(context *gin.Context) {
-		concerned_routes := []string{}
+		concerned_routes := []string{"/api/team/users/:name"}
 		BasePrivilegesMiddleWare(context, []string{"MANAGER", "ADMIN"}, concerned_routes)
 	}
 }

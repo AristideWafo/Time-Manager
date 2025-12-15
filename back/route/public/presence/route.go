@@ -17,17 +17,17 @@ func RegisterPresenceRoutes(router *gin.Engine) {
 	}
 }
 
-// GetAllPresences
+// GetAllPresences godoc
 //
-//	@Summary		Return all presences for the authenticated user
-//	@Description	Returns all presences belonging to the user identified by the JWT token.
-//	@Tags			Presence
-//	@Accept			json
-//	@Produce		json
-//	@Success		200		{array}	PresenceOutput
-//	@Failure		404		"User not found"
-//	@Failure		500		"Internal server error"
-//	@Router			/api/presence [get]
+// @Summary     Return all presences for the authenticated user
+// @Description Returns all presences belonging to the user identified by the JWT token.
+// @Tags        Presence
+// @Produce     json
+// @Success     200 {array} presence.PresenceOutput
+// @Failure     404 {string} string "User not found"
+// @Failure     500 {string} string "Internal server error"
+// @Router      /api/presence [get]
+// @Security ApiKeyAuth
 func GetAllPresences(context *gin.Context) {
 
 	_id, err := service.DecryptIDFromContextClaim(context)
@@ -64,19 +64,20 @@ func GetAllPresences(context *gin.Context) {
 	context.JSON(http.StatusOK, gin.H{"user": output})
 }
 
-// CreatePresence
+// CreatePresence godoc
 //
-// @Summary Create a new presence record
+// @Summary     Create a new presence record
 // @Description Create a new presence entry for the authenticated user. Returns conflict if duplicate presence exists.
-// @Tags Presence
-// @Accept json
-// @Produce json
-// @Param presence body CreatePresenceInput true "Presence to create"
-// @Success 200 {object} PresenceOutput
-// @Failure 400 "Invalid input"
-// @Failure 409 "Conflict : presence with same information already exists"
-// @Failure 500 "Internal server error"
-// @Router /api/presence/create [post]
+// @Tags        Presence
+// @Accept      json
+// @Produce     json
+// @Param       presence body CreatePresenceInput true "Presence to create"
+// @Success     200 {object} presence.PresenceOutput
+// @Failure     400 {string} string "Invalid input"
+// @Failure     409 {string} string "Conflict : presence with same information already exists"
+// @Failure     500 {string} string "Internal server error"
+// @Router      /api/presence/create [post]
+// @Security ApiKeyAuth
 func CreatePresence(context *gin.Context) {
 
 	_id, err := service.DecryptIDFromContextClaim(context)

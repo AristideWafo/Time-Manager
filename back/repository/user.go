@@ -70,35 +70,30 @@ func SaveUser(user *model.User) error {
 
 func UpdateOneUser(user *model.User, update bson.D) error {
 
-	team_update := false
 	unset := bson.D{}
-	var ok bool
+	team_id := bson.NilObjectID
 
 	for index, elem := range update {
 
-		if elem.Key == "Team" && elem.Value != "" {
-			team_update = true
-			if !ok {
-				return errors.New("INVALID TEAM UPDATE")
-			}
-			break
-		}
-
-		if elem.Key == "Team" && elem.Value == "" {
+		if elem.Key == "Team" && elem.Value == bson.NilObjectID {
 			unset = bson.D{{Key: "Team", Value: ""}}
 			update = append(update[:index], update[index+1:]...)
 			break
 		}
+
+		if elem.Key == "Team" {
+			team_id, _ = elem.Value.(bson.ObjectID)
+			break
+		}
 	}
 
-	if !team_update {
-		return UpdateOne(user, UserCollection(), update, unset)
-	}
+	if team_id != bson.NilObjectID {
+		filter := bson.D{{Key: "_id", Value: team_id}}
+		team := &model.Team{}
+		if err := GetOneTeam(team, filter); err != nil {
+			return err
+		}
 
-	filter := bson.D{{Key: "_id", Value: user.ID}}
-	team := &model.Team{}
-	if err := GetOneTeam(team, filter); err != nil {
-		return err
 	}
 
 	return UpdateOne(user, UserCollection(), update, unset)
