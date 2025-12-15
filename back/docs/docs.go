@@ -15,6 +15,422 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
+        "/api/admin/all/team": {
+            "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Returns a list of all teams",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Admin"
+                ],
+                "summary": "Get all teams",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/teams.TeamOutput"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal server error",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/admin/all/user": {
+            "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Returns a list of all users",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Admin"
+                ],
+                "summary": "Get all users",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/users.UserOutput"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal server error",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/admin/team/create": {
+            "post": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Create a single new team from a specific team Input. Will return an error if team with same name already exists.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Admin"
+                ],
+                "summary": "Create a single new team",
+                "parameters": [
+                    {
+                        "description": "Team to create",
+                        "name": "team",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/admin.CreateTeamInput"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/teams.TeamOutput"
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid input",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "409": {
+                        "description": "Conflict : team already exists",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal server error",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/admin/team/update": {
+            "put": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Update a single existing team from a specific team Input. Will return corresponding team if no modification is done",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Admin"
+                ],
+                "summary": "Update a single existing team",
+                "parameters": [
+                    {
+                        "description": "Current team name and New team name",
+                        "name": "team",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/admin.UpdateTeamInput"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/teams.TeamOutput"
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid input",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "404": {
+                        "description": "Team not found",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "409": {
+                        "description": "Conflict : team already exists",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal server error",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/admin/team/users/{name}": {
+            "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Return all users from the specified team. Will return an error if team doesn't exist. Will return an empty array if no user is in the team",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Admin"
+                ],
+                "summary": "Return all users from a team",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Team name",
+                        "name": "name",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/users.UserOutput"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid input",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "404": {
+                        "description": "Team not found",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal server error",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/admin/update/team/user/{id}": {
+            "put": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Update the team of a user identified by id",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Admin"
+                ],
+                "summary": "Update a user's team",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "User id",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Team to associate with the user",
+                        "name": "team",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/admin.UpdateUserTeamInput"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/users.UserOutput"
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid input",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "404": {
+                        "description": "User not found",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal server error",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/admin/user/create": {
+            "post": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Create a single new user from a specific user Input. Will return an error if user already exists.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Admin"
+                ],
+                "summary": "Create a single new user",
+                "parameters": [
+                    {
+                        "description": "User to create",
+                        "name": "user",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/admin.CreateUserInput"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/users.UserOutput"
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid input",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "409": {
+                        "description": "Conflict : user already exists",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal server error",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/admin/{id}": {
+            "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Fetch a single user and returns its info if successful",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Admin"
+                ],
+                "summary": "Fetch a single user by id",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "User id",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/users.UserOutput"
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid input",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "404": {
+                        "description": "User not found",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal server error",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
         "/api/authentification": {
             "post": {
                 "description": "Authenticates a user using email and password, and returns a JWT token if successful",
@@ -58,12 +474,115 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/presence": {
+        "/api/manager/team/user/presence/{id}": {
             "get": {
-                "description": "Returns all presences belonging to the user identified by the JWT token.",
-                "consumes": [
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Returns all presence records for the specified user if the user belongs to the manager's team",
+                "produces": [
                     "application/json"
                 ],
+                "tags": [
+                    "Manager"
+                ],
+                "summary": "Get presences for a user",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "User id",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/presence.PresenceOutput"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid input / not member of team",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "404": {
+                        "description": "User not found",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal server error",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/manager/team/users/{name}": {
+            "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Return all users belonging to the team the manager manages (team is derived from the manager's token/claim)",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Manager"
+                ],
+                "summary": "Return all users from the manager's team",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/users.UserOutput"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid input",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "404": {
+                        "description": "Not found",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal server error",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/presence": {
+            "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Returns all presences belonging to the user identified by the JWT token.",
                 "produces": [
                     "application/json"
                 ],
@@ -82,16 +601,27 @@ const docTemplate = `{
                         }
                     },
                     "404": {
-                        "description": "User not found"
+                        "description": "User not found",
+                        "schema": {
+                            "type": "string"
+                        }
                     },
                     "500": {
-                        "description": "Internal server error"
+                        "description": "Internal server error",
+                        "schema": {
+                            "type": "string"
+                        }
                     }
                 }
             }
         },
         "/api/presence/create": {
             "post": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
                 "description": "Create a new presence entry for the authenticated user. Returns conflict if duplicate presence exists.",
                 "consumes": [
                     "application/json"
@@ -122,19 +652,33 @@ const docTemplate = `{
                         }
                     },
                     "400": {
-                        "description": "Invalid input"
+                        "description": "Invalid input",
+                        "schema": {
+                            "type": "string"
+                        }
                     },
                     "409": {
-                        "description": "Conflict : presence with same information already exists"
+                        "description": "Conflict : presence with same information already exists",
+                        "schema": {
+                            "type": "string"
+                        }
                     },
                     "500": {
-                        "description": "Internal server error"
+                        "description": "Internal server error",
+                        "schema": {
+                            "type": "string"
+                        }
                     }
                 }
             }
         },
-        "/api/team/:name": {
+        "/api/team/name": {
             "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
                 "description": "Fetch a single team and returns its info if successful",
                 "produces": [
                     "application/json"
@@ -147,7 +691,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/team.TeamOutput"
+                            "$ref": "#/definitions/teams.TeamOutput"
                         }
                     },
                     "400": {
@@ -162,118 +706,13 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/team/:name/users": {
-            "get": {
-                "description": "Return all users from the specified team. Will return an error if team doesn't exist. Will return an empty array if no user is in the team",
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Team"
-                ],
-                "summary": "Return all users from a team",
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/user.UserOutput"
-                            }
-                        }
-                    },
-                    "400": {
-                        "description": "Invalid input"
-                    },
-                    "404": {
-                        "description": "Team Not Found"
-                    },
-                    "500": {
-                        "description": "Internal server error"
-                    }
-                }
-            }
-        },
-        "/api/team/create": {
-            "post": {
-                "description": "Create a single new team from a specific team Input. Will return an error if team with same name already exists.",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Team"
-                ],
-                "summary": "Create a single new team",
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/team.TeamOutput"
-                        }
-                    },
-                    "400": {
-                        "description": "Invalid input"
-                    },
-                    "409": {
-                        "description": "Conflict : team already exists"
-                    },
-                    "500": {
-                        "description": "Internal server error"
-                    }
-                }
-            }
-        },
-        "/api/team/update": {
-            "put": {
-                "description": "Update a single existing team from a specific team Input. Will return corresponding team if no modification is done",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Team"
-                ],
-                "summary": "Update a single existing team",
-                "parameters": [
-                    {
-                        "description": "Current team name and New team name",
-                        "name": "team",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/team.UpdateTeamInput"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/team.TeamOutput"
-                        }
-                    },
-                    "400": {
-                        "description": "Invalid input"
-                    },
-                    "404": {
-                        "description": "Team not found"
-                    },
-                    "409": {
-                        "description": "Conflict : team already exists"
-                    },
-                    "500": {
-                        "description": "Internal server error"
-                    }
-                }
-            }
-        },
         "/api/user": {
             "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
                 "description": "Fetch a single user and returns its info if successful",
                 "produces": [
                     "application/json"
@@ -286,63 +725,31 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/user.UserOutput"
+                            "$ref": "#/definitions/users.UserOutput"
                         }
                     },
                     "404": {
-                        "description": "User not found"
-                    },
-                    "500": {
-                        "description": "Internal server error"
-                    }
-                }
-            }
-        },
-        "/api/user/create": {
-            "post": {
-                "description": "Create a single new user from a specific user Input. Will return an error if user already exists.",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "User"
-                ],
-                "summary": "Create a single new user",
-                "parameters": [
-                    {
-                        "description": "User to create",
-                        "name": "user",
-                        "in": "body",
-                        "required": true,
+                        "description": "User not found",
                         "schema": {
-                            "$ref": "#/definitions/user.CreateUserInput"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/user.UserOutput"
+                            "type": "string"
                         }
                     },
-                    "400": {
-                        "description": "Invalid input"
-                    },
-                    "409": {
-                        "description": "Conflict : user already exists"
-                    },
                     "500": {
-                        "description": "Internal server error"
+                        "description": "Internal server error",
+                        "schema": {
+                            "type": "string"
+                        }
                     }
                 }
             }
         },
         "/api/user/update": {
             "post": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
                 "description": "Update a single existing user from a specific user Input. Will return corresponding user if no modification is done",
                 "consumes": [
                     "application/json"
@@ -361,7 +768,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/user.UpdateUserInput"
+                            "$ref": "#/definitions/users.UpdateUserInput"
                         }
                     }
                 ],
@@ -369,20 +776,93 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/user.UserOutput"
+                            "$ref": "#/definitions/users.UserOutput"
                         }
                     },
                     "400": {
-                        "description": "Invalid input"
+                        "description": "Invalid input",
+                        "schema": {
+                            "type": "string"
+                        }
                     },
                     "500": {
-                        "description": "Internal server error"
+                        "description": "Internal server error",
+                        "schema": {
+                            "type": "string"
+                        }
                     }
                 }
             }
         }
     },
     "definitions": {
+        "admin.CreateTeamInput": {
+            "type": "object",
+            "required": [
+                "Name"
+            ],
+            "properties": {
+                "Name": {
+                    "type": "string"
+                }
+            }
+        },
+        "admin.CreateUserInput": {
+            "type": "object",
+            "required": [
+                "Email",
+                "FirstName",
+                "LastName",
+                "Password",
+                "Role"
+            ],
+            "properties": {
+                "Email": {
+                    "type": "string"
+                },
+                "FirstName": {
+                    "type": "string"
+                },
+                "LastName": {
+                    "type": "string"
+                },
+                "Password": {
+                    "type": "string"
+                },
+                "Role": {
+                    "type": "string"
+                },
+                "Team": {
+                    "type": "string"
+                }
+            }
+        },
+        "admin.UpdateTeamInput": {
+            "type": "object",
+            "required": [
+                "CurrentName",
+                "NewName"
+            ],
+            "properties": {
+                "CurrentName": {
+                    "type": "string"
+                },
+                "NewName": {
+                    "type": "string"
+                }
+            }
+        },
+        "admin.UpdateUserTeamInput": {
+            "type": "object",
+            "required": [
+                "TeamId"
+            ],
+            "properties": {
+                "TeamId": {
+                    "type": "string"
+                }
+            }
+        },
         "authentification.AuthentificationUserInput": {
             "type": "object",
             "required": [
@@ -462,7 +942,7 @@ const docTemplate = `{
                 }
             }
         },
-        "team.TeamOutput": {
+        "teams.TeamOutput": {
             "type": "object",
             "required": [
                 "Name",
@@ -477,52 +957,7 @@ const docTemplate = `{
                 }
             }
         },
-        "team.UpdateTeamInput": {
-            "type": "object",
-            "required": [
-                "CurrentName",
-                "NewName"
-            ],
-            "properties": {
-                "CurrentName": {
-                    "type": "string"
-                },
-                "NewName": {
-                    "type": "string"
-                }
-            }
-        },
-        "user.CreateUserInput": {
-            "type": "object",
-            "required": [
-                "Email",
-                "FirstName",
-                "LastName",
-                "Password",
-                "Role"
-            ],
-            "properties": {
-                "Email": {
-                    "type": "string"
-                },
-                "FirstName": {
-                    "type": "string"
-                },
-                "LastName": {
-                    "type": "string"
-                },
-                "Password": {
-                    "type": "string"
-                },
-                "Role": {
-                    "type": "string"
-                },
-                "Team": {
-                    "type": "string"
-                }
-            }
-        },
-        "user.UpdateUserInput": {
+        "users.UpdateUserInput": {
             "type": "object",
             "properties": {
                 "FirstName": {
@@ -536,7 +971,7 @@ const docTemplate = `{
                 }
             }
         },
-        "user.UserOutput": {
+        "users.UserOutput": {
             "type": "object",
             "required": [
                 "Email",
@@ -568,8 +1003,10 @@ const docTemplate = `{
         }
     },
     "securityDefinitions": {
-        "BasicAuth": {
-            "type": "basic"
+        "ApiKeyAuth": {
+            "type": "apiKey",
+            "name": "api_token",
+            "in": "header"
         }
     }
 }`
