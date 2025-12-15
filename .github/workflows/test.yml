@@ -3,18 +3,14 @@ name: Test
 on:
   workflow_call:
     inputs:
-      go-version:
-        required: true
-        type: string
-      working-dir-front:
-        required: true
-        type: string
-      working-dir-back:
-        required: true
-        type: string
-      node-version:
-        required: true
-        type: string
+      test-backend:
+        required: false
+        type: boolean
+        default: true
+      test-frontend:
+        required: false
+        type: boolean
+        default: true
 
 permissions:
   contents: read
@@ -26,10 +22,10 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v5
       # - name: Test app
-      #   run: echo "Testing for ${{ inputs.go-version }} and ${{ inputs.node-version }}"
+      #   run: echo "Testing for ${{ vars.GO_VERSION }} and ${{ vars.NODE_VERSION }}"
 
   go-lint:
-    if: contains(github.ref_name, 'cicd') || contains(github.ref_name, 'back_')
+    if: inputs.test-backend == true
     name: go-lint
     runs-on: ubuntu-latest
     steps:
@@ -38,9 +34,9 @@ jobs:
       - name: Setup Go
         uses: actions/setup-go@v6
         with:
-          go-version: ${{ inputs.go-version }}
+          go-version: ${{ vars.GO_VERSION }}
           cache: true
-          cache-dependency-path: ${{ inputs.working-dir-back }}/go.sum
+          cache-dependency-path: ${{ vars.BACK_REPOSITORY }}/go.sum
 
       - name: Cache golangci-lint
         uses: actions/cache@v4
@@ -48,13 +44,13 @@ jobs:
           path: |
             ~/.cache/golangci-lint
             ~/.cache/go-build
-          key: ${{ runner.os }}-golangci-lint-${{ inputs.go-version }}-${{ hashFiles(format('{0}/go.sum', inputs.working-dir-back)) }}
+          key: ${{ runner.os }}-golangci-lint-${{ vars.GO_VERSION }}-${{ hashFiles(format('{0}/go.sum', vars.BACK_REPOSITORY)) }}
           restore-keys: |
-            ${{ runner.os }}-golangci-lint-${{ inputs.go-version }}-
+            ${{ runner.os }}-golangci-lint-${{ vars.GO_VERSION }}-
             ${{ runner.os }}-golangci-lint-
 
       - name: Ensure Go dependencies
-        working-directory: ${{ inputs.working-dir-back }}
+        working-directory: ${{ vars.BACK_REPOSITORY }}
         run: go mod tidy
 
       - name: Install golangci-lint
@@ -63,11 +59,11 @@ jobs:
           echo "$(go env GOPATH)/bin" >> $GITHUB_PATH
 
       - name: Run golangci-lint
-        working-directory: ${{ inputs.working-dir-back }}
+        working-directory: ${{ vars.BACK_REPOSITORY }}
         run: golangci-lint run --timeout=5m
 
   angular-lint:
-    if: contains(github.ref_name, 'cicd') || contains(github.ref_name, 'front_')
+    if: inputs.test-frontend == true
     name: angular-lint
     runs-on: ubuntu-latest
     steps:
@@ -76,39 +72,39 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v5
         with:
-          node-version: ${{ inputs.node-version }}
+          node-version: ${{ vars.NODE_VERSION }}
           cache: "npm"
-          cache-dependency-path: ${{ inputs.working-dir-front }}/package-lock.json
+          cache-dependency-path: ${{ vars.FRONT_REPOSITORY }}/package-lock.json
 
       - name: Cache node modules
         uses: actions/cache@v4
         with:
-          path: ${{ inputs.working-dir-front }}/node_modules
-          key: ${{ runner.os }}-node-lint-${{ inputs.node-version }}-${{ hashFiles(format('{0}/package-lock.json', inputs.working-dir-front)) }}
+          path: ${{ vars.FRONT_REPOSITORY }}/node_modules
+          key: ${{ runner.os }}-node-lint-${{ vars.NODE_VERSION }}-${{ hashFiles(format('{0}/package-lock.json', vars.FRONT_REPOSITORY)) }}
           restore-keys: |
-            ${{ runner.os }}-node-lint-${{ inputs.node-version }}-
+            ${{ runner.os }}-node-lint-${{ vars.NODE_VERSION }}-
             ${{ runner.os }}-node-lint-
 
       - name: Cache ESLint
         uses: actions/cache@v4
         with:
           path: |
-            ${{ inputs.working-dir-front }}/.eslintcache
-            ${{ inputs.working-dir-front }}/node_modules/.cache
-          key: ${{ runner.os }}-eslint-${{ hashFiles(format('{0}/.eslintrc.json', inputs.working-dir-front)) }}-${{ hashFiles(format('{0}/src/main.ts', inputs.working-dir-front)) }}-${{ hashFiles(format('{0}/src/app/**/*.ts', inputs.working-dir-front)) }}
+            ${{ vars.FRONT_REPOSITORY }}/.eslintcache
+            ${{ vars.FRONT_REPOSITORY }}/node_modules/.cache
+          key: ${{ runner.os }}-eslint-${{ hashFiles(format('{0}/.eslintrc.json', vars.FRONT_REPOSITORY)) }}-${{ hashFiles(format('{0}/src/main.ts', vars.FRONT_REPOSITORY)) }}-${{ hashFiles(format('{0}/src/app/**/*.ts', vars.FRONT_REPOSITORY)) }}
           restore-keys: |
             ${{ runner.os }}-eslint-
 
       - name: Install dependencies
-        working-directory: ${{ inputs.working-dir-front }}
+        working-directory: ${{ vars.FRONT_REPOSITORY }}
         run: npm ci
 
       - name: Run lint
-        working-directory: ${{ inputs.working-dir-front }}
-        run:  npm run lint:ci || true
+        working-directory: ${{ vars.FRONT_REPOSITORY }}
+        run: npm run lint:ci || true
 
       - name: Check for lint errors
-        working-directory: ${{ inputs.working-dir-front }}
+        working-directory: ${{ vars.FRONT_REPOSITORY }}
         run: |
           ERRORS=$(jq '[.[].errorCount] | add' lint-results.json)
           if [ "$ERRORS" -gt 0 ]; then

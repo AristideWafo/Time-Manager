@@ -8,8 +8,48 @@ on:
     branches: ["dev", "feat/*", "fix/*"]
 
 jobs:
+  detect-changes:
+    name: Detect Changes
+    runs-on: ubuntu-latest
+    outputs:
+      backend: ${{ steps.changes.outputs.backend }}
+      frontend: ${{ steps.changes.outputs.frontend }}
+      root: ${{ steps.changes.outputs.root }}
+      run-all: ${{ steps.check.outputs.run-all }}
+    steps:
+      - uses: actions/checkout@v5
+      - uses: dorny/paths-filter@v3
+        id: changes
+        with:
+          filters: |
+            backend:
+              - 'back/**'
+            frontend:
+              - 'front/**'
+            root:
+              - '.github/**'
+              - 'nginx/**'
+              - '*.json'
+              - '*.yml'
+              - '*.yaml'
+              - '*.sh'
+              - 'Dockerfile*'
+              - 'docker-compose*'
+              - 'sonar-project.properties'
+              - 'package.json'
+              - '.releaserc.json'
+      - name: Check if should run all
+        id: check
+        run: |
+          if [[ "${{ steps.changes.outputs.root }}" == "true" ]]; then
+            echo "run-all=true" >> $GITHUB_OUTPUT
+          else
+            echo "run-all=false" >> $GITHUB_OUTPUT
+          fi
+
   cache-deps:
-    if: contains(github.ref_name, 'back_') || contains(github.ref_name, 'front_')
+    needs: detect-changes
+    if: needs.detect-changes.outputs.backend == 'true' || needs.detect-changes.outputs.frontend == 'true' || needs.detect-changes.outputs.run-all == 'true'
     name: Cache Dependencies
     runs-on: ubuntu-latest
     outputs:
@@ -44,7 +84,8 @@ jobs:
 
   build:
     name: Build
-    needs: cache-deps
+    needs: [detect-changes, cache-deps]
+    if: needs.detect-changes.outputs.backend == 'true' || needs.detect-changes.outputs.frontend == 'true' || needs.detect-changes.outputs.run-all == 'true'
     uses: ./.github/workflows/build.yml
     with:
       go-version: ${{ vars.GO_VERSION }}
@@ -52,10 +93,13 @@ jobs:
       working-dir-front: ${{ vars.FRONT_REPOSITORY }}
       working-dir-back: ${{ vars.BACK_REPOSITORY }}
       app-name: ${{ vars.APP_NAME }}
+      build-backend: ${{ needs.detect-changes.outputs.backend == 'true' || needs.detect-changes.outputs.run-all == 'true' }}
+      build-frontend: ${{ needs.detect-changes.outputs.frontend == 'true' || needs.detect-changes.outputs.run-all == 'true' }}
 
   test:
     name: Tests & Linting
-    needs: [cache-deps, build]
+    needs: [detect-changes, build]
+    if: needs.detect-changes.outputs.backend == 'true' || needs.detect-changes.outputs.frontend == 'true' || needs.detect-changes.outputs.run-all == 'true'
     permissions:
       contents: read
     uses: ./.github/workflows/test.yml
@@ -64,3 +108,5 @@ jobs:
       node-version: ${{ vars.NODE_VERSION }}
       working-dir-front: ${{ vars.FRONT_REPOSITORY }}
       working-dir-back: ${{ vars.BACK_REPOSITORY }}
+      test-backend: ${{ needs.detect-changes.outputs.backend == 'true' || needs.detect-changes.outputs.run-all == 'true' }}
+      test-frontend: ${{ needs.detect-changes.outputs.frontend == 'true' || needs.detect-changes.outputs.run-all == 'true' }}
