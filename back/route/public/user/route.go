@@ -1,4 +1,4 @@
-package user
+package users
 
 import (
 	"TimeManager/middleware"
@@ -15,21 +15,21 @@ func RegisterUserRoutes(router *gin.Engine) {
 	user := router.Group("/api/user").Use(middleware.AdminMiddleware())
 	{
 		user.GET("", FetchUser)
-		user.POST("/create", PostUser)
 		user.POST("/update", UpdateUser)
 	}
 }
 
-// FetchUser
+// FetchUser godoc
 //
-//	@Summary		Fetch a single user
-//	@Description	Fetch a single user and returns its info if successful
-//	@Tags			User
-//	@Produce		json
-//	@Success		200		{object}	UserOutput
-//	@Failure		404		"User not found"
-//	@Failure		500		"Internal server error"
-//	@Router			/api/user [get]
+// @Summary     Fetch a single user
+// @Description Fetch a single user and returns its info if successful
+// @Tags        User
+// @Produce     json
+// @Success     200 {object} users.UserOutput
+// @Failure     404 {string} string "User not found"
+// @Failure     500 {string} string "Internal server error"
+// @Router      /api/user [get]
+// @Security ApiKeyAuth
 func FetchUser(context *gin.Context) {
 
 	_id, err := service.DecryptIDFromContextClaim(context)
@@ -69,72 +69,19 @@ func FetchUser(context *gin.Context) {
 	context.JSON(http.StatusOK, gin.H{"user": output})
 }
 
-// PostUser
+// UpdateUser godoc
 //
-//	@Summary		Create a single new user
-//	@Description	Create a single new user from a specific user Input. Will return an error if user already exists.
-//	@Tags			User
-//	@Accept			json
-//	@Produce		json
-//	@Param			user	body		CreateUserInput	true	"User to create"
-//	@Success		200		{object}	UserOutput
-//	@Failure		400		"Invalid input"
-//	@Failure		409		"Conflict : user already exists"
-//	@Failure		500		"Internal server error"
-//	@Router			/api/user/create [post]
-func PostUser(context *gin.Context) {
-
-	var user CreateUserInput
-
-	if err := context.BindJSON(&user); err != nil {
-		err = context.AbortWithError(http.StatusBadRequest, err)
-		context.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		return
-	}
-
-	created_user, err := service.CreateUser(user.FirstName, user.LastName, user.Email, user.Password, user.Role, user.Team)
-
-	if err != nil {
-		err = context.AbortWithError(http.StatusConflict, err)
-		context.JSON(http.StatusConflict, gin.H{"error": err.Error()})
-		return
-	}
-
-	var output UserOutput
-
-	if err = copier.Copy(&output, created_user); err != nil {
-		err = context.AbortWithError(http.StatusInternalServerError, err)
-		context.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-		return
-	}
-
-	output.ID = created_user.ID.Hex()
-
-	if created_user.Team != bson.NilObjectID {
-		output.Team = created_user.Team.Hex()
-	}
-
-	if err = model.ValidateModel(&output); err != nil {
-		err = context.AbortWithError(http.StatusInternalServerError, err)
-		context.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-		return
-	}
-
-	context.JSON(http.StatusOK, gin.H{"user": output})
-}
-
-// UpdateUser
-//
-//	@Summary		Update a single existing user
-//	@Description	Update a single existing user from a specific user Input. Will return corresponding user if no modification is done
-//	@Tags			User
-//	@Accept			json
-//	@Produce		json
-//	@Param			user	body		UpdateUserInput	true	"User fields to update"
-//	@Success		200		{object}	UserOutput
-//	@Failure		400		"Invalid input"
-//	@Failure		500		"Internal server error"
-//	@Router			/api/user/update [post]
+// @Summary     Update a single existing user
+// @Description Update a single existing user from a specific user Input. Will return corresponding user if no modification is done
+// @Tags        User
+// @Accept      json
+// @Produce     json
+// @Param       user body UpdateUserInput true "User fields to update"
+// @Success     200 {object} users.UserOutput
+// @Failure     400 {string} string "Invalid input"
+// @Failure     500 {string} string "Internal server error"
+// @Router      /api/user/update [post]
+// @Security ApiKeyAuth
 func UpdateUser(context *gin.Context) {
 
 	_id, err := service.DecryptIDFromContextClaim(context)
