@@ -11,6 +11,7 @@ export function authTokenInterceptor(req: HttpRequest<unknown>, next: HttpHandle
     let clonedReq = req;
 
     if (token) {
+        console.log("Token envoyé :", token);
         clonedReq = req.clone({
             headers: req.headers.set('api_token', token)
         });

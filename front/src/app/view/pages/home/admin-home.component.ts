@@ -3,10 +3,10 @@ import { Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 
 @Component({
-    selector: 'app-admin-home',
-    standalone: true,
-    imports: [CommonModule],
-    template: `
+  selector: 'app-admin-home',
+  standalone: true,
+  imports: [CommonModule],
+  template: `
     <section class="dashboard">
       <header class="dashboard-header">
         <h1>Tableau de bord</h1>
@@ -38,26 +38,35 @@ import { CommonModule } from '@angular/common';
           <p>Ajoutez un nouvel utilisateur à l'équipe.</p>
           <button (click)="goToCreateUser()">Créer un utilisateur</button>
         </div>
+
+        <div class="card">
+          <h2>Utilisateurs</h2>
+          <p>Voir et gérer tous les utilisateurs de l’application.</p>
+          <button (click)="goToUsers()">Voir les utilisateurs</button>
+        </div>
+
       </div>
     </section>
   `,
-    styleUrls: ['./admin-home.component.css']
+  styleUrls: ['./admin-home.component.css']
 })
 export class AdminHomeComponent implements OnInit {
-    firstName: string | null = null;
-    lastName: string | null = null;
-    role: string | null = 'ADMIN';
+  firstName: string | null = null;
+  lastName: string | null = null;
+  role: string | null = 'ADMIN';
 
-    constructor(private router: Router) { }
+  constructor(private router: Router) { }
 
-    ngOnInit() {
-        this.firstName = localStorage.getItem('FirstName');
-        this.lastName = localStorage.getItem('LastName');
-        this.role = localStorage.getItem('Role');
-    }
+  ngOnInit() {
+    this.firstName = localStorage.getItem('FirstName');
+    this.lastName = localStorage.getItem('LastName');
+    this.role = localStorage.getItem('Role');
+  }
 
-    goToProfile() { this.router.navigate(['/profile']); }
-    goToTeams() { this.router.navigate(['/teams']); }
-    goToCreateUser() { this.router.navigate(['/create-user']); }
-    logout() { localStorage.clear(); this.router.navigate(['/login']); }
+  goToProfile() { this.router.navigate(['/profile']); }
+  goToTeams() { this.router.navigate(['/teams']); }
+  goToCreateUser() { this.router.navigate(['/create-user']); }
+  goToUsers() { this.router.navigate(['/users']); }
+
+  logout() { localStorage.clear(); this.router.navigate(['/login']); }
 }
