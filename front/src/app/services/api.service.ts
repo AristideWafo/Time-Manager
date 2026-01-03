@@ -97,10 +97,12 @@ export class ApiService {
 
     // GET /api/manager/team/users/{name}
     getManagerTeamUsers() {
-        return this.http.get<any[]>(
-            `${this.baseUrl}/manager/team/users/{name}`
-        );
+        const teamId = localStorage.getItem('Team');
+        if (!teamId) throw new Error('Team introuvable');
+
+        return this.http.get<any[]>(`${this.baseUrl}/manager/team/users/${teamId}`);
     }
+
 
     // GET /api/manager/team/user/presence/{id}
     getUserPresencesForManager(id: string) {

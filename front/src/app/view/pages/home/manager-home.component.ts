@@ -3,10 +3,10 @@ import { Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 
 @Component({
-    selector: 'app-manager-home',
-    standalone: true,
-    imports: [CommonModule],
-    template: `
+  selector: 'app-manager-home',
+  standalone: true,
+  imports: [CommonModule],
+  template: `
     <section class="dashboard">
       <header class="dashboard-header">
         <h1>Tableau de bord</h1>
@@ -35,22 +35,22 @@ import { CommonModule } from '@angular/common';
       </div>
     </section>
   `,
-    styleUrls: ['./manager-home.component.css']
+  styleUrls: ['./manager-home.component.css']
 })
 export class ManagerHomeComponent implements OnInit {
-    firstName: string | null = null;
-    lastName: string | null = null;
-    role: string | null = 'MANAGER';
+  firstName: string | null = null;
+  lastName: string | null = null;
+  role: string | null = 'MANAGER';
 
-    constructor(private router: Router) { }
+  constructor(private router: Router) { }
 
-    ngOnInit() {
-        this.firstName = localStorage.getItem('FirstName');
-        this.lastName = localStorage.getItem('LastName');
-        this.role = localStorage.getItem('Role');
-    }
+  ngOnInit() {
+    this.firstName = localStorage.getItem('FirstName');
+    this.lastName = localStorage.getItem('LastName');
+    this.role = localStorage.getItem('Role');
+  }
 
-    goToProfile() { this.router.navigate(['/profile']); }
-    goToTeams() { this.router.navigate(['/teams']); }
-    logout() { localStorage.clear(); this.router.navigate(['/login']); }
+  goToProfile() { this.router.navigate(['/profile']); }
+  goToTeams() { this.router.navigate(['/manager/team']); }
+  logout() { localStorage.clear(); this.router.navigate(['/login']); }
 }

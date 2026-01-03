@@ -12,6 +12,8 @@ import { EmployeeHomeComponent } from '../pages/home/employee-home.component';
 import { ManagerHomeComponent } from '../pages/home/manager-home.component';
 import { AdminHomeComponent } from '../pages/home/admin-home.component';
 
+import { UsersComponent } from '../pages/getUser/getUser';
+
 export const routes: Routes = [
     { path: '', redirectTo: 'login', pathMatch: 'full' },
 
@@ -31,6 +33,15 @@ export const routes: Routes = [
         canActivate: [authGuard, roleGuard('MANAGER')]
     },
 
+    {
+        path: 'manager/team',
+        loadComponent: () =>
+            import('../pages/teams/manager-team.components')
+                .then(m => m.ManagerTeamComponent),
+        canActivate: [authGuard, roleGuard('MANAGER')]
+    },
+
+
     // ADMIN
     {
         path: 'admin-home',
@@ -45,6 +56,11 @@ export const routes: Routes = [
 
     // ADMIN only
     { path: 'create-user', component: CreateUserComponent, canActivate: [authGuard, roleGuard('ADMIN')] },
+    {
+        path: 'users',
+        component: UsersComponent,
+        canActivate: [authGuard, roleGuard('ADMIN')]
+    },
 
     { path: '**', redirectTo: 'login' }
 ];
