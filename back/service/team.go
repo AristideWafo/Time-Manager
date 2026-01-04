@@ -7,7 +7,7 @@ import (
 	"go.mongodb.org/mongo-driver/v2/bson"
 )
 
-func GetTeamByName(name string) (*model.Team, error) {
+var GetTeamByName = func(name string) (*model.Team, error) {
 	team := &model.Team{}
 	filter := bson.D{{Key: "Name", Value: name}}
 
@@ -43,7 +43,7 @@ func UpdateTeam(name string, update bson.D) (*model.Team, error) {
 	return team, repository.UpdateOneTeam(team, update)
 }
 
-func GetTeamUsers(_id bson.ObjectID) ([]*model.User, error) {
+var GetTeamUsers = func(_id bson.ObjectID) ([]*model.User, error) {
 	list_users := []*model.User{}
 
 	filter := bson.D{{Key: "Team", Value: _id}}
