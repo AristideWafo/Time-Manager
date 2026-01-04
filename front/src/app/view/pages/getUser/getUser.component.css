@@ -1,0 +1,99 @@
+/* --- Page utilisateurs --- */
+.users-page {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 20px;
+    font-family: Arial, sans-serif;
+    color: #0a2540;
+}
+
+.users-page h1 {
+    font-size: 1.8rem;
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+/* --- Messages --- */
+.users-page p {
+    font-size: 1rem;
+    text-align: center;
+    margin-bottom: 16px;
+}
+
+.users-page p:first-of-type {
+    color: #0d6efd;
+    /* bleu pour le loading */
+}
+
+.users-page p:last-of-type {
+    color: #842029;
+    /* rouge pour aucun utilisateur */
+    background-color: #f8d7da;
+    border: 1px solid #f5c2c7;
+    padding: 10px 14px;
+    border-radius: 8px;
+}
+
+/* --- Liste utilisateurs --- */
+.users-page ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 16px;
+    justify-content: center;
+}
+
+.users-page li {
+    background-color: #ffffff;
+    border: 1px solid rgba(0, 0, 0, 0.05);
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    padding: 20px;
+    flex: 1 1 220px;
+    /* minimum 220px, s’adapte */
+    max-width: 250px;
+    transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+
+.users-page li:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+}
+
+.users-page li strong {
+    color: #007bff;
+    font-size: 1rem;
+}
+
+.users-page li br {
+    margin-bottom: 4px;
+}
+
+/* --- Role et équipe --- */
+.users-page li p {
+    margin: 4px 0;
+}
+
+.users-page li span.role {
+    font-weight: 600;
+    color: #0a2540;
+}
+
+.users-page li span.team {
+    font-style: italic;
+    color: #495057;
+}
+
+/* --- Responsive --- */
+@media (max-width: 600px) {
+    .users-page ul {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .users-page li {
+        max-width: 90%;
+    }
+}
