@@ -137,19 +137,19 @@ func UpdateOne[document Document](doc document, collection *mongo.Collection, up
 	return err
 }
 
-func UpdateMany[document Document](empty_doc document, filter bson.D, collection *mongo.Collection, update bson.D, unset bson.D) error {
+func UpdateMany[document Document](docs *[]document, filter bson.D, collection *mongo.Collection, update bson.D, unset bson.D) error {
 
-	date_update := append(update, bson.D{{Key: "UpdatedAt", Value: time.Now()}}...)
-	err := GetOne(filter, collection, empty_doc)
-
-	if err != nil {
-		return err
+	if len(*docs) == 0 {
+		return nil
 	}
 
-	doc_fields := reflect.ValueOf(empty_doc).Elem()
+	now := time.Now()
+	date_update := append(update, bson.E{Key: "UpdatedAt", Value: now})
+
+	first := (*docs)[0]
+	doc_fields := reflect.ValueOf(first).Elem()
 
 	for _, elem := range date_update {
-
 		field := doc_fields.FieldByName(elem.Key)
 
 		if field.IsValid() && field.CanSet() {
@@ -167,7 +167,6 @@ func UpdateMany[document Document](empty_doc document, filter bson.D, collection
 	}
 
 	for _, elem := range unset {
-
 		field := doc_fields.FieldByName(elem.Key)
 
 		if field.IsValid() && field.CanSet() {
@@ -178,9 +177,7 @@ func UpdateMany[document Document](empty_doc document, filter bson.D, collection
 		}
 	}
 
-	err = empty_doc.Validate()
-
-	if err != nil {
+	if err := first.Validate(); err != nil {
 		return err
 	}
 
@@ -188,9 +185,36 @@ func UpdateMany[document Document](empty_doc document, filter bson.D, collection
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 
-	_, err = collection.UpdateMany(ctx, filter, full_update)
+	if _, err := collection.UpdateMany(ctx, filter, full_update); err != nil {
+		return err
+	}
 
-	return err
+	for i := range *docs {
+		elemDoc := (*docs)[i]
+		v := reflect.ValueOf(elemDoc).Elem()
+
+		for _, upd := range date_update {
+			field := v.FieldByName(upd.Key)
+			if field.IsValid() && field.CanSet() {
+				value := reflect.ValueOf(upd.Value)
+				if value.Type().AssignableTo(field.Type()) {
+					field.Set(value)
+				}
+			}
+		}
+
+		for _, u := range unset {
+			field := v.FieldByName(u.Key)
+			if field.IsValid() && field.CanSet() {
+				field.Set(reflect.Zero(field.Type()))
+			}
+		}
+		if err := elemDoc.Validate(); err != nil {
+			return err
+		}
+	}
+
+	return nil
 }
 
 func GetOne[document Document](filter bson.D, collection *mongo.Collection, empty_doc document) error {

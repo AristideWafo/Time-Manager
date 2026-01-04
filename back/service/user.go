@@ -31,8 +31,7 @@ func Login(email string, password string) (*model.User, error) {
 	return user, err
 }
 
-func GetUserByID(_id bson.ObjectID) (*model.User, error) {
-
+var GetUserByID = func(_id bson.ObjectID) (*model.User, error) {
 	user := &model.User{}
 	filter := bson.D{{Key: "_id", Value: _id}}
 
