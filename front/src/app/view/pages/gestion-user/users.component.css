@@ -71,20 +71,30 @@
     margin-bottom: 4px;
 }
 
-/* --- Role et équipe --- */
-.users-page li p {
-    margin: 4px 0;
-}
-
-.users-page li span.role {
+/* --- Role badges --- */
+.role {
     font-weight: 600;
-    color: #0a2540;
+    padding: 2px 6px;
+    border-radius: 4px;
+    color: #fff;
 }
 
-.users-page li span.team {
-    font-style: italic;
-    color: #495057;
+.role.admin {
+    background-color: #dc3545;
 }
+
+/* rouge */
+.role.manager {
+    background-color: #ffc107;
+    color: #333;
+}
+
+/* jaune */
+.role.employee {
+    background-color: #0d6efd;
+}
+
+/* bleu */
 
 /* --- Responsive --- */
 @media (max-width: 600px) {

@@ -12,7 +12,7 @@ import { EmployeeHomeComponent } from '../pages/home/employee-home.component';
 import { ManagerHomeComponent } from '../pages/home/manager-home.component';
 import { AdminHomeComponent } from '../pages/home/admin-home.component';
 
-import { UsersComponent } from '../pages/getUser/getUser';
+import { UsersComponent } from '../pages/gestion-user/users.component';
 
 export const routes: Routes = [
     { path: '', redirectTo: 'login', pathMatch: 'full' },
@@ -56,11 +56,7 @@ export const routes: Routes = [
 
     // ADMIN only
     { path: 'create-user', component: CreateUserComponent, canActivate: [authGuard, roleGuard('ADMIN')] },
-    {
-        path: 'users',
-        component: UsersComponent,
-        canActivate: [authGuard, roleGuard('ADMIN')]
-    },
+    { path: 'users', component: UsersComponent, canActivate: [authGuard, roleGuard('ADMIN')] },
 
     { path: '**', redirectTo: 'login' }
 ];
