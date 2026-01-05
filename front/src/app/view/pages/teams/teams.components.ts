@@ -1,4 +1,3 @@
-// teams.component.ts
 import { Component, OnInit } from '@angular/core';
 import { ApiService } from '../../../services/api.service';
 import { CommonModule } from '@angular/common';
@@ -44,15 +43,7 @@ interface Team {
       </div>
     </section>
   `,
-  styles: [`
-    .teams-page { max-width: 600px; margin: 0 auto; font-family: Arial; }
-    input { margin-right: 10px; }
-    button { margin-right: 20px; }
-    hr { margin: 20px 0; }
-    .team-id { color: gray; font-size: 0.9em; }
-    .success { color: green; }
-    .error { color: red; }
-  `]
+  styleUrls: ['./teams.components.css']
 })
 export class TeamsComponent implements OnInit {
   teams: Team[] = [];
@@ -66,11 +57,9 @@ export class TeamsComponent implements OnInit {
     this.loadTeams();
   }
 
-  // 🔹 Récupération de toutes les teams
   loadTeams(): void {
     this.api.getAllTeams().subscribe({
       next: (data: any) => {
-        // On s'assure que c'est un array et on garde NameBeforeEdit
         const list = Array.isArray(data) ? data : data.teams || [];
         this.teams = list.map((t: Team) => ({ ...t, NameBeforeEdit: t.Name }));
         console.log('Teams API response', this.teams);
@@ -82,7 +71,6 @@ export class TeamsComponent implements OnInit {
     });
   }
 
-  // 🔹 Création d'une nouvelle team
   createTeam(): void {
     const name = this.newTeamName.trim();
     if (!name) return;
@@ -90,7 +78,6 @@ export class TeamsComponent implements OnInit {
     this.api.createTeam({ Name: name }).subscribe({
       next: (team: any) => {
         const newTeam = team.team || team;
-        if (!Array.isArray(this.teams)) this.teams = [];
         this.teams.push({ ...newTeam, NameBeforeEdit: newTeam.Name });
         this.newTeamName = '';
         this.showMessage('Team créée avec succès ✅', false);
@@ -107,7 +94,6 @@ export class TeamsComponent implements OnInit {
     });
   }
 
-  // 🔹 Mise à jour du nom d'une team via CurrentName
   updateTeam(team: Team): void {
     const newName = team.Name.trim();
     if (!newName) return;
@@ -117,7 +103,7 @@ export class TeamsComponent implements OnInit {
     this.api.updateTeam(payload).subscribe({
       next: (updated: any) => {
         team.Name = updated.Name || newName;
-        team.NameBeforeEdit = team.Name; // 🔹 mise à jour référence
+        team.NameBeforeEdit = team.Name;
         this.showMessage('Nom de la team mis à jour ✅', false);
         console.log('Team mise à jour', updated);
       },
@@ -134,7 +120,6 @@ export class TeamsComponent implements OnInit {
     });
   }
 
-  // 🔹 Affichage des messages UI
   private showMessage(msg: string, error: boolean) {
     this.message = msg;
     this.isError = error;
