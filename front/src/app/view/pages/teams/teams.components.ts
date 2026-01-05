@@ -7,6 +7,7 @@ import { FormsModule } from '@angular/forms';
 interface Team {
   _id: string;
   Name: string;
+  NameBeforeEdit?: string; // 🔹 utile pour update
 }
 
 @Component({
@@ -69,9 +70,10 @@ export class TeamsComponent implements OnInit {
   loadTeams(): void {
     this.api.getAllTeams().subscribe({
       next: (data: any) => {
-        console.log('Teams API response', data);
-        // Forcer un tableau quelle que soit la structure
-        this.teams = Array.isArray(data) ? data : data.teams || [];
+        // On s'assure que c'est un array et on garde NameBeforeEdit
+        const list = Array.isArray(data) ? data : data.teams || [];
+        this.teams = list.map((t: Team) => ({ ...t, NameBeforeEdit: t.Name }));
+        console.log('Teams API response', this.teams);
       },
       error: (err) => {
         console.error('Erreur chargement teams', err);
@@ -87,35 +89,47 @@ export class TeamsComponent implements OnInit {
 
     this.api.createTeam({ Name: name }).subscribe({
       next: (team: any) => {
-        // Backend peut renvoyer { team: {...} } ou juste l'objet
         const newTeam = team.team || team;
         if (!Array.isArray(this.teams)) this.teams = [];
-        this.teams.push(newTeam);
+        this.teams.push({ ...newTeam, NameBeforeEdit: newTeam.Name });
         this.newTeamName = '';
         this.showMessage('Team créée avec succès ✅', false);
         console.log('Team créée', newTeam);
       },
-      error: (err) => {
+      error: (err: any) => {
         console.error('Erreur création team', err);
-        this.showMessage('Erreur lors de la création de la team ❌', true);
+        if (err.error?.error === 'new name already exists') {
+          this.showMessage('Erreur : ce nom de team existe déjà ❌', true);
+        } else {
+          this.showMessage('Erreur lors de la création de la team ❌', true);
+        }
       }
     });
   }
 
-  // 🔹 Mise à jour du nom d'une team
+  // 🔹 Mise à jour du nom d'une team via CurrentName
   updateTeam(team: Team): void {
     const newName = team.Name.trim();
     if (!newName) return;
 
-    this.api.updateTeam({ CurrentName: team.Name, NewName: newName }).subscribe({
+    const payload = { CurrentName: team.NameBeforeEdit || team.Name, NewName: newName };
+
+    this.api.updateTeam(payload).subscribe({
       next: (updated: any) => {
         team.Name = updated.Name || newName;
+        team.NameBeforeEdit = team.Name; // 🔹 mise à jour référence
         this.showMessage('Nom de la team mis à jour ✅', false);
         console.log('Team mise à jour', updated);
       },
-      error: (err) => {
+      error: (err: any) => {
         console.error('Erreur update team', err);
-        this.showMessage('Erreur lors de la mise à jour ❌', true);
+        if (err.status === 409) {
+          this.showMessage('Erreur : ce nom de team existe déjà ❌', true);
+        } else if (err.status === 404) {
+          this.showMessage('Erreur : équipe non trouvée ❌', true);
+        } else {
+          this.showMessage('Erreur lors de la mise à jour ❌', true);
+        }
       }
     });
   }
