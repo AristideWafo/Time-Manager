@@ -1,133 +1,175 @@
-/* --- Carte individuelle --- */
+/* -------------------------------
+   Dashboard global
+---------------------------------*/
+.dashboard {
+    padding: 32px;
+    background: #f6f8fb;
+    min-height: 100vh;
+    font-family: 'Inter', sans-serif;
+}
+
+.dashboard-header {
+    text-align: center;
+    margin-bottom: 36px;
+}
+
+.dashboard-header h1 {
+    font-size: 2rem;
+    color: #0f172a;
+    margin-bottom: 8px;
+}
+
+.dashboard-header p {
+    font-size: 1rem;
+    color: #475569;
+    margin-bottom: 16px;
+}
+
+/* --- Cards grid --- */
+.dashboard-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 24px;
+}
+
+/* --- Card --- */
 .card {
-    background: #ffffff;
-    padding: 28px 25px;
-    border-radius: 16px;
-    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.06);
     display: flex;
     flex-direction: column;
     justify-content: space-between;
-    align-items: center;
-    transition: transform 0.25s ease, box-shadow 0.25s ease;
-    border: 1px solid rgba(0, 0, 0, 0.05);
+    background: #ffffff;
+    border-radius: 20px;
+    box-shadow: 0 8px 28px rgba(15, 23, 42, 0.08);
+    padding: 24px;
+    border: 1px solid rgba(15, 23, 42, 0.08);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
 .card:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 10px 28px rgba(0, 0, 0, 0.1);
+    transform: translateY(-3px);
+    box-shadow: 0 16px 36px rgba(15, 23, 42, 0.12);
 }
 
-/* --- Titre de la carte --- */
-.card h2 {
-    font-size: 1.4rem;
-    font-weight: 600;
-    color: #0a2540;
-    text-align: center;
-    margin-bottom: 12px;
+/* --- Card Header --- */
+.card-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 16px;
 }
 
-/* --- Texte de la carte --- */
-.card p {
-    flex-grow: 1;
-    font-size: 0.96rem;
-    color: #495057;
-    text-align: center;
-    margin-bottom: 22px;
-    line-height: 1.6;
+.card-header .icon {
+    width: 44px;
+    height: 44px;
+    border-radius: 12px;
+    background: rgba(37, 99, 235, 0.1);
+    color: #2563eb;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 1.2rem;
 }
 
-/* --- Bouton principal --- */
-.card button {
-    padding: 10px 22px;
-    background: linear-gradient(135deg, #007bff, #0062cc);
-    color: #fff;
-    border: none;
-    border-radius: 8px;
-    font-weight: 600;
-    cursor: pointer;
+/* --- Card Body --- */
+.card-body p {
     font-size: 0.95rem;
-    letter-spacing: 0.3px;
-    transition: all 0.25s ease;
-    box-shadow: 0 4px 10px rgba(0, 123, 255, 0.25);
+    color: #475569;
+    line-height: 1.6;
+    flex-grow: 1;
 }
 
-.card button:hover {
-    background: linear-gradient(135deg, #0069d9, #0056b3);
+/* --- Card Footer --- */
+.card-footer {
+    display: flex;
+    justify-content: center;
+    margin-top: 16px;
+}
+
+.card-footer button {
+    padding: 12px 26px;
+    background-color: #2563eb;
+    color: #ffffff;
+    border: none;
+    border-radius: 12px;
+    font-weight: 600;
+    font-size: 0.95rem;
+    cursor: pointer;
+    transition: background-color 0.25s ease, transform 0.25s ease, box-shadow 0.25s ease;
+    box-shadow: 0 4px 12px rgba(37, 99, 235, 0.25);
+}
+
+.card-footer button:hover {
+    background-color: #1d4ed8;
     transform: translateY(-2px);
-    box-shadow: 0 6px 14px rgba(0, 123, 255, 0.3);
+    box-shadow: 0 6px 16px rgba(37, 99, 235, 0.3);
 }
 
-/* --- Message informatif --- */
+/* --- Messages --- */
 .message {
     margin-top: 18px;
-    color: #0f5132;
-    background-color: #d1e7dd;
-    border: 1px solid #badbcc;
-    padding: 10px 14px;
-    border-radius: 8px;
-    font-size: 0.9rem;
+    padding: 12px 16px;
+    border-radius: 12px;
     text-align: center;
-    width: 100%;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.03);
-    transition: all 0.3s ease;
+    font-size: 0.9rem;
+    border: 1px solid;
 }
 
 .message.success {
-    background-color: #d1e7dd;
-    color: #0f5132;
-    border-color: #badbcc;
+    color: #0f766e;
+    background-color: rgba(15, 118, 110, 0.08);
+    border-color: rgba(15, 118, 110, 0.25);
 }
 
 .message.error {
-    background-color: #f8d7da;
-    color: #842029;
-    border-color: #f5c2c7;
+    color: #b91c1c;
+    background-color: rgba(185, 28, 28, 0.08);
+    border-color: rgba(185, 28, 28, 0.25);
+}
+
+/* --- Welcome box --- */
+.welcome-box {
+    background-color: #f1f5f9;
+    border-left: 4px solid #2563eb;
+    padding: 14px 18px;
+    margin-top: 16px;
+    border-radius: 12px;
+    font-size: 0.95rem;
+    color: #0f172a;
+}
+
+.welcome-box .role {
+    font-style: italic;
+    color: #475569;
+}
+
+/* --- Logout button --- */
+.logout-button {
+    padding: 12px 26px;
+    background-color: #dc2626;
+    color: #ffffff;
+    border: none;
+    border-radius: 12px;
+    font-weight: 600;
+    font-size: 0.95rem;
+    cursor: pointer;
+    box-shadow: 0 4px 12px rgba(220, 38, 38, 0.25);
+    transition: transform 0.25s ease, background-color 0.25s ease;
+    margin-bottom: 20px;
+}
+
+.logout-button:hover {
+    background-color: #b91c1c;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(220, 38, 38, 0.3);
 }
 
 /* --- Responsive --- */
 @media (max-width: 500px) {
     .card {
-        width: 100%;
-        padding: 24px 18px;
+        padding: 20px;
     }
 
-    .card h2 {
+    .card-header h2 {
         font-size: 1.25rem;
     }
-}
-
-.welcome-box {
-    background-color: #eef6ff;
-    border-left: 4px solid #007bff;
-    padding: 12px 16px;
-    margin-top: 16px;
-    border-radius: 8px;
-    font-size: 16px;
-    color: #333;
-}
-
-.welcome-box .role {
-    color: #555;
-    font-style: italic;
-}
-
-.logout-button {
-    padding: 10px 22px;
-    background: linear-gradient(135deg, #dc3545, #c82333);
-    color: #fff;
-    border: none;
-    border-radius: 8px;
-    font-weight: 600;
-    cursor: pointer;
-    font-size: 0.95rem;
-    letter-spacing: 0.3px;
-    transition: all 0.25s ease;
-    box-shadow: 0 4px 10px rgba(220, 53, 69, 0.25);
-    margin-top: 16px;
-}
-
-.logout-button:hover {
-    background: linear-gradient(135deg, #c82333, #bd2130);
-    transform: translateY(-2px);
-    box-shadow: 0 6px 14px rgba(220, 53, 69, 0.3);
 }

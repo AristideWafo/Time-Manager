@@ -22,29 +22,56 @@ import { CommonModule } from '@angular/common';
 
       <div class="dashboard-cards">
         <div class="card">
-          <h2>Profil</h2>
-          <p>Accédez à vos informations personnelles et à vos paramètres.</p>
-          <button (click)="goToProfile()">Voir le profil</button>
+          <div class="card-header">
+            <div class="icon">👤</div>
+            <h2>Profil</h2>
+          </div>
+          <div class="card-body">
+            <p>Accédez à vos informations personnelles et à vos paramètres.</p>
+          </div>
+          <div class="card-footer">
+            <button (click)="goToProfile()">Voir le profil</button>
+          </div>
         </div>
 
         <div class="card">
-          <h2>Équipes</h2>
-          <p>Gérez vos équipes et visualisez les membres.</p>
-          <button (click)="goToTeams()">Voir les équipes</button>
+          <div class="card-header">
+            <div class="icon">👥</div>
+            <h2>Équipes</h2>
+          </div>
+          <div class="card-body">
+            <p>Gérez vos équipes et visualisez les membres.</p>
+          </div>
+          <div class="card-footer">
+            <button (click)="goToTeams()">Voir les équipes</button>
+          </div>
         </div>
 
         <div class="card">
-          <h2>Créer utilisateur</h2>
-          <p>Ajoutez un nouvel utilisateur à l'équipe.</p>
-          <button (click)="goToCreateUser()">Créer un utilisateur</button>
+          <div class="card-header">
+            <div class="icon">➕</div>
+            <h2>Créer utilisateur</h2>
+          </div>
+          <div class="card-body">
+            <p>Ajoutez un nouvel utilisateur à l'équipe.</p>
+          </div>
+          <div class="card-footer">
+            <button (click)="goToCreateUser()">Créer un utilisateur</button>
+          </div>
         </div>
 
         <div class="card">
-          <h2>Utilisateurs</h2>
-          <p>Voir et gérer tous les utilisateurs de l’application.</p>
-          <button (click)="goToUsers()">Voir les utilisateurs</button>
+          <div class="card-header">
+            <div class="icon">📋</div>
+            <h2>Utilisateurs</h2>
+          </div>
+          <div class="card-body">
+            <p>Voir et gérer tous les utilisateurs de l’application.</p>
+          </div>
+          <div class="card-footer">
+            <button (click)="goToUsers()">Voir les utilisateurs</button>
+          </div>
         </div>
-
       </div>
     </section>
   `,
@@ -68,5 +95,8 @@ export class AdminHomeComponent implements OnInit {
   goToCreateUser() { this.router.navigate(['/create-user']); }
   goToUsers() { this.router.navigate(['/users']); }
 
-  logout() { localStorage.clear(); this.router.navigate(['/login']); }
+  logout() {
+    localStorage.clear();
+    this.router.navigate(['/login']);
+  }
 }

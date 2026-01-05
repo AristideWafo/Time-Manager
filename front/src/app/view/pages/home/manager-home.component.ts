@@ -22,15 +22,29 @@ import { CommonModule } from '@angular/common';
 
       <div class="dashboard-cards">
         <div class="card">
-          <h2>Profil</h2>
-          <p>Accédez à vos informations personnelles et à vos paramètres.</p>
-          <button (click)="goToProfile()">Voir le profil</button>
+          <div class="card-header">
+            <div class="icon">👤</div>
+            <h2>Profil</h2>
+          </div>
+          <div class="card-body">
+            <p>Accédez à vos informations personnelles et à vos paramètres.</p>
+          </div>
+          <div class="card-footer">
+            <button (click)="goToProfile()">Voir le profil</button>
+          </div>
         </div>
 
         <div class="card">
-          <h2>Équipes</h2>
-          <p>Gérez vos équipes et visualisez les membres.</p>
-          <button (click)="goToTeams()">Voir les équipes</button>
+          <div class="card-header">
+            <div class="icon">👥</div>
+            <h2>Équipes</h2>
+          </div>
+          <div class="card-body">
+            <p>Gérez vos équipes et visualisez les membres.</p>
+          </div>
+          <div class="card-footer">
+            <button (click)="goToTeams()">Voir les équipes</button>
+          </div>
         </div>
       </div>
     </section>
