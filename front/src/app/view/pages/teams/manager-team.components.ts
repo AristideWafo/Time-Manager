@@ -44,19 +44,61 @@ export class ManagerTeamComponent implements OnInit {
   constructor(private api: ApiService) { }
 
   ngOnInit(): void {
-    this.loadTeamUsers();
+    console.log('🟢 ManagerTeamComponent init');
+
+    const teamId = localStorage.getItem('Team');
+    console.log('ℹ️ TeamId récupéré du localStorage :', teamId);
+
+    if (!teamId) {
+      this.error = '❌ Aucun teamId trouvé dans le localStorage.';
+      return;
+    }
+
+    this.loadTeamUsers(teamId);
   }
 
-  loadTeamUsers() {
+  loadTeamUsers(teamId: string) {
     this.loading = true;
-    this.api.getManagerTeamUsers().subscribe({
-      next: (res) => {
-        this.users = res;
-        this.loading = false;
+
+    // On récupère toutes les équipes
+    this.api.getAllTeams().subscribe({
+      next: (res: any) => {
+        console.log('ℹ️ Teams récupérées :', res);
+
+        if (!res.teams || !Array.isArray(res.teams)) {
+          this.error = '❌ Aucune équipe trouvée dans la réponse API.';
+          this.loading = false;
+          return;
+        }
+
+        const team = res.teams.find((t: any) => t._id === teamId);
+
+        if (!team) {
+          this.error = '❌ Aucune équipe correspondante trouvée pour cet ID.';
+          this.loading = false;
+          return;
+        }
+
+        const teamName = team.Name;
+        console.log('ℹ️ TeamName à utiliser pour l\'API :', teamName);
+
+        // On récupère les utilisateurs de l’équipe
+        this.api.getManagerTeamUsersByName(teamName).subscribe({
+          next: (users) => {
+            console.log('✅ Utilisateurs récupérés :', users);
+            this.users = users;
+            this.loading = false;
+          },
+          error: (err) => {
+            console.error('❌ Erreur API manager/team/users :', err);
+            this.error = "Impossible de charger les utilisateurs de votre équipe";
+            this.loading = false;
+          }
+        });
       },
       error: (err) => {
-        console.error('Erreur API manager/team/users :', err);
-        this.error = 'Impossible de charger les utilisateurs de votre équipe';
+        console.error('❌ Erreur API getAllTeams :', err);
+        this.error = "Impossible de récupérer les équipes";
         this.loading = false;
       }
     });

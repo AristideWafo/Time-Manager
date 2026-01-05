@@ -20,7 +20,7 @@ describe('ApiService', () => {
     });
 
     afterEach(() => {
-        httpMock.verify(); // vérifie qu’aucune requête n’est oubliée
+        httpMock.verify();
     });
 
     /* ===================== AUTH ===================== */
@@ -84,21 +84,15 @@ describe('ApiService', () => {
 
     /* ===================== MANAGER ===================== */
 
-    it('should throw error if Team is missing in localStorage', () => {
-        spyOn(localStorage, 'getItem').and.returnValue(null);
+    it('should call GET /api/manager/team/users/{name} with Authorization header', () => {
+        const teamName = 'DEV';
+        localStorage.setItem('token', 'fake-token');
 
-        expect(() => service.getManagerTeamUsers()).toThrowError(
-            'Team introuvable'
-        );
-    });
+        service.getManagerTeamUsersByName(teamName).subscribe();
 
-    it('should call GET /api/manager/team/users/{team}', () => {
-        spyOn(localStorage, 'getItem').and.returnValue('DEV');
-
-        service.getManagerTeamUsers().subscribe();
-
-        const req = httpMock.expectOne('/api/manager/team/users/DEV');
+        const req = httpMock.expectOne(`/api/manager/team/users/${teamName}`);
         expect(req.request.method).toBe('GET');
+        expect(req.request.headers.get('Authorization')).toBe('Bearer fake-token');
 
         req.flush([]);
     });

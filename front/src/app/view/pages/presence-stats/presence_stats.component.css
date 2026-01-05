@@ -1,5 +1,5 @@
 .stats-container {
-    max-width: 800px;
+    max-width: 900px;
     margin: 30px auto;
     padding: 20px;
     font-family: 'Inter', sans-serif;
@@ -8,10 +8,98 @@
     box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
 }
 
-h1 {
+h1,
+h2 {
     text-align: center;
-    margin-bottom: 20px;
 }
+
+/* ===== KPI ===== */
+
+.kpi-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 16px;
+    margin: 20px 0;
+}
+
+.kpi-card {
+    background: #fafafa;
+    border-radius: 12px;
+    padding: 16px;
+    text-align: center;
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
+    transition: transform 0.2s ease;
+}
+
+.kpi-card:hover {
+    transform: translateY(-4px);
+}
+
+.kpi-title {
+    font-size: 0.9rem;
+    color: #666;
+}
+
+.kpi-value {
+    font-size: 1.8rem;
+    font-weight: bold;
+    margin: 6px 0;
+    color: #3f51b5;
+}
+
+.kpi-sub {
+    font-size: 0.8rem;
+    color: #999;
+}
+
+.kpi-card.low .kpi-value {
+    color: #e53935;
+}
+
+.kpi-card.medium .kpi-value {
+    color: #fb8c00;
+}
+
+.kpi-card.high .kpi-value {
+    color: #43a047;
+}
+
+/* ===== EXPORT ===== */
+
+.export-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    margin-bottom: 16px;
+}
+
+.export-btn {
+    background-color: #3f51b5;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    padding: 8px 16px;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+.export-btn.csv {
+    background-color: #2e7d32;
+}
+
+.export-btn:hover {
+    filter: brightness(1.1);
+}
+
+/* ===== CHART ===== */
+
+.chart-wrapper {
+    width: 100%;
+    height: 400px;
+    margin-top: 16px;
+}
+
+/* ===== TABLE ===== */
 
 table {
     width: 100%;
@@ -23,45 +111,8 @@ th,
 td {
     padding: 10px;
     border: 1px solid #ddd;
-    text-align: left;
 }
 
 th {
     background-color: #f1f1f1;
-}
-
-.export-btn {
-    background-color: #3f51b5;
-    color: white;
-    border: none;
-    border-radius: 8px;
-    padding: 8px 16px;
-    cursor: pointer;
-    margin-bottom: 16px;
-    font-weight: bold;
-}
-
-.export-btn:hover {
-    background-color: #5c6bc0;
-}
-
-.export-buttons {
-    display: flex;
-    gap: 10px;
-    justify-content: center;
-    margin-bottom: 16px;
-}
-
-.export-btn.csv {
-    background-color: #2e7d32;
-}
-
-.export-btn:hover {
-    filter: brightness(1.1);
-}
-
-.chart-wrapper {
-    width: 100%;
-    height: 400px;
-    position: relative;
 }
