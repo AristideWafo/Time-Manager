@@ -1,7 +1,4 @@
-import {
-  Component,
-  OnInit
-} from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ApiService } from '../../../services/api.service';
 import jsPDF from 'jspdf';
@@ -50,6 +47,19 @@ interface Presence {
           <div class="kpi-sub">productivité</div>
         </div>
 
+        <!-- Nouveau KPI : Aujourd'hui -->
+        <div class="kpi-card neutral">
+          <div class="kpi-title">🕒 Aujourd'hui</div>
+          <div class="kpi-value">{{ formatHours(todayWorkedHours) }}</div>
+          <div class="kpi-sub">heures travaillées</div>
+        </div>
+
+        <div class="kpi-card neutral">
+          <div class="kpi-title">⏳ Restant</div>
+          <div class="kpi-value">{{ formatHours(todayRemainingHours) }}</div>
+          <div class="kpi-sub">pour 8 h</div>
+        </div>
+
       </div>
 
       <!-- Export -->
@@ -92,7 +102,11 @@ export class PresenceStatsComponent implements OnInit {
   totalDays = 0;
   averageHoursPerDay = 0;
 
+  todayWorkedHours = 0;
+  todayRemainingHours = 0;
+
   private presenceByDay: { [key: string]: Presence[] } = {};
+  readonly goalHoursPerDay = 8;
 
   constructor(private api: ApiService) { }
 
@@ -120,6 +134,7 @@ export class PresenceStatsComponent implements OnInit {
     this.presenceByDay = {};
     const MS_PER_HOUR = 3600000;
 
+    // Regrouper par jour
     this.presences.forEach(p => {
       const day = new Date(p.Timestamp).toISOString().slice(0, 10);
       if (!this.presenceByDay[day]) this.presenceByDay[day] = [];
@@ -132,23 +147,30 @@ export class PresenceStatsComponent implements OnInit {
     for (const day in this.presenceByDay) {
       const sorted = this.presenceByDay[day].sort(
         (a, b) =>
-          new Date(a.Timestamp).getTime() -
-          new Date(b.Timestamp).getTime()
+          new Date(a.Timestamp).getTime() - new Date(b.Timestamp).getTime()
       );
 
+      let dayHours = 0;
       for (let i = 0; i < sorted.length - 1; i += 2) {
-        totalHours +=
+        dayHours +=
           (new Date(sorted[i + 1].Timestamp).getTime() -
             new Date(sorted[i].Timestamp).getTime()) / MS_PER_HOUR;
       }
 
+      totalHours += dayHours;
       daysCount++;
+
+      // Si c'est aujourd'hui
+      const today = new Date().toISOString().slice(0, 10);
+      if (day === today) {
+        this.todayWorkedHours = dayHours;
+        this.todayRemainingHours = Math.max(this.goalHoursPerDay - dayHours, 0);
+      }
     }
 
     this.totalWorkHours = totalHours;
     this.totalDays = daysCount;
-    this.averageHoursPerDay =
-      daysCount > 0 ? totalHours / daysCount : 0;
+    this.averageHoursPerDay = daysCount > 0 ? totalHours / daysCount : 0;
   }
 
   formatHours(hours: number): string {
@@ -166,9 +188,11 @@ export class PresenceStatsComponent implements OnInit {
     doc.text(`Heures totales : ${this.formatHours(this.totalWorkHours)}`, 14, 35);
     doc.text(`Jours travaillés : ${this.totalDays}`, 14, 42);
     doc.text(`Moyenne / jour : ${this.formatHours(this.averageHoursPerDay)}`, 14, 49);
+    doc.text(`Aujourd'hui : ${this.formatHours(this.todayWorkedHours)}`, 14, 56);
+    doc.text(`Restant pour 8h : ${this.formatHours(this.todayRemainingHours)}`, 14, 63);
 
     autoTable(doc, {
-      startY: 60,
+      startY: 75,
       head: [['Type', 'Date', 'Heure']],
       body: this.presences.map(p => [
         p.Type,

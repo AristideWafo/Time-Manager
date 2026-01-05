@@ -6,7 +6,7 @@ import { FormsModule } from '@angular/forms';
 interface Team {
   _id: string;
   Name: string;
-  NameBeforeEdit?: string; // 🔹 utile pour update
+  NameBeforeEdit?: string;
 }
 
 @Component({
