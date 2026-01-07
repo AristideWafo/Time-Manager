@@ -46,6 +46,13 @@ export class ApiService {
         return this.http.put(`${this.baseUrl}/admin/update/team/user/${id}`, data);
     }
 
+    deleteUser(id: string): Observable<any> {
+        return this.http.delete(
+            `${this.baseUrl}/admin/user/delete/${id}`
+        );
+    }
+
+
     /* ===================== ADMIN - TEAMS ===================== */
 
     getAllTeams(): Observable<any[]> {
