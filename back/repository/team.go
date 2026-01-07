@@ -30,6 +30,5 @@ func DeleteOneTeam(team *model.Team) error {
 		return err
 	}
 
-	return UpdateManyUsers(bson.D{{Key: "Team", Value: team.ID}}, bson.D{{Key: "Team", Value: ""}})
-
+	return nil
 }

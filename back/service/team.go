@@ -58,3 +58,26 @@ func GetTeamUsers(_id bson.ObjectID) ([]*model.User, error) {
 
 	return list_users, err
 }
+
+func DeleteTeamById(_id bson.ObjectID) error {
+
+	team, err := GetTeamById(_id)
+
+	if err != nil {
+		return err
+	}
+
+	err = repository.DeleteOneTeam(team)
+
+	if err != nil {
+		return err
+	}
+
+	err = repository.UpdateManyUsers(bson.D{{Key: "Team", Value: team.ID}}, bson.D{{Key: "Team", Value: ""}})
+
+	if err != nil && err.Error() != "mongo: no documents in result" {
+		return err
+	}
+
+	return nil
+}

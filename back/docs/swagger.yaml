@@ -256,6 +256,35 @@ paths:
       summary: Create a single new team
       tags:
       - Admin
+  /api/admin/team/delete/{id}:
+    delete:
+      description: Delete a single team
+      parameters:
+      - description: Team id
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: OK
+          schema:
+            type: string
+        "400":
+          description: Invalid input
+          schema:
+            type: string
+        "500":
+          description: Internal server error
+          schema:
+            type: string
+      security:
+      - ApiKeyAuth: []
+      summary: Delete a single team by id
+      tags:
+      - Admin
   /api/admin/team/update:
     put:
       consumes:
@@ -411,6 +440,35 @@ paths:
       summary: Create a single new user
       tags:
       - Admin
+  /api/admin/user/delete/{id}:
+    delete:
+      description: Delete a single user
+      parameters:
+      - description: User id
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: OK
+          schema:
+            type: string
+        "400":
+          description: Invalid input
+          schema:
+            type: string
+        "500":
+          description: Internal server error
+          schema:
+            type: string
+      security:
+      - ApiKeyAuth: []
+      summary: Delete a single user by id
+      tags:
+      - Admin
   /api/authentification:
     post:
       consumes:
@@ -476,7 +534,7 @@ paths:
       summary: Get presences for a user
       tags:
       - Manager
-  /api/manager/team/users/{name}:
+  /api/manager/team/users:
     get:
       description: Return all users belonging to the team the manager manages (team
         is derived from the manager's token/claim)
