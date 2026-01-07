@@ -66,23 +66,18 @@ export class ApiService {
 
     /* ===================== MANAGER ===================== */
 
-    getManagerTeamUsersByName(name: string): Observable<any[]> {
-        const token = localStorage.getItem('token');
-        const headers = new HttpHeaders({
-            'Authorization': `Bearer ${token}`
-        });
-
-        return this.http.get<any[]>(`${this.baseUrl}/manager/team/users/${name}`, { headers });
+    getManagerTeamUsers(): Observable<any[]> {
+        return this.http.get<any[]>(
+            `${this.baseUrl}/manager/team/users`
+        );
     }
 
     getUserPresencesForManager(id: string): Observable<any[]> {
-        const token = localStorage.getItem('token');
-        const headers = new HttpHeaders({
-            'Authorization': `Bearer ${token}`
-        });
-
-        return this.http.get<any[]>(`${this.baseUrl}/manager/team/user/presence/${id}`, { headers });
+        return this.http.get<any[]>(
+            `${this.baseUrl}/manager/team/user/presence/${id}`
+        );
     }
+
 
     /* ===================== PRESENCE ===================== */
 
