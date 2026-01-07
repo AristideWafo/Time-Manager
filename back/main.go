@@ -1,10 +1,10 @@
 package main
 
 import (
-	"TimeManager/middleware"
 	"TimeManager/repository"
 	"TimeManager/route/admin"
 	"TimeManager/route/authentification"
+	"TimeManager/route/manager"
 	"TimeManager/route/public/presence"
 	teams "TimeManager/route/public/team"
 	users "TimeManager/route/public/user"
@@ -43,13 +43,13 @@ func main() {
 	repository.DBConnect()
 
 	router := gin.Default()
-	router.Use(middleware.AuthMiddleware())
 
 	authentification.RegisterAuthentificationRoutes(router)
 	users.RegisterUserRoutes(router)
 	teams.RegisterTeamRoutes(router)
 	presence.RegisterPresenceRoutes(router)
 	admin.RegisterAdminRoutes(router)
+	manager.RegisterManagerRoutes(router)
 
 	router.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 

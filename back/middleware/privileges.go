@@ -9,44 +9,29 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func BasePrivilegesMiddleWare(context *gin.Context, privileges []string, concerned_routes []string) {
-
-	unverified := true
-
-	for _, route := range concerned_routes {
-		if context.FullPath() == route {
-			unverified = false
-			break
-		}
-	}
-
-	if unverified {
-		context.Next()
-		return
-	}
+func BasePrivilegesMiddleWare(context *gin.Context, privileges []string) bool {
 
 	claims, ok := context.Get("claims")
 
 	if !ok {
 		err := errors.New("ERROR WHEN GETTING CLAIMS")
-		err = context.AbortWithError(http.StatusInternalServerError, err)
-		context.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-		return
+		err = context.AbortWithError(http.StatusBadRequest, err)
+		context.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return false
 	}
 
 	asserted_claims, ok := claims.(service.TokenClaims)
 
 	if !ok {
 		err := errors.New("ERROR WHEN GETTING CLAIMS")
-		err = context.AbortWithError(http.StatusInternalServerError, err)
-		context.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-		return
+		err = context.AbortWithError(http.StatusBadRequest, err)
+		context.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return false
 	}
 
 	for _, privilege := range privileges {
 		if asserted_claims.Audience[0] == privilege {
-			context.Next()
-			return
+			return true
 		}
 	}
 
@@ -55,18 +40,24 @@ func BasePrivilegesMiddleWare(context *gin.Context, privileges []string, concern
 	err = context.AbortWithError(http.StatusBadRequest, err)
 	context.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 
+	return false
+
 }
 
 func ManagerMiddleware() gin.HandlerFunc {
 	return func(context *gin.Context) {
-		concerned_routes := []string{"/api/team/users/:name"}
-		BasePrivilegesMiddleWare(context, []string{"MANAGER", "ADMIN"}, concerned_routes)
+		if !BasePrivilegesMiddleWare(context, []string{"MANAGER", "ADMIN"}) {
+			return
+		}
+		context.Next()
 	}
 }
 
 func AdminMiddleware() gin.HandlerFunc {
 	return func(context *gin.Context) {
-		concerned_routes := []string{"/api/user/create"}
-		BasePrivilegesMiddleWare(context, []string{"ADMIN"}, concerned_routes)
+		if !BasePrivilegesMiddleWare(context, []string{"ADMIN"}) {
+			return
+		}
+		context.Next()
 	}
 }

@@ -235,3 +235,35 @@ func GetAllUsers(context *gin.Context) {
 	context.JSON(http.StatusOK, gin.H{"users": all_users_output})
 
 }
+
+// DeleteUserById godoc
+// @Summary     Delete a single user by id
+// @Description Delete a single user
+// @Tags        Admin
+// @Produce     json
+// @Param       id   path     string            true  "User id"
+// @Success 204 {string}  "OK"
+// @Failure     400  {string} string "Invalid input"
+// @Failure     500  {string} string "Internal server error"
+// @Router      /api/admin/user/delete/{id} [delete]
+// @Security ApiKeyAuth
+func DeleteUserById(context *gin.Context) {
+
+	id, err := bson.ObjectIDFromHex(context.Param("id"))
+
+	if err != nil {
+		err = context.AbortWithError(http.StatusBadRequest, err)
+		context.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	err = service.DeleteUserById(id)
+	print(err)
+	if err != nil {
+		err = context.AbortWithError(http.StatusInternalServerError, err)
+		context.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	context.Status(http.StatusNoContent)
+}

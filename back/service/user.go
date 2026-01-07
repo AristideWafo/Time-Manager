@@ -115,3 +115,20 @@ func UpdateUserByID(_id bson.ObjectID, update bson.D) (*model.User, error) {
 
 	return user, repository.UpdateOneUser(user, update)
 }
+
+func DeleteUserById(_id bson.ObjectID) error {
+
+	user, err := GetUserByID(_id)
+
+	if err != nil {
+		return err
+	}
+
+	err = repository.DeleteOneUser(user)
+
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
