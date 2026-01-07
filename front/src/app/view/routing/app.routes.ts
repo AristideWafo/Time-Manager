@@ -14,6 +14,8 @@ import { AdminHomeComponent } from '../pages/home/admin-home.component';
 
 import { UsersComponent } from '../pages/gestion-user/users.component';
 
+import { EmployeePresenceComponent } from '../pages/presence-stats/manager_check_presence.component';
+
 export const routes: Routes = [
     { path: '', redirectTo: 'login', pathMatch: 'full' },
 
@@ -40,6 +42,14 @@ export const routes: Routes = [
                 .then(m => m.ManagerTeamComponent),
         canActivate: [authGuard, roleGuard('MANAGER')]
     },
+
+
+    {
+        path: 'manager/team/user/:id', component: EmployeePresenceComponent
+
+    },
+
+
 
 
     // ADMIN
