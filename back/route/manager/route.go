@@ -14,11 +14,11 @@ import (
 	"go.mongodb.org/mongo-driver/v2/bson"
 )
 
-func RegisterAdminRoutes(router *gin.Engine) {
-	manager := router.Group("/api/manager").Use(middleware.ManagerMiddleware())
+func RegisterManagerRoutes(router *gin.Engine) {
+	manager := router.Group("/api/manager").Use(middleware.AuthMiddleware(), middleware.ManagerMiddleware())
 	{
 
-		manager.GET("/team/users/:name", GetAllUsersFromTeam)
+		manager.GET("/team/users", GetAllUsersFromTeam)
 		manager.GET("/team/user/presence/:id", GetUserPresences)
 	}
 }
@@ -33,7 +33,7 @@ func RegisterAdminRoutes(router *gin.Engine) {
 // @Failure     400  {string}  string  "Invalid input"
 // @Failure     404  {string}  string  "Not found"
 // @Failure     500  {string}  string  "Internal server error"
-// @Router      /api/manager/team/users/{name} [get]
+// @Router      /api/manager/team/users [get]
 // @Security ApiKeyAuth
 func GetAllUsersFromTeam(context *gin.Context) {
 

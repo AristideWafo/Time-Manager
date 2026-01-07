@@ -1,6 +1,7 @@
 package presence
 
 import (
+	"TimeManager/middleware"
 	"TimeManager/model"
 	"TimeManager/service"
 	"net/http"
@@ -10,7 +11,7 @@ import (
 )
 
 func RegisterPresenceRoutes(router *gin.Engine) {
-	user := router.Group("/api/presence")
+	user := router.Group("/api/presence").Use(middleware.AuthMiddleware())
 	{
 		user.GET("", GetAllPresences)
 		user.POST("/create", CreatePresence)

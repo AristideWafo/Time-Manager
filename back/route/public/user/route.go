@@ -12,7 +12,7 @@ import (
 )
 
 func RegisterUserRoutes(router *gin.Engine) {
-	user := router.Group("/api/user").Use(middleware.AdminMiddleware())
+	user := router.Group("/api/user").Use(middleware.AuthMiddleware(), middleware.AdminMiddleware())
 	{
 		user.GET("", FetchUser)
 		user.POST("/update", UpdateUser)
