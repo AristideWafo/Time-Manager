@@ -71,6 +71,11 @@ export class ApiService {
         return this.http.get<any[]>(`${this.baseUrl}/admin/team/users/${name}`);
     }
 
+    deleteTeam(teamId: string): Observable<any> {
+        return this.http.delete(`${this.baseUrl}/admin/team/delete/${teamId}`);
+    }
+
+
     /* ===================== MANAGER ===================== */
 
     getManagerTeamUsers(): Observable<any[]> {
