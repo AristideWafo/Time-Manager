@@ -12,7 +12,7 @@ import (
 )
 
 func RegisterTeamRoutes(router *gin.Engine) {
-	team := router.Group("/api/team").Use(middleware.AuthMiddleware(), middleware.ManagerMiddleware())
+	team := router.Group("/api/team").Use(middleware.AuthMiddleware())
 	{
 		team.GET("/:name", FetchTeam)
 	}
