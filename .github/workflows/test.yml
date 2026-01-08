@@ -16,14 +16,6 @@ permissions:
   contents: read
 
 jobs:
-  test:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v5
-      # - name: Test app
-      #   run: echo "Testing for ${{ vars.GO_VERSION }} and ${{ vars.NODE_VERSION }}"
-
   go-lint:
     if: inputs.test-backend == true
     name: go-lint
@@ -61,6 +53,34 @@ jobs:
       - name: Run golangci-lint
         working-directory: ${{ vars.BACK_REPOSITORY }}
         run: golangci-lint run --timeout=5m
+
+  go-test:
+    if: inputs.test-backend == true
+    name: go-test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: Setup Go
+        uses: actions/setup-go@v6
+        with:
+          go-version: ${{ vars.GO_VERSION }}
+          cache: true
+          cache-dependency-path: ${{ vars.BACK_REPOSITORY }}/go.sum
+
+      - name: Ensure Go dependencies
+        working-directory: ${{ vars.BACK_REPOSITORY }}
+        run: go mod tidy
+
+      - name: Run tests
+        working-directory: ${{ vars.BACK_REPOSITORY }}
+        run: go test $(go list ./... | grep -v /repository) -v -coverprofile=coverage.out
+
+      - name: Upload test coverage
+        uses: actions/upload-artifact@v3
+        with:
+          name: backend-coverage-report
+          path: ${{ vars.BACK_REPOSITORY }}/coverage.out
 
   angular-lint:
     if: inputs.test-frontend == true
