@@ -1,50 +1,109 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { Observable } from 'rxjs';
 
 @Injectable({ providedIn: 'root' })
 export class ApiService {
+
     private baseUrl = '/api';
 
     constructor(private http: HttpClient) { }
 
-    // Authentification
-    login(credentials: { Email: string; Password: string }) {
-        return this.http.post<{ token: string }>(
-            `${this.baseUrl}/authentification`, credentials
+    /* ===================== AUTH ===================== */
+
+    login(credentials: { Email: string; Password: string }): Observable<any> {
+        return this.http.post(
+            `${this.baseUrl}/authentification`,
+            credentials
         );
     }
 
-    // Utilisateur connecté via token
-    getUser() {
-        return this.http.get<any>(`${this.baseUrl}/user`);
+    /* ===================== USER ===================== */
+
+    getUser(): Observable<any> {
+        return this.http.get(`${this.baseUrl}/user`);
     }
 
-    updateUser(data: any) {
+    updateUser(data: any): Observable<any> {
         return this.http.post(`${this.baseUrl}/user/update`, data);
     }
 
-    deleteUser() {
-        return this.http.delete(`${this.baseUrl}/user`);
+    /* ===================== ADMIN - USERS ===================== */
+
+    getAllUsers(): Observable<any[]> {
+        return this.http.get<any[]>(`${this.baseUrl}/admin/all/user`);
     }
 
-    // Équipes
-    getAllTeams() {
-        return this.http.get<any[]>(`${this.baseUrl}/team`);
+    createUser(data: any): Observable<any> {
+        return this.http.post(`${this.baseUrl}/admin/user/create`, data);
     }
 
-    createTeam(data: any) {
-        return this.http.post(`${this.baseUrl}/team`, data);
+    getUserById(id: string): Observable<any> {
+        return this.http.get(`${this.baseUrl}/admin/${id}`);
     }
 
-    updateTeam(id: string, data: any) {
-        return this.http.put(`${this.baseUrl}/team/${id}`, data);
+    updateUserTeam(id: string, data: any): Observable<any> {
+        return this.http.put(`${this.baseUrl}/admin/update/team/user/${id}`, data);
     }
 
-    deleteTeam(id: string) {
-        return this.http.delete(`${this.baseUrl}/team/${id}`);
+    deleteUser(id: string): Observable<any> {
+        return this.http.delete(
+            `${this.baseUrl}/admin/user/delete/${id}`
+        );
     }
 
-    postPresence(data: { Type: string; Timestamp: string }) {
+
+    /* ===================== ADMIN - TEAMS ===================== */
+
+    getAllTeams(): Observable<any[]> {
+        return this.http.get<any[]>(`${this.baseUrl}/admin/all/team`);
+    }
+
+    createTeam(data: any): Observable<any> {
+        return this.http.post(`${this.baseUrl}/admin/team/create`, data);
+    }
+
+    updateTeam(data: any): Observable<any> {
+        return this.http.put(`${this.baseUrl}/admin/team/update`, data);
+    }
+
+    getTeamUsers(name: string): Observable<any[]> {
+        return this.http.get<any[]>(`${this.baseUrl}/admin/team/users/${name}`);
+    }
+
+    deleteTeam(teamId: string): Observable<any> {
+        return this.http.delete(`${this.baseUrl}/admin/team/delete/${teamId}`);
+    }
+
+
+    /* ===================== MANAGER ===================== */
+
+    getManagerTeamUsers(): Observable<any[]> {
+        return this.http.get<any[]>(
+            `${this.baseUrl}/manager/team/users`
+        );
+    }
+
+    getUserPresencesForManager(id: string): Observable<any[]> {
+        return this.http.get<any[]>(
+            `${this.baseUrl}/manager/team/user/presence/${id}`
+        );
+    }
+
+
+    /* ===================== PRESENCE ===================== */
+
+    getPresence(): Observable<any[]> {
+        return this.http.get<any[]>(`${this.baseUrl}/presence`);
+    }
+
+    postPresence(data: { Type: string; Timestamp: string }): Observable<any> {
         return this.http.post(`${this.baseUrl}/presence/create`, data);
+    }
+
+    /* ===================== TEAM ===================== */
+
+    getTeam(): Observable<any> {
+        return this.http.get(`${this.baseUrl}/team/name`);
     }
 }

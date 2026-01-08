@@ -1,136 +1,193 @@
-/* --- Conteneur principal --- */
-.teams {
-    background: #ffffff;
-    border-radius: 16px;
-    padding: 30px 35px;
-    max-width: 520px;
-    margin: 40px auto;
-    font-family: 'Inter', 'Segoe UI', Roboto, sans-serif;
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
-    border: 1px solid rgba(0, 0, 0, 0.05);
-    transition: box-shadow 0.3s ease, transform 0.25s ease;
+/* --- Page Teams --- */
+.teams-page {
+    max-width: 700px;
+    margin: 0 auto;
+    padding: 32px;
+    font-family: 'Inter', sans-serif;
+    color: #0f172a;
 }
 
-.teams:hover {
-    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.1);
-    transform: translateY(-3px);
-}
-
-/* --- Titre --- */
-.teams h2 {
+/* --- Titre principal --- */
+.teams-page h1 {
+    font-size: 2rem;
     text-align: center;
-    font-size: 1.6rem;
     font-weight: 600;
-    color: #0a2540;
-    margin-bottom: 25px;
+    margin-bottom: 32px;
 }
 
-/* --- Formulaire d’ajout d’équipe --- */
-.team-form {
+/* --- Messages --- */
+.success {
+    text-align: center;
+    background-color: #d1fae5;
+    color: #065f46;
+    padding: 10px 16px;
+    border-radius: 12px;
+    margin-bottom: 16px;
+}
+
+.error {
+    text-align: center;
+    background-color: #fee2e2;
+    color: #991b1b;
+    padding: 10px 16px;
+    border-radius: 12px;
+    margin-bottom: 16px;
+}
+
+/* --- Section création de team --- */
+.create-team {
     display: flex;
-    justify-content: center;
-    flex-wrap: wrap;
-    gap: 10px;
-    margin-bottom: 25px;
+    flex-direction: column;
+    gap: 12px;
+    margin-bottom: 24px;
+    padding: 16px;
+    background: #ffffff;
+    border-radius: 20px;
+    box-shadow: 0 8px 28px rgba(15, 23, 42, 0.08);
+    border: 1px solid rgba(15, 23, 42, 0.08);
 }
 
-.team-form input {
-    flex: 1;
-    min-width: 180px;
-    padding: 10px 12px;
-    border: 1px solid #d0d7de;
-    border-radius: 8px;
-    background-color: #f8f9fa;
+.create-team h3 {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: #0f172a;
+}
+
+.create-team input {
+    padding: 10px 14px;
+    border-radius: 12px;
+    border: 1px solid #cbd5e1;
+    font-size: 0.95rem;
+    outline: none;
+    transition: all 0.25s ease;
+    width: 100%;
+}
+
+.create-team input:focus {
+    border-color: #2563eb;
+    box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.25);
+}
+
+.create-team button {
+    padding: 10px 20px;
+    background: linear-gradient(135deg, #2563eb, #1e40af);
+    color: #fff;
+    border: none;
+    border-radius: 12px;
+    font-weight: 600;
+    cursor: pointer;
     font-size: 0.95rem;
     transition: all 0.25s ease;
+    box-shadow: 0 4px 12px rgba(37, 99, 235, 0.25);
 }
 
-.team-form input:focus {
-    background-color: #fff;
-    border-color: #007bff;
-    box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.15);
-    outline: none;
-}
-
-/* --- Bouton d’ajout --- */
-.team-form button {
-    padding: 10px 20px;
-    background: linear-gradient(135deg, #007bff, #0062cc);
-    color: #fff;
-    border: none;
-    border-radius: 8px;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.25s ease;
-    box-shadow: 0 4px 10px rgba(0, 123, 255, 0.25);
-}
-
-.team-form button:hover {
-    background: linear-gradient(135deg, #0069d9, #0056b3);
+.create-team button:hover {
+    background: linear-gradient(135deg, #1e40af, #1e3a8a);
     transform: translateY(-2px);
-    box-shadow: 0 6px 14px rgba(0, 123, 255, 0.3);
+    box-shadow: 0 6px 16px rgba(37, 99, 235, 0.3);
 }
 
-/* --- Liste des équipes --- */
-ul {
+/* --- Liste des teams --- */
+.teams-list {
+    margin-top: 24px;
+}
+
+.teams-list h3 {
+    font-size: 1.2rem;
+    font-weight: 600;
+    margin-bottom: 16px;
+}
+
+.teams-list ul {
     list-style: none;
     padding: 0;
-    margin: 0;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 20px;
 }
 
-li {
-    margin: 10px 0;
-    padding: 12px 15px;
-    background-color: #ffffff;
-    border: 1px solid #e9ecef;
-    border-radius: 10px;
+/* --- Carte team --- */
+.teams-list li {
     display: flex;
-    justify-content: space-between;
-    align-items: center;
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04);
+    flex-direction: column;
+    gap: 12px;
+    background: #ffffff;
+    border-radius: 20px;
+    padding: 20px;
+    box-shadow: 0 8px 28px rgba(15, 23, 42, 0.08);
+    border: 1px solid rgba(15, 23, 42, 0.08);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.teams-list li:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 16px 36px rgba(15, 23, 42, 0.12);
+}
+
+.teams-list li input {
+    padding: 10px 12px;
+    border-radius: 12px;
+    border: 1px solid #cbd5e1;
+    font-size: 0.95rem;
+    outline: none;
     transition: all 0.25s ease;
 }
 
-li:hover {
-    transform: translateX(5px);
-    background-color: #f8f9fa;
+.teams-list li input:focus {
+    border-color: #2563eb;
+    box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.25);
 }
 
-/* --- Boutons de suppression --- */
-li button {
-    padding: 6px 12px;
-    background: linear-gradient(135deg, #dc3545, #b02a37);
+.teams-list li button {
+    padding: 8px 16px;
+    background: linear-gradient(135deg, #2563eb, #1e40af);
     color: #fff;
     border: none;
-    border-radius: 6px;
+    border-radius: 12px;
     font-weight: 600;
     cursor: pointer;
+    font-size: 0.9rem;
     transition: all 0.25s ease;
+    box-shadow: 0 4px 12px rgba(37, 99, 235, 0.25);
 }
 
-li button:hover {
-    background: linear-gradient(135deg, #b02a37, #842029);
+.teams-list li button:hover {
+    background: linear-gradient(135deg, #1e40af, #1e3a8a);
     transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(37, 99, 235, 0.3);
 }
 
-/* --- Responsive --- */
-@media (max-width: 500px) {
-    .teams {
-        padding: 24px 20px;
-    }
+.teams-list li .team-id {
+    font-size: 0.85rem;
+    color: #64748b;
+    margin-top: 4px;
+}
 
-    .team-form {
-        flex-direction: column;
-        align-items: stretch;
-    }
+/* --- Bouton Supprimer --- */
+.teams-list li .delete-btn {
+    padding: 8px 16px;
+    background: linear-gradient(135deg, #dc2626, #991b1b);
+    /* Rouge dégradé */
+    color: #fff;
+    border: none;
+    border-radius: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    font-size: 0.9rem;
+    transition: all 0.25s ease;
+    box-shadow: 0 4px 12px rgba(220, 38, 38, 0.25);
+    /* ombre rouge */
+}
 
-    .team-form button {
-        width: 100%;
-    }
+.teams-list li .delete-btn:hover {
+    background: linear-gradient(135deg, #991b1b, #7f1d1d);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(220, 38, 38, 0.3);
+}
 
-    li {
-        flex-direction: column;
-        text-align: center;
-        gap: 8px;
+
+@media (max-width: 600px) {
+    .teams-list ul {
+        grid-template-columns: 1fr;
     }
 }
