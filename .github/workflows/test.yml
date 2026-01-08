@@ -66,6 +66,30 @@ jobs:
         working-directory: ${{ inputs.working-dir-back }}
         run: golangci-lint run --timeout=5m
 
+  go-test:
+    if: contains(github.ref_name, 'cicd') || contains(github.ref_name, 'back_')
+    name: go-test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: Setup Go
+        uses: actions/setup-go@v6
+        with:
+          go-version: ${{ inputs.go-version }}
+          cache: true
+          cache-dependency-path: ${{ inputs.working-dir-back }}/go.sum
+
+      - name: Run Go tests
+        working-directory: ${{ inputs.working-dir-back }}
+        run: go test $(go list ./... | grep -v /repository) -v -coverprofile=coverage.out
+      
+      - name: Upload Go test coverage
+        uses: actions/upload-artifact@v6
+        with:
+          name: go-coverage-report
+          path: coverage.out
+
   angular-lint:
     if: contains(github.ref_name, 'cicd') || contains(github.ref_name, 'front_')
     name: angular-lint
