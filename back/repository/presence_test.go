@@ -10,10 +10,18 @@ import (
 	"go.mongodb.org/mongo-driver/v2/bson"
 )
 
-func cleanupPresenceTest(_ *testing.T) {
+func cleanupPresenceTest(t *testing.T) {
 	if Client.Database != nil {
-		UserCollection().DeleteMany(context.TODO(), bson.D{})
-		PresenceCollection().DeleteMany(context.TODO(), bson.D{})
+		_, err := UserCollection().DeleteMany(context.TODO(), bson.D{})
+
+		if err != nil {
+			t.Fatalf("failed to cleanup test collection: %v", err)
+		}
+		_, err = PresenceCollection().DeleteMany(context.TODO(), bson.D{})
+
+		if err != nil {
+			t.Fatalf("failed to cleanup test collection: %v", err)
+		}
 	}
 }
 

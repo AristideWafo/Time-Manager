@@ -9,9 +9,12 @@ import (
 	"go.mongodb.org/mongo-driver/v2/bson"
 )
 
-func cleanupTeamTest(_ *testing.T) {
+func cleanupTeamTest(t *testing.T) {
 	if Client.Database != nil {
-		TeamCollection().DeleteMany(context.TODO(), bson.D{})
+		_, err := TeamCollection().DeleteMany(context.TODO(), bson.D{})
+		if err != nil {
+			t.Fatalf("failed to cleanup test collection: %v", err)
+		}
 	}
 }
 
