@@ -179,7 +179,7 @@ func TestGetOne_DocumentExists(t *testing.T) {
 	}
 
 	if retrieved.FirstName != "Doctor" {
-		t.Fatalf("expected retrieved FirstName to be John, got %s", retrieved.FirstName)
+		t.Fatalf("expected retrieved FirstName to be Doctor, got %s", retrieved.FirstName)
 	}
 }
 
