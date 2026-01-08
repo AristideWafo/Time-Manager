@@ -2,15 +2,33 @@ name: "CodeQL Analysis"
 
 on:
   push:
-    branches: [ "dev" ] 
+    branches: ["dev"]
   schedule:
-    - cron: '24 3 * * 0'
-  
+    - cron: "24 3 * * 0"
+
 jobs:
+  detect-changes:
+    name: Detect Changes
+    runs-on: ubuntu-latest
+    outputs:
+      backend: ${{ steps.changes.outputs.backend }}
+      frontend: ${{ steps.changes.outputs.frontend }}
+    steps:
+      - uses: actions/checkout@v5
+      - uses: dorny/paths-filter@v3
+        id: changes
+        with:
+          filters: |
+            backend:
+              - 'back/**'
+            frontend:
+              - 'front/**'
+
   analyze:
     name: Analyze (${{ matrix.language }})
     runs-on: ${{ (matrix.language == 'swift' && 'macos-latest') || 'ubuntu-latest' }}
     timeout-minutes: ${{ (matrix.language == 'swift' && 120) || 360 }}
+    needs: detect-changes
     permissions:
       security-events: write
       actions: read
@@ -19,7 +37,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        language: ['go', 'javascript-typescript']
+        language: ["go", "javascript-typescript"]
         # Définir des configurations spécifiques par langage
         include:
           - language: go
@@ -28,93 +46,93 @@ jobs:
             build-mode: none
 
     steps:
-    - name: Checkout repository
-      uses: actions/checkout@v4
+      - name: Checkout repository
+        uses: actions/checkout@v4
 
-    # Cache setup for Go
-    - name: Setup Go with cache
-      if: matrix.language == 'go' && (contains(github.ref_name, 'cicd') || contains(github.ref_name, 'back_'))
-      uses: actions/setup-go@v5
-      with:
-        go-version: ${{ vars.GO_VERSION }}
-        cache: true
-        cache-dependency-path: ${{ vars.BACK_REPOSITORY }}/go.sum
+      # Cache setup for Go
+      - name: Setup Go with cache
+        if: matrix.language == 'go' && needs.detect-changes.outputs.backend == 'true'
+        uses: actions/setup-go@v5
+        with:
+          go-version: ${{ vars.GO_VERSION }}
+          cache: true
+          cache-dependency-path: ${{ vars.BACK_REPOSITORY }}/go.sum
 
-    - name: Cache Go modules and build
-      if: matrix.language == 'go' && (contains(github.ref_name, 'cicd') || contains(github.ref_name, 'back_'))
-      uses: actions/cache@v4
-      with:
-        path: |
-          ~/.cache/go-build
-          ${{ vars.BACK_REPOSITORY }}/vendor
-        key: ${{ runner.os }}-go-codeql-${{ vars.GO_VERSION }}-${{ hashFiles('back/go.sum') }}
-        restore-keys: |
-          ${{ runner.os }}-go-codeql-${{ vars.GO_VERSION }}-
-          ${{ runner.os }}-go-codeql-
+      - name: Cache Go modules and build
+        if: matrix.language == 'go' && needs.detect-changes.outputs.backend == 'true'
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cache/go-build
+            ${{ vars.BACK_REPOSITORY }}/vendor
+          key: ${{ runner.os }}-go-codeql-${{ vars.GO_VERSION }}-${{ hashFiles('back/go.sum') }}
+          restore-keys: |
+            ${{ runner.os }}-go-codeql-${{ vars.GO_VERSION }}-
+            ${{ runner.os }}-go-codeql-
 
-    # Cache setup for Node.js
-    - name: Setup Node.js with cache
-      if: matrix.language == 'javascript-typescript' && (contains(github.ref_name, 'cicd') || contains(github.ref_name, 'front_'))
-      uses: actions/setup-node@v4
-      with:
-        node-version: ${{ vars.NODE_VERSION }}
-        cache: 'npm'
-        cache-dependency-path: ${{ vars.FRONT_REPOSITORY }}/package-lock.json
+      # Cache setup for Node.js
+      - name: Setup Node.js with cache
+        if: matrix.language == 'javascript-typescript' && needs.detect-changes.outputs.frontend == 'true'
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ vars.NODE_VERSION }}
+          cache: "npm"
+          cache-dependency-path: ${{ vars.FRONT_REPOSITORY }}/package-lock.json
 
-    - name: Cache node modules
-      if: matrix.language == 'javascript-typescript' && (contains(github.ref_name, 'cicd') || contains(github.ref_name, 'front_'))
-      uses: actions/cache@v4
-      with:
-        path: |
-          ${{ vars.FRONT_REPOSITORY }}/node_modules
-          ~/.npm
-        key: ${{ runner.os }}-node-codeql-${{ vars.NODE_VERSION }}-${{ hashFiles('front/package-lock.json') }}
-        restore-keys: |
-          ${{ runner.os }}-node-codeql-${{ vars.NODE_VERSION }}-
-          ${{ runner.os }}-node-codeql-
+      - name: Cache node modules
+        if: matrix.language == 'javascript-typescript' && needs.detect-changes.outputs.frontend == 'true'
+        uses: actions/cache@v4
+        with:
+          path: |
+            ${{ vars.FRONT_REPOSITORY }}/node_modules
+            ~/.npm
+          key: ${{ runner.os }}-node-codeql-${{ vars.NODE_VERSION }}-${{ hashFiles('front/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-node-codeql-${{ vars.NODE_VERSION }}-
+            ${{ runner.os }}-node-codeql-
 
-    - name: Cache Angular build
-      if: matrix.language == 'javascript-typescript' && (contains(github.ref_name, 'cicd') || contains(github.ref_name, 'front_'))
-      uses: actions/cache@v4
-      with:
-        path: |
-          ${{ vars.FRONT_REPOSITORY }}/.angular/cache
-          ${{ vars.FRONT_REPOSITORY }}/dist
-        key: ${{ runner.os }}-angular-codeql-${{ hashFiles('front/src/**/*.ts', 'front/angular.json') }}
-        restore-keys: |
-          ${{ runner.os }}-angular-codeql-
+      - name: Cache Angular build
+        if: matrix.language == 'javascript-typescript' && needs.detect-changes.outputs.frontend == 'true'
+        uses: actions/cache@v4
+        with:
+          path: |
+            ${{ vars.FRONT_REPOSITORY }}/.angular/cache
+            ${{ vars.FRONT_REPOSITORY }}/dist
+          key: ${{ runner.os }}-angular-codeql-${{ hashFiles('front/src/**/*.ts', 'front/angular.json') }}
+          restore-keys: |
+            ${{ runner.os }}-angular-codeql-
 
-    - name: Initialize CodeQL
-      uses: github/codeql-action/init@v3
-      with:
-        languages: ${{ matrix.language }}
-        config-file: ./.github/codeql-config.yml
+      - name: Initialize CodeQL
+        uses: github/codeql-action/init@v3
+        with:
+          languages: ${{ matrix.language }}
+          config-file: ./.github/codeql-config.yml
 
-    - name: Build Go
-      if: matrix.language == 'go' && (contains(github.ref_name, 'cicd') || contains(github.ref_name, 'back_'))
-      working-directory: ${{ vars.BACK_REPOSITORY }}
-      run: |
-        go mod download
-        go mod tidy
-        go build -v -ldflags="-s -w" ./...
+      - name: Build Go
+        if: matrix.language == 'go' && needs.detect-changes.outputs.backend == 'true'
+        working-directory: ${{ vars.BACK_REPOSITORY }}
+        run: |
+          go mod download
+          go mod tidy
+          go build -v -ldflags="-s -w" ./...
 
-    - name: Build JS/TS  
-      if: matrix.language == 'javascript-typescript' && (contains(github.ref_name, 'cicd') || contains(github.ref_name, 'front_'))
-      working-directory: ${{ vars.FRONT_REPOSITORY }}
-      run: |
-        npm ci --prefer-offline --no-audit --no-fund --silent
-        npm run build --if-present -- --source-map=false --optimization=false || echo "Build completed with warnings"
+      - name: Build JS/TS
+        if: matrix.language == 'javascript-typescript' && (contains(github.ref_name, 'cicd') || contains(github.ref_name, 'front_'))
+        working-directory: ${{ vars.FRONT_REPOSITORY }}
+        run: |
+          npm ci --prefer-offline --no-audit --no-fund --silent
+          npm run build --if-present -- --source-map=false --optimization=false || echo "Build completed with warnings"
 
-    # Étape de nettoyage avant analyse pour optimiser les performances
-    - name: Cleanup before analysis
-      run: |
-        # Nettoyer les fichiers temporaires pour réduire la charge d'analyse
-        find . -name "*.log" -delete || true
-        find . -name "node_modules/.cache" -type d -exec rm -rf {} + || true
+      # Étape de nettoyage avant analyse pour optimiser les performances
+      - name: Cleanup before analysis
+        run: |
+          # Nettoyer les fichiers temporaires pour réduire la charge d'analyse
+          find . -name "*.log" -delete || true
+          find . -name "node_modules/.cache" -type d -exec rm -rf {} + || true
 
-    - name: Perform CodeQL Analysis
-      uses: github/codeql-action/analyze@v3
-      with:
-        category: "/language:${{matrix.language}}"
-        upload: true
-        cleanup-level: none
+      - name: Perform CodeQL Analysis
+        uses: github/codeql-action/analyze@v3
+        with:
+          category: "/language:${{matrix.language}}"
+          upload: true
+          cleanup-level: none
