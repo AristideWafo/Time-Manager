@@ -63,7 +63,7 @@ export class LoginComponent {
         localStorage.setItem('LastName', res.LastName);
         localStorage.setItem('Team', res.Team);
 
-        console.log("Utilisateur connecté :", res);
+        //console.log("Utilisateur connecté :", res);
 
 
         if (res.Role === 'ADMIN') {

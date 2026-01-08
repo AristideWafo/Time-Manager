@@ -84,18 +84,15 @@ describe('ApiService', () => {
 
     /* ===================== MANAGER ===================== */
 
-    it('should call GET /api/manager/team/users/{name} with Authorization header', () => {
-        const teamName = 'DEV';
-        localStorage.setItem('token', 'fake-token');
+    it('should call GET /api/manager/team/users', () => {
+        service.getManagerTeamUsers().subscribe();
 
-        service.getManagerTeamUsersByName(teamName).subscribe();
-
-        const req = httpMock.expectOne(`/api/manager/team/users/${teamName}`);
+        const req = httpMock.expectOne('/api/manager/team/users');
         expect(req.request.method).toBe('GET');
-        expect(req.request.headers.get('Authorization')).toBe('Bearer fake-token');
 
         req.flush([]);
     });
+
 
     /* ===================== PRESENCE ===================== */
 

@@ -8,7 +8,7 @@ import { RouterOutlet } from '@angular/router';
   <main>
     <header class="brand-name" style="display: flex; align-items: center; gap: 10px; margin-bottom: 20px;">
       <img class="brand-logo" src="assets/logo.svg" alt="logo" aria-hidden="true" style="height: 100px;">
-      <strong style="font-size: 1.5rem;">Manager Time</strong>
+      <strong style="font-size: 1.5rem;">Bienvenue</strong>
     </header>
 
     <section class="content" style="align-items: center; text-align: center;">

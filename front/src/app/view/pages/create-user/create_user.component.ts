@@ -109,12 +109,11 @@ export class CreateUserComponent implements OnInit {
     this.loadTeams();
   }
 
-  // 🔹 Récupération des teams existantes
   loadTeams(): void {
     this.apiService.getAllTeams().subscribe({
       next: (data: any) => {
         console.log('Teams récupérées :', data);
-        this.teams = data.teams; // ✅ important
+        this.teams = data.teams;
       },
       error: (err) => {
         console.error('Erreur récupération équipes', err);
@@ -122,7 +121,6 @@ export class CreateUserComponent implements OnInit {
     });
   }
 
-  // 🔹 Création user + assignation team
   createUser(): void {
 
     const userData = {
@@ -133,12 +131,12 @@ export class CreateUserComponent implements OnInit {
       Role: this.role
     };
 
-    // 1️⃣ Création de l'utilisateur
+    // Création de l'utilisateur
     this.apiService.createUser(userData).subscribe({
       next: (createdUser: any) => {
         console.log('User créé :', createdUser);
 
-        // ✅ récupérer l'_id réel dans le backend
+        // récupérer l'_id réel dans le backend
         const userId = createdUser.user?._id;
 
         if (!userId) {
@@ -146,7 +144,7 @@ export class CreateUserComponent implements OnInit {
           return;
         }
 
-        // 2️⃣ Assignation de la team
+        // Assignation de la team
         this.apiService.updateUserTeam(userId, { teamId: this.teamId }).subscribe({
           next: () => {
             this.message = 'Utilisateur créé et assigné à une équipe ✅';
