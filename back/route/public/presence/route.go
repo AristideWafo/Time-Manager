@@ -11,10 +11,10 @@ import (
 )
 
 func RegisterPresenceRoutes(router *gin.Engine) {
-	user := router.Group("/api/presence").Use(middleware.AuthMiddleware())
+	presence := router.Group("/api/presence").Use(middleware.AuthMiddleware())
 	{
-		user.GET("", GetAllPresences)
-		user.POST("/create", CreatePresence)
+		presence.GET("", GetAllPresences)
+		presence.POST("/create", CreatePresence)
 	}
 }
 
