@@ -163,6 +163,29 @@
     margin-top: 4px;
 }
 
+/* --- Bouton Supprimer --- */
+.teams-list li .delete-btn {
+    padding: 8px 16px;
+    background: linear-gradient(135deg, #dc2626, #991b1b);
+    /* Rouge dégradé */
+    color: #fff;
+    border: none;
+    border-radius: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    font-size: 0.9rem;
+    transition: all 0.25s ease;
+    box-shadow: 0 4px 12px rgba(220, 38, 38, 0.25);
+    /* ombre rouge */
+}
+
+.teams-list li .delete-btn:hover {
+    background: linear-gradient(135deg, #991b1b, #7f1d1d);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(220, 38, 38, 0.3);
+}
+
+
 @media (max-width: 600px) {
     .teams-list ul {
         grid-template-columns: 1fr;

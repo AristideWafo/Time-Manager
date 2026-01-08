@@ -16,6 +16,7 @@ interface Presence {
   imports: [CommonModule],
   template: `
   <section class="stats-container">
+
     <h1>Présences de {{ employeeName }}</h1>
 
     <div *ngIf="loading">Chargement des données...</div>
@@ -54,9 +55,20 @@ interface Presence {
         </div>
 
         <div class="kpi-card neutral">
-          <div class="kpi-title">⏳ Restant</div>
+          <div class="kpi-title">⏳ Restant (8h)</div>
           <div class="kpi-value">{{ formatHours(todayRemainingHours) }}</div>
-          <div class="kpi-sub">pour 8 h</div>
+        </div>
+
+        <div class="kpi-card" [ngClass]="weeklyStatus">
+          <div class="kpi-title">📆 Cette semaine</div>
+          <div class="kpi-value">{{ formatHours(weeklyWorkHours) }}</div>
+          <div class="kpi-sub">/ 35 h</div>
+        </div>
+
+        <div class="kpi-card neutral">
+          <div class="kpi-title">🗓 Ce mois-ci</div>
+          <div class="kpi-value">{{ formatHours(monthlyWorkHours) }}</div>
+          <div class="kpi-sub">heures travaillées</div>
         </div>
 
       </div>
@@ -105,8 +117,13 @@ export class EmployeePresenceComponent implements OnInit {
   todayWorkedHours = 0;
   todayRemainingHours = 0;
 
-  private presenceByDay: { [key: string]: Presence[] } = {};
+  weeklyWorkHours = 0;
+  monthlyWorkHours = 0;
+
   readonly goalHoursPerDay = 8;
+  readonly weeklyGoalHours = 35;
+
+  private presenceByDay: { [key: string]: Presence[] } = {};
 
   constructor(
     private api: ApiService,
@@ -126,21 +143,23 @@ export class EmployeePresenceComponent implements OnInit {
     return 'high';
   }
 
+  get weeklyStatus(): 'low' | 'medium' | 'high' {
+    if (this.weeklyWorkHours < 25) return 'low';
+    if (this.weeklyWorkHours < this.weeklyGoalHours) return 'medium';
+    return 'high';
+  }
+
   loadEmployeePresences(): void {
     this.loading = true;
 
     this.api.getUserPresencesForManager(this.employeeId).subscribe({
       next: (res: any) => {
-        console.log('📊 Présences employé :', res);
-
         this.employeeName = res.userName || 'Employé';
         this.presences = Array.isArray(res.presences) ? res.presences : [];
-
         this.calculateStats();
         this.loading = false;
       },
-      error: (err) => {
-        console.error('❌ Erreur récupération présences employé', err);
+      error: () => {
         this.presences = [];
         this.loading = false;
       }
@@ -149,52 +168,86 @@ export class EmployeePresenceComponent implements OnInit {
 
   private calculateStats(): void {
 
-    if (!Array.isArray(this.presences) || this.presences.length === 0) {
-      this.totalWorkHours = 0;
-      this.totalDays = 0;
-      this.averageHoursPerDay = 0;
-      this.todayWorkedHours = 0;
-      this.todayRemainingHours = this.goalHoursPerDay;
-      return;
-    }
+    if (!this.presences.length) return;
+
+    const MS_PER_HOUR = 3600000;
+    const presenceByWeek: { [key: string]: Presence[] } = {};
+    const presenceByMonth: { [key: string]: Presence[] } = {};
 
     this.presenceByDay = {};
-    const MS_PER_HOUR = 3600000;
 
     this.presences.forEach(p => {
-      const day = new Date(p.Timestamp).toISOString().slice(0, 10);
-      if (!this.presenceByDay[day]) this.presenceByDay[day] = [];
-      this.presenceByDay[day].push(p);
+      const date = new Date(p.Timestamp);
+      const dayKey = date.toISOString().slice(0, 10);
+      const weekKey = this.getISOWeek(date);
+      const monthKey = this.getMonthKey(date);
+
+      if (!this.presenceByDay[dayKey]) this.presenceByDay[dayKey] = [];
+      if (!presenceByWeek[weekKey]) presenceByWeek[weekKey] = [];
+      if (!presenceByMonth[monthKey]) presenceByMonth[monthKey] = [];
+
+      this.presenceByDay[dayKey].push(p);
+      presenceByWeek[weekKey].push(p);
+      presenceByMonth[monthKey].push(p);
     });
 
     let totalHours = 0;
     let daysCount = 0;
 
     for (const day in this.presenceByDay) {
-      const sorted = this.presenceByDay[day].sort(
-        (a, b) => new Date(a.Timestamp).getTime() - new Date(b.Timestamp).getTime()
-      );
-
-      let dayHours = 0;
-      for (let i = 0; i < sorted.length - 1; i += 2) {
-        dayHours +=
-          (new Date(sorted[i + 1].Timestamp).getTime() -
-            new Date(sorted[i].Timestamp).getTime()) / MS_PER_HOUR;
-      }
-
+      const dayHours = this.calculateHours(this.presenceByDay[day], MS_PER_HOUR);
       totalHours += dayHours;
       daysCount++;
 
-      const today = new Date().toISOString().slice(0, 10);
-      if (day === today) {
+      if (day === new Date().toISOString().slice(0, 10)) {
         this.todayWorkedHours = dayHours;
         this.todayRemainingHours = Math.max(this.goalHoursPerDay - dayHours, 0);
       }
     }
 
+    const currentWeek = this.getISOWeek(new Date());
+    const currentMonth = this.getMonthKey(new Date());
+
+    this.weeklyWorkHours = presenceByWeek[currentWeek]
+      ? this.calculateHours(presenceByWeek[currentWeek], MS_PER_HOUR)
+      : 0;
+
+    this.monthlyWorkHours = presenceByMonth[currentMonth]
+      ? this.calculateHours(presenceByMonth[currentMonth], MS_PER_HOUR)
+      : 0;
+
     this.totalWorkHours = totalHours;
     this.totalDays = daysCount;
     this.averageHoursPerDay = totalHours / daysCount;
+  }
+
+  private calculateHours(presences: Presence[], ms: number): number {
+    const sorted = presences.sort(
+      (a, b) => new Date(a.Timestamp).getTime() - new Date(b.Timestamp).getTime()
+    );
+
+    let hours = 0;
+    for (let i = 0; i < sorted.length - 1; i += 2) {
+      hours +=
+        (new Date(sorted[i + 1].Timestamp).getTime() -
+          new Date(sorted[i].Timestamp).getTime()) / ms;
+    }
+    return hours;
+  }
+
+  private getISOWeek(date: Date): string {
+    const d = new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()));
+    const dayNum = d.getUTCDay() || 7;
+    d.setUTCDate(d.getUTCDate() + 4 - dayNum);
+    const yearStart = new Date(Date.UTC(d.getUTCFullYear(), 0, 1));
+    const weekNo = Math.ceil((((d.getTime() - yearStart.getTime()) / 86400000) + 1) / 7);
+    return `${d.getUTCFullYear()}-W${weekNo}`;
+  }
+
+  private getMonthKey(date: Date): string {
+    return `${date.getFullYear()}-${(date.getMonth() + 1)
+      .toString()
+      .padStart(2, '0')}`;
   }
 
   formatHours(hours: number): string {
@@ -205,18 +258,10 @@ export class EmployeePresenceComponent implements OnInit {
 
   exportToPDF(): void {
     const doc = new jsPDF();
-    doc.setFontSize(16);
     doc.text(`Présences de ${this.employeeName}`, 14, 20);
 
-    doc.setFontSize(12);
-    doc.text(`Heures totales : ${this.formatHours(this.totalWorkHours)}`, 14, 35);
-    doc.text(`Jours travaillés : ${this.totalDays}`, 14, 42);
-    doc.text(`Moyenne / jour : ${this.formatHours(this.averageHoursPerDay)}`, 14, 49);
-    doc.text(`Aujourd'hui : ${this.formatHours(this.todayWorkedHours)}`, 14, 56);
-    doc.text(`Restant pour 8h : ${this.formatHours(this.todayRemainingHours)}`, 14, 63);
-
     autoTable(doc, {
-      startY: 75,
+      startY: 30,
       head: [['Type', 'Date', 'Heure']],
       body: this.presences.map(p => [
         p.Type,
@@ -233,10 +278,7 @@ export class EmployeePresenceComponent implements OnInit {
       `${p.Type};${new Date(p.Timestamp).toLocaleDateString('fr-FR')};${new Date(p.Timestamp).toLocaleTimeString('fr-FR')}`
     );
 
-    const blob = new Blob([rows.join('\n')], {
-      type: 'text/csv;charset=utf-8'
-    });
-
+    const blob = new Blob([rows.join('\n')], { type: 'text/csv;charset=utf-8' });
     const link = document.createElement('a');
     link.href = URL.createObjectURL(blob);
     link.download = `presences-${this.employeeName}.csv`;
