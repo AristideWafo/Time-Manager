@@ -107,9 +107,7 @@ interface UserProfile {
             <h3>Confirmer la suppression</h3>
             <p>Êtes-vous sûr de vouloir supprimer votre compte ?</p>
 
-            <button (click)="deleteProfile()" [disabled]="isLoading">
-              {{ isLoading ? 'Suppression...' : 'Supprimer définitivement' }}
-            </button>
+      
 
             <button (click)="cancelDelete()" [disabled]="isLoading">
               Annuler
@@ -186,6 +184,8 @@ export class ProfileComponent implements OnInit {
       Team: this.userProfile.team
     };
 
+    console.log(updateData.Password)
+
     this.apiService.updateUser(updateData).subscribe({
       next: () => {
         this.userProfile = { ...this.editProfile };
@@ -203,24 +203,24 @@ export class ProfileComponent implements OnInit {
 
   confirmDelete() { this.showDeleteModal = true; }
   cancelDelete() { this.showDeleteModal = false; }
-
-  deleteProfile() {
-    this.isLoading = true;
-    this.apiService.deleteUser().subscribe({
-      next: () => {
-        this.isLoading = false;
-        this.showDeleteModal = false;
-        localStorage.removeItem('access_token');
-        this.router.navigate(['/login']);
-      },
-      error: () => {
-        this.isLoading = false;
-        this.showDeleteModal = false;
-        this.showMessage('Impossible de supprimer le profil.', 'error');
-      }
-    });
-  }
-
+  /*
+    deleteProfile() {
+      this.isLoading = true;
+      this.apiService.deleteUser().subscribe({
+        next: () => {
+          this.isLoading = false;
+          this.showDeleteModal = false;
+          localStorage.removeItem('access_token');
+          this.router.navigate(['/login']);
+        },
+        error: () => {
+          this.isLoading = false;
+          this.showDeleteModal = false;
+          this.showMessage('Impossible de supprimer le profil.', 'error');
+        }
+      });
+    }
+  */
   private showMessage(text: string, type: 'success' | 'error') {
     this.message = text;
     this.messageType = type;
@@ -229,3 +229,11 @@ export class ProfileComponent implements OnInit {
 
   private clearMessage() { this.message = ''; }
 }
+
+/* a mettre dans le html si delete fonctionne
+
+      <button (click)="deleteProfile()" [disabled]="isLoading">
+              {{ isLoading ? 'Suppression...' : 'Supprimer définitivement' }}
+            </button>
+
+            */
