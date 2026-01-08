@@ -35,9 +35,13 @@ func setupTestCollection(t *testing.T) *mongo.Collection {
 	return Client.Database.Collection(testCollectionName)
 }
 
-func cleanupTestCollection(_ *testing.T) {
+func cleanupTestCollection(t *testing.T) {
 	if Client.Database != nil {
-		Client.Database.Collection(testCollectionName).DeleteMany(context.TODO(), bson.D{})
+		_, err := Client.Database.Collection(testCollectionName).DeleteMany(context.TODO(), bson.D{})
+
+		if err != nil {
+			t.Fatalf("failed to cleanup test collection: %v", err)
+		}
 	}
 }
 

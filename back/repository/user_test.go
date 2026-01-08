@@ -9,9 +9,13 @@ import (
 	"go.mongodb.org/mongo-driver/v2/bson"
 )
 
-func cleanupUserTest(_ *testing.T) {
+func cleanupUserTest(t *testing.T) {
 	if Client.Database != nil {
-		UserCollection().DeleteMany(context.TODO(), bson.D{})
+		_, err := UserCollection().DeleteMany(context.TODO(), bson.D{})
+
+		if err != nil {
+			t.Fatalf("failed to cleanup test collection: %v", err)
+		}
 	}
 }
 
