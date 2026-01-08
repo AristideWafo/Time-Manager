@@ -33,7 +33,7 @@ jobs:
 
     # Cache setup for Go
     - name: Setup Go with cache
-      if: matrix.language == 'go'
+      if: matrix.language == 'go' && (contains(github.ref_name, 'cicd') || contains(github.ref_name, 'back_'))
       uses: actions/setup-go@v5
       with:
         go-version: ${{ vars.GO_VERSION }}
@@ -41,7 +41,7 @@ jobs:
         cache-dependency-path: ${{ vars.BACK_REPOSITORY }}/go.sum
 
     - name: Cache Go modules and build
-      if: matrix.language == 'go'
+      if: matrix.language == 'go' && (contains(github.ref_name, 'cicd') || contains(github.ref_name, 'back_'))
       uses: actions/cache@v4
       with:
         path: |
@@ -54,7 +54,7 @@ jobs:
 
     # Cache setup for Node.js
     - name: Setup Node.js with cache
-      if: matrix.language == 'javascript-typescript'
+      if: matrix.language == 'javascript-typescript' && (contains(github.ref_name, 'cicd') || contains(github.ref_name, 'front_'))
       uses: actions/setup-node@v4
       with:
         node-version: ${{ vars.NODE_VERSION }}
@@ -62,7 +62,7 @@ jobs:
         cache-dependency-path: ${{ vars.FRONT_REPOSITORY }}/package-lock.json
 
     - name: Cache node modules
-      if: matrix.language == 'javascript-typescript'
+      if: matrix.language == 'javascript-typescript' && (contains(github.ref_name, 'cicd') || contains(github.ref_name, 'front_'))
       uses: actions/cache@v4
       with:
         path: |
@@ -74,7 +74,7 @@ jobs:
           ${{ runner.os }}-node-codeql-
 
     - name: Cache Angular build
-      if: matrix.language == 'javascript-typescript'
+      if: matrix.language == 'javascript-typescript' && (contains(github.ref_name, 'cicd') || contains(github.ref_name, 'front_'))
       uses: actions/cache@v4
       with:
         path: |
@@ -91,7 +91,7 @@ jobs:
         config-file: ./.github/codeql-config.yml
 
     - name: Build Go
-      if: matrix.language == 'go'
+      if: matrix.language == 'go' && (contains(github.ref_name, 'cicd') || contains(github.ref_name, 'back_'))
       working-directory: ${{ vars.BACK_REPOSITORY }}
       run: |
         go mod download
@@ -99,7 +99,7 @@ jobs:
         go build -v -ldflags="-s -w" ./...
 
     - name: Build JS/TS  
-      if: matrix.language == 'javascript-typescript'
+      if: matrix.language == 'javascript-typescript' && (contains(github.ref_name, 'cicd') || contains(github.ref_name, 'front_'))
       working-directory: ${{ vars.FRONT_REPOSITORY }}
       run: |
         npm ci --prefer-offline --no-audit --no-fund --silent
