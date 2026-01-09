@@ -4,7 +4,7 @@ import { CommonModule } from '@angular/common';
 import { ApiService } from '../../../services/api.service';
 
 interface Presence {
-  Type: string;
+  Type: 'Check-in' | 'Check-out';
   Timestamp: string;
   User: string;
 }
@@ -28,13 +28,14 @@ interface Presence {
       </header>
 
       <div class="dashboard-cards">
+
         <div class="card">
           <div class="card-header">
             <div class="icon">👤</div>
             <h2>Profil</h2>
           </div>
           <div class="card-body">
-            <p>Accédez à vos informations personnelles et à vos paramètres.</p>
+            <p>Accédez à vos informations personnelles.</p>
           </div>
           <div class="card-footer">
             <button (click)="goToProfile()">Voir le profil</button>
@@ -47,12 +48,12 @@ interface Presence {
             <h2>Présence</h2>
           </div>
           <div class="card-body">
-            <p>Enregistrez votre présence quotidienne.</p>
+            <p>Enregistrez votre présence.</p>
             <p *ngIf="message" class="message">{{ message }}</p>
           </div>
           <div class="card-footer">
             <button (click)="pointer()" [disabled]="isPosting">
-              Pointer {{ nextBadgeType }}
+              Pointer {{ allowedNextBadge }}
             </button>
           </div>
         </div>
@@ -63,61 +64,86 @@ interface Presence {
             <h2>Statistiques</h2>
           </div>
           <div class="card-body">
-            <p>Consultez vos présences et temps de travail.</p>
+            <p>Consultez vos temps de travail.</p>
           </div>
           <div class="card-footer">
             <button (click)="goToStats()">Voir les statistiques</button>
           </div>
         </div>
+
       </div>
     </section>
   `,
   styleUrls: ['./employee-home.component.css']
 })
 export class EmployeeHomeComponent implements OnInit {
+
   firstName: string | null = null;
   lastName: string | null = null;
   role: string | null = 'EMPLOYEE';
+
   message: string | null = null;
-
-  // Liste des présences du jour pour cet utilisateur
-  todaysPresences: Presence[] = [];
-
-  // Type du prochain badge
-  nextBadgeType: 'Check-in' | 'Check-out' = 'Check-in';
-
-  // Bloquer le bouton pendant l'envoi
   isPosting = false;
 
-  constructor(private router: Router, private api: ApiService) { }
+  /** Liste complète des présences reçues (tous les jours, sans filtrage) */
+  allPresences: Presence[] = [];
 
-  ngOnInit() {
+  /** Badge autorisé pour le prochain clic */
+  allowedNextBadge: 'Check-in' | 'Check-out' = 'Check-in';
+
+  constructor(
+    private router: Router,
+    private api: ApiService
+  ) { }
+
+  ngOnInit(): void {
     this.firstName = localStorage.getItem('FirstName');
     this.lastName = localStorage.getItem('LastName');
     this.role = localStorage.getItem('Role');
 
-    const userId = localStorage.getItem('user_id');
-    if (userId) {
-      // Récupérer toutes les présences pour déterminer le type du prochain badge
-      this.api.getPresence().subscribe({
-        next: (res: any) => {
-          const allPresences: Presence[] = res.user || [];
-          const today = new Date().toISOString().slice(0, 10);
-
-          this.todaysPresences = allPresences.filter(
-            p => p.User === userId && p.Timestamp.slice(0, 10) === today
-          );
-
-          // Déterminer le type du prochain badge
-          this.nextBadgeType = (this.todaysPresences.length % 2 === 0) ? 'Check-in' : 'Check-out';
-        },
-        error: err => console.error('Erreur récupération présences', err)
-      });
-    }
+    this.loadPresences();
   }
 
-  pointer() {
-    if (this.isPosting) return; // empêche les clics multiples
+  // =========================
+  // 🔁 CHARGEMENT DES PRÉSENCES
+  // =========================
+  private loadPresences(): void {
+    const userId = localStorage.getItem('user_id');
+    if (!userId) return;
+
+    console.log(`🔁 loadPresences | userId = ${userId}`);
+
+    this.api.getPresence().subscribe({
+      next: (res: any) => {
+        // ✅ On prend toutes les présences telles qu'elles sont
+        this.allPresences = res.user || [];
+        console.log('📦 Toutes les présences reçues: ', this.allPresences);
+
+        // Calcul du prochain badge à partir du dernier
+        this.allowedNextBadge = this.computeAllowedNextBadge();
+        console.log('🧠 Résultat final attendu: ', this.allowedNextBadge);
+      },
+      error: err => console.error('❌ Erreur récupération présences', err)
+    });
+  }
+
+  // =========================
+  // 🧠 CALCUL DU PROCHAIN BADGE (dernier pointage)
+  // =========================
+  private computeAllowedNextBadge(): 'Check-in' | 'Check-out' {
+    if (this.allPresences.length === 0) return 'Check-in';
+
+    const last = this.allPresences[this.allPresences.length - 1];
+    const next = last.Type === 'Check-in' ? 'Check-out' : 'Check-in';
+    console.log('➡️ Action autorisée (dernier badge): ', next);
+    return next;
+  }
+
+  // =========================
+  // ⛔ POST PROTÉGÉ
+  // =========================
+  pointer(): void {
+    if (this.isPosting) return;
     this.isPosting = true;
 
     const userId = localStorage.getItem('user_id');
@@ -126,33 +152,48 @@ export class EmployeeHomeComponent implements OnInit {
       return;
     }
 
+    const badgeType = this.allowedNextBadge;
+
     const data: Presence = {
-      Type: this.nextBadgeType,
+      Type: badgeType,
       Timestamp: new Date().toISOString(),
       User: userId
     };
 
+    console.log('👉 CLICK pointer()');
+    console.log('📤 Badge envoyé: ', badgeType);
+
     this.api.postPresence(data).subscribe({
       next: () => {
-        this.message = `✅ ${this.nextBadgeType} enregistré avec succès.`;
-        // On met à jour la liste pour le prochain badge
-        this.todaysPresences.push(data);
-        this.nextBadgeType = (this.todaysPresences.length % 2 === 0) ? 'Check-in' : 'Check-out';
+        this.message = `✅ ${badgeType} enregistré.`;
+
+        // 🔁 Relecture complète → cohérence garantie
+        this.loadPresences();
+
         setTimeout(() => this.message = null, 3000);
         this.isPosting = false;
+        console.log('✅ POST OK');
       },
       error: () => {
-        this.message = `❌ Erreur lors de l'enregistrement.`;
+        this.message = '❌ Erreur lors de l’enregistrement.';
         setTimeout(() => this.message = null, 3000);
         this.isPosting = false;
       }
     });
   }
 
-  goToProfile() { this.router.navigate(['/profile']); }
-  goToStats() { this.router.navigate(['/presence-stats']); }
+  // =========================
+  // NAVIGATION
+  // =========================
+  goToProfile(): void {
+    this.router.navigate(['/profile']);
+  }
 
-  logout() {
+  goToStats(): void {
+    this.router.navigate(['/presence-stats']);
+  }
+
+  logout(): void {
     localStorage.clear();
     this.router.navigate(['/login']);
   }
