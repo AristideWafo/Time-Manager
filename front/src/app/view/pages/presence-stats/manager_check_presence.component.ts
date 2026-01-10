@@ -17,7 +17,7 @@ interface Presence {
   template: `
   <section class="stats-container">
 
-    <h1>Présence de {{ employeeName }}</h1>
+    <h1>Présences de {{ employeeName }}</h1>
 
     <div *ngIf="loading">Chargement des données...</div>
 
@@ -52,6 +52,13 @@ interface Presence {
           <div class="kpi-title">🕒 Aujourd'hui</div>
           <div class="kpi-value">{{ formatHours(todayWorkedHours) }}</div>
           <div class="kpi-sub">heures travaillées</div>
+        </div>
+
+        <!-- Nouvelle carte Heures sup -->
+        <div class="kpi-card neutral">
+          <div class="kpi-title">➕ Heures sup</div>
+          <div class="kpi-value">{{ formatHours(todayWorkedHours > goalHoursPerDay ? todayWorkedHours - goalHoursPerDay : 0) }}</div>
+          <div class="kpi-sub">au-delà de 8 h</div>
         </div>
 
         <div class="kpi-card neutral">
