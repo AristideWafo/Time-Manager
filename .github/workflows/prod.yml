@@ -8,30 +8,47 @@ on:
     branches: ["prod"]
 
 jobs:
+  detect-changes:
+    name: Detect Changes
+    runs-on: ubuntu-latest
+    outputs:
+      backend: ${{ steps.changes.outputs.backend }}
+      frontend: ${{ steps.changes.outputs.frontend }}
+    steps:
+      - uses: actions/checkout@v5
+      - uses: dorny/paths-filter@v3
+        id: changes
+        with:
+          filters: |
+            backend:
+              - 'back/**'
+            frontend:
+              - 'front/**'
+
   build:
     name: Build Application
+    needs: detect-changes
+    if: needs.detect-changes.outputs.backend == 'true' || needs.detect-changes.outputs.frontend == 'true'
     uses: ./.github/workflows/build.yml
     with:
-      go-version: ${{ vars.GO_VERSION }}
-      node-version: ${{ vars.NODE_VERSION }}
-      working-dir-front: ${{ vars.FRONT_REPOSITORY }}
-      working-dir-back: ${{ vars.BACK_REPOSITORY }}
-      app-name: ${{ vars.APP_NAME }}
+      build-backend: ${{ needs.detect-changes.outputs.backend == 'true' }}
+      build-frontend: ${{ needs.detect-changes.outputs.frontend == 'true' }}
 
   test:
     name: Run Tests & Linting
-    needs: [build]
+    needs: [detect-changes, build]
+    if: needs.detect-changes.outputs.backend == 'true' || needs.detect-changes.outputs.frontend == 'true'
     permissions:
       contents: read
     uses: ./.github/workflows/test.yml
     with:
-      go-version: ${{ vars.GO_VERSION }}
-      node-version: ${{ vars.NODE_VERSION }}
-      working-dir-front: ${{ vars.FRONT_REPOSITORY }}
-      working-dir-back: ${{ vars.BACK_REPOSITORY }}
+      test-backend: ${{ needs.detect-changes.outputs.backend == 'true' }}
+      test-frontend: ${{ needs.detect-changes.outputs.frontend == 'true' }}
 
   security-scan:
     name: Security Analysis
+    needs: detect-changes
+    if: needs.detect-changes.outputs.backend == 'true' || needs.detect-changes.outputs.frontend == 'true'
     runs-on: ubuntu-latest
     permissions:
       security-events: write
@@ -54,16 +71,13 @@ jobs:
 
   package:
     name: Package Application
-    needs: [build, test, security-scan]
+    needs: [detect-changes, build, test, security-scan]
+    if: needs.detect-changes.outputs.backend == 'true' || needs.detect-changes.outputs.frontend == 'true'
     permissions:
       contents: write
       packages: write
       id-token: write
     uses: ./.github/workflows/packaging.yml
-    with:
-      node-version: ${{ vars.NODE_VERSION }}
-      working-dir-front: ${{ vars.FRONT_REPOSITORY }}
-      working-dir-back: ${{ vars.BACK_REPOSITORY }}
 
   deploy:
     name: Deploy to Production

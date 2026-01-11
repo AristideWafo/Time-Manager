@@ -7,7 +7,7 @@ import (
 	"go.mongodb.org/mongo-driver/v2/bson"
 )
 
-func SavePresence(presence *model.Presence) error {
+var SavePresence = func(presence *model.Presence) error {
 
 	user := &model.User{}
 	filter := bson.D{{Key: "_id", Value: presence.User}}
@@ -39,7 +39,7 @@ func UpdateOnePresence(presence *model.Presence, update bson.D) error {
 	return UpdateOne(presence, UserCollection(), update, bson.D{})
 }
 
-func GetManyPresences(presences *[]*model.Presence, filter bson.D) error {
+var GetManyPresences = func(presences *[]*model.Presence, filter bson.D) error {
 
 	err := GetMany(filter, PresenceCollection(), presences)
 

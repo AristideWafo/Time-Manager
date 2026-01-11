@@ -2,16 +2,6 @@ name: Packaging
 
 on:
   workflow_call:
-    inputs:
-      node-version:
-        required: true
-        type: string
-      working-dir-front:
-        required: true
-        type: string
-      working-dir-back:
-        required: true
-        type: string
 
 jobs:
 
@@ -29,7 +19,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v5
         with:
-          node-version: "${{ inputs.node-version }}"
+          node-version: "${{ vars.NODE_VERSION }}"
           cache: "npm"
           cache-dependency-path: package-lock.json
 
@@ -78,8 +68,8 @@ jobs:
       - name: Build and push Docker image
         uses: docker/build-push-action@v6
         with:
-          context: ./${{ matrix.component == 'back' && inputs.working-dir-back || 'nginx' }}
-          file: ./${{ (matrix.component == 'back' && inputs.working-dir-back || 'nginx') }}/Dockerfile
+          context: ./${{ matrix.component == 'back' && vars.BACK_REPOSITORY || 'nginx' }}
+          file: ./${{ (matrix.component == 'back' && vars.BACK_REPOSITORY || 'nginx') }}/Dockerfile
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}, 

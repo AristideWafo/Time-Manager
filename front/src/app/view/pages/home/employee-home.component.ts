@@ -28,7 +28,6 @@ interface Presence {
       </header>
 
       <div class="dashboard-cards">
-
         <div class="card">
           <div class="card-header">
             <div class="icon">👤</div>
@@ -70,7 +69,6 @@ interface Presence {
             <button (click)="goToStats()">Voir les statistiques</button>
           </div>
         </div>
-
       </div>
     </section>
   `,
