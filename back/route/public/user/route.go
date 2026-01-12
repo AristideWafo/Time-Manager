@@ -98,7 +98,7 @@ func UpdateUser(context *gin.Context) {
 		return
 	}
 
-	fetched_user := &model.User{}
+	var fetched_user *model.User
 
 	if input.FirstName != "" || input.LastName != "" || input.Password != "" {
 
