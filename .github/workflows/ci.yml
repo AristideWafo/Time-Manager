@@ -59,6 +59,7 @@ jobs:
       - uses: actions/checkout@v5
 
       - name: Cache Go dependencies
+        if: needs.detect-changes.outputs.backend == 'true' || needs.detect-changes.outputs.run-all == 'true'
         id: go-cache
         uses: actions/cache@v4
         with:
@@ -71,6 +72,7 @@ jobs:
             ${{ runner.os }}-go-
 
       - name: Cache npm dependencies
+        if: needs.detect-changes.outputs.frontend == 'true' || needs.detect-changes.outputs.run-all == 'true'
         id: npm-cache
         uses: actions/cache@v4
         with:

@@ -7,6 +7,7 @@
 [![CI Build](https://github.com/AristideWafo/Time-Manager/actions/workflows/ci.yml/badge.svg)](https://github.com/AristideWafo/Time-Manager/actions/workflows/ci.yml)
 [![CodeQL](https://github.com/AristideWafo/Time-Manager/actions/workflows/codeql.yml/badge.svg)](https://github.com/AristideWafo/Time-Manager/actions/workflows/codeql.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![SonarQube Cloud](https://sonarcloud.io/images/project_badges/sonarcloud-light.svg)](https://sonarcloud.io/summary/new_code?id=AristideWafo_Time-Manager)
 
 > 🚀 **Application de gestion du temps moderne** construite avec Go (Gin), Angular, et PostgreSQL. Solution complète pour le suivi du temps de travail avec authentification sécurisée et interface utilisateur intuitive.
 
