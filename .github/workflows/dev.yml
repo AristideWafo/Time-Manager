@@ -7,8 +7,8 @@ jobs:
     name: Detect Changes
     runs-on: ubuntu-22.04
     outputs:
-      backend: ${{ steps.changes.outputs.backend }}
-      frontend: ${{ steps.changes.outputs.frontend }}
+      backend: ${{ steps.changes.outputs.backend || github.event_name == 'workflow_dispatch' }}
+      frontend: ${{ steps.changes.outputs.frontend || github.event_name == 'workflow_dispatch' }}
     steps:
       - uses: actions/checkout@v5
       - uses: dorny/paths-filter@v3
@@ -20,46 +20,9 @@ jobs:
             frontend:
               - 'front/**'
 
-  cache-deps:
-    needs: detect-changes
-    if: needs.detect-changes.outputs.backend == 'true' || needs.detect-changes.outputs.frontend == 'true'
-    name: Cache Dependencies
-    runs-on: ubuntu-22.04
-    outputs:
-      go-cache-hit: ${{ steps.go-cache.outputs.cache-hit }}
-      npm-cache-hit: ${{ steps.npm-cache.outputs.cache-hit }}
-    steps:
-      - uses: actions/checkout@v5
-
-      - name: Cache Go dependencies
-        if: needs.detect-changes.outputs.backend == 'true'
-        id: go-cache
-        uses: actions/cache@v4
-        with:
-          path: |
-            ~/.cache/go-build
-            ~/go/pkg/mod
-          key: ${{ runner.os }}-go-${{ vars.GO_VERSION }}-${{ hashFiles('back/go.sum') }}
-          restore-keys: |
-            ${{ runner.os }}-go-${{ vars.GO_VERSION }}-
-            ${{ runner.os }}-go-
-
-      - name: Cache npm dependencies
-        if: needs.detect-changes.outputs.frontend == 'true'
-        id: npm-cache
-        uses: actions/cache@v4
-        with:
-          path: |
-            ~/.npm
-            ${{ vars.FRONT_REPOSITORY }}/node_modules
-          key: ${{ runner.os }}-npm-${{ vars.NODE_VERSION }}-${{ hashFiles('front/package-lock.json') }}
-          restore-keys: |
-            ${{ runner.os }}-npm-${{ vars.NODE_VERSION }}-
-            ${{ runner.os }}-npm-
-
   build:
     name: Build
-    needs: [detect-changes, cache-deps]
+    needs: [detect-changes]
     if: needs.detect-changes.outputs.backend == 'true' || needs.detect-changes.outputs.frontend == 'true'
     permissions:
       contents: read
@@ -80,14 +43,25 @@ jobs:
     with:
       test-backend: ${{ needs.detect-changes.outputs.backend == 'true' }}
       test-frontend: ${{ needs.detect-changes.outputs.frontend == 'true' }}
+  
+  manual-approval:
+    name: Manual Approval
+    runs-on: ubuntu-22.04
+    needs: [test]
+    steps:
+      - name: Wait for approval
+        uses: trstringer/manual-approval@v1
+        with:
+          secret: ${{ github.TOKEN }}
+          approvers: user1,user2
 
   security-scan:
     name: Security Analysis
     needs: detect-changes
     if: |
-      github.event_name == 'workflow_dispatch' && ( 
+      github.event_name == 'workflow_dispatch' || 
       needs.detect-changes.outputs.backend == 'true' || 
-      needs.detect-changes.outputs.frontend == 'true' )
+      needs.detect-changes.outputs.frontend == 'true'
     runs-on: ubuntu-22.04
     permissions:
       security-events: write
@@ -111,6 +85,8 @@ jobs:
   sonarqube:
     name: SonarQube
     runs-on: ubuntu-22.04
+    needs: [detect-changes, build]
+    if: needs.detect-changes.outputs.backend == 'true' || needs.detect-changes.outputs.frontend == 'true'
     steps:
       - name: Checkout
         uses: actions/checkout@v5
@@ -123,18 +99,10 @@ jobs:
 
   package:
     name: Package Application
-    needs: [detect-changes, build, test, security-scan]
+    needs: [detect-changes, build, test, security-scan, sonarqube, manual-approval]
     if: needs.detect-changes.outputs.backend == 'true' || needs.detect-changes.outputs.frontend == 'true'
     permissions:
       contents: write
       packages: write
       id-token: write
     uses: ./.github/workflows/packaging.yml
-
-  deploy:
-    name: Deploy to Production
-    needs: [package]
-    if: github.ref == 'refs/heads/prod' && github.event_name == 'push'
-    uses: ./.github/workflows/deploy.yml
-    with:
-      environment: production
