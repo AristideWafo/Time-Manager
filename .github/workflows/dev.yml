@@ -1,6 +1,6 @@
 on:
   push:
-    branches: [ "dev" ]
+    branches: ["dev"]
   workflow_dispatch:
 jobs:
   detect-changes:
@@ -76,30 +76,6 @@ jobs:
     with:
       test-backend: ${{ needs.detect-changes.outputs.backend == 'true' }}
       test-frontend: ${{ needs.detect-changes.outputs.frontend == 'true' }}
-
-    security-scan:
-    name: Security Analysis
-    needs: detect-changes
-    if: needs.detect-changes.outputs.backend == 'true' || needs.detect-changes.outputs.frontend == 'true'
-    runs-on: ubuntu-22.04
-    permissions:
-      security-events: write
-      actions: read
-      contents: read
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-
-      - name: Initialize CodeQL
-        uses: github/codeql-action/init@v3
-        with:
-          languages: go,javascript-typescript
-
-      - name: Autobuild
-        uses: github/codeql-action/autobuild@v3
-
-      - name: Perform CodeQL Analysis
-        uses: github/codeql-action/analyze@v3
 
   security-scan:
     name: Security Analysis
