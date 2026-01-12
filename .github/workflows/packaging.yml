@@ -4,10 +4,9 @@ on:
   workflow_call:
 
 jobs:
-
   semantic-release:
     name: Semantic Release
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     outputs:
       new-release-published: ${{ steps.semantic.outputs.new-release-published }}
       new-release-version: ${{ steps.semantic.outputs.new-release-version }}
@@ -33,8 +32,8 @@ jobs:
         run: npx semantic-release
   packaging:
     name: Docker Packaging
-    runs-on: ubuntu-latest
-    needs: semantic-release    
+    runs-on: ubuntu-22.04
+    needs: semantic-release
     if: always() && (needs.semantic-release.outputs.new-release-published == 'true' || github.event_name == 'push')
     strategy:
       matrix:
@@ -64,7 +63,7 @@ jobs:
             type=semver,pattern={{version}},value=${{ needs.semantic-release.outputs.new-release-version }}
             type=semver,pattern={{major}}.{{minor}},value=${{ needs.semantic-release.outputs.new-release-version }}
             type=raw,value=latest,enable={{is_default_branch}}
-          
+
       - name: Build and push Docker image
         uses: docker/build-push-action@v6
         with:
@@ -72,7 +71,7 @@ jobs:
           file: ./${{ (matrix.component == 'back' && vars.BACK_REPOSITORY || 'nginx') }}/Dockerfile
           push: true
           tags: ${{ steps.meta.outputs.tags }}
-          labels: ${{ steps.meta.outputs.labels }}, 
+          labels: ${{ steps.meta.outputs.labels }},
           platforms: linux/amd64
           cache-from: type=gha
           cache-to: type=gha,mode=max

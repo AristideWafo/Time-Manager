@@ -19,7 +19,7 @@ jobs:
   go-lint:
     if: inputs.test-backend == true
     name: go-lint
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     steps:
       - uses: actions/checkout@v5
 
@@ -57,7 +57,7 @@ jobs:
   go-test:
     if: inputs.test-backend == true
     name: go-test
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     steps:
       - uses: actions/checkout@v5
 
@@ -85,7 +85,7 @@ jobs:
   angular-lint:
     if: inputs.test-frontend == true
     name: angular-lint
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     steps:
       - uses: actions/checkout@v5
 

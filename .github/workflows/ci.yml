@@ -10,7 +10,7 @@ on:
 jobs:
   detect-changes:
     name: Detect Changes
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     outputs:
       backend: ${{ steps.changes.outputs.backend }}
       frontend: ${{ steps.changes.outputs.frontend }}
@@ -51,7 +51,7 @@ jobs:
     needs: detect-changes
     if: needs.detect-changes.outputs.backend == 'true' || needs.detect-changes.outputs.frontend == 'true' || needs.detect-changes.outputs.run-all == 'true'
     name: Cache Dependencies
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     outputs:
       go-cache-hit: ${{ steps.go-cache.outputs.cache-hit }}
       npm-cache-hit: ${{ steps.npm-cache.outputs.cache-hit }}

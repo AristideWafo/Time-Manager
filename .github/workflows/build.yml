@@ -16,7 +16,7 @@ jobs:
   front-build:
     if: inputs.build-frontend == true
     name: front-build
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     steps:
       - name: Checkout
         uses: actions/checkout@v5
@@ -57,7 +57,7 @@ jobs:
   back-build:
     if: inputs.build-backend == true
     name: back-build
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     steps:
       - name: Checkout
         uses: actions/checkout@v5
