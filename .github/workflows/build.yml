@@ -12,11 +12,16 @@ on:
         type: boolean
         default: true
 
+permissions:
+  contents: read
+  id-token: write
+  attestations: write
+
 jobs:
   front-build:
     if: inputs.build-frontend == true
     name: front-build
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     steps:
       - name: Checkout
         uses: actions/checkout@v5
@@ -54,10 +59,17 @@ jobs:
       - name: Build Angular project
         working-directory: ${{ vars.FRONT_REPOSITORY }}
         run: npm run build -- --configuration production
+
+      - name: Attest build provenance
+        if: github.event_name == 'push' && github.ref == 'refs/heads/dev'
+        uses: actions/attest-build-provenance@v3
+        with:
+          subject-path: ${{ vars.FRONT_REPOSITORY }}/dist
+
   back-build:
     if: inputs.build-backend == true
     name: back-build
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     steps:
       - name: Checkout
         uses: actions/checkout@v5
@@ -95,3 +107,9 @@ jobs:
       - name: Build Go project
         working-directory: ${{ vars.BACK_REPOSITORY }}
         run: go build -o ${{ vars.APP_NAME }} .
+
+      - name: Attest build provenance
+        if: github.event_name == 'push' && github.ref == 'refs/heads/dev'
+        uses: actions/attest-build-provenance@v3
+        with:
+          subject-path: ${{ vars.BACK_REPOSITORY }}/${{ vars.APP_NAME }}
