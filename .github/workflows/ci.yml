@@ -7,6 +7,10 @@ on:
     types: [opened, synchronize, reopened] # Ajout de synchronize pour cache optimal
     branches: ["dev", "feat/*", "fix/*"]
 
+permissions:
+  contents: read
+  id-token: write
+
 jobs:
   detect-changes:
     name: Detect Changes
