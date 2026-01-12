@@ -43,11 +43,6 @@ export class LoginComponent {
     this.error = '';
     this.loading = true;
 
-    console.log('Tentative de login avec :', {
-      Email: this.email,
-      Password: this.password
-    });
-
     this.api.login({ Email: this.email, Password: this.password }).subscribe({
       next: (res: any) => {
         if (!res.Token || !res._id) {
@@ -62,9 +57,6 @@ export class LoginComponent {
         localStorage.setItem('FirstName', res.FirstName);
         localStorage.setItem('LastName', res.LastName);
         localStorage.setItem('Team', res.Team);
-
-        //console.log("Utilisateur connecté :", res);
-
 
         if (res.Role === 'ADMIN') {
           this.router.navigate(['/admin-home']);

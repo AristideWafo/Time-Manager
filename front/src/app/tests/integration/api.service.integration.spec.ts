@@ -30,7 +30,6 @@ describe('ApiService Integration', () => {
             expect(res.teams[0].Name).toBe('DEV');
         });
 
-        // URL corrigée
         const req = httpMock.expectOne('/api/admin/all/team');
         expect(req.request.method).toBe('GET');
         req.flush(mockResponse);
@@ -51,7 +50,6 @@ describe('ApiService Integration', () => {
             expect(res.user._id).toBe('123');
         });
 
-        // URL corrigée
         const req = httpMock.expectOne('/api/admin/user/create');
         expect(req.request.method).toBe('POST');
         expect(req.request.body).toEqual(userPayload);
@@ -65,7 +63,6 @@ describe('ApiService Integration', () => {
             expect(res.success).toBeTrue();
         });
 
-        // URL corrigée
         const req = httpMock.expectOne('/api/admin/update/team/user/123');
         expect(req.request.method).toBe('PUT');
         expect(req.request.body).toEqual({ teamId: '1' });

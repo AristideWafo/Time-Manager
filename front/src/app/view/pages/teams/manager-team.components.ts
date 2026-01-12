@@ -60,7 +60,6 @@ export class ManagerTeamComponent implements OnInit {
   ) { }
 
   ngOnInit(): void {
-    console.log('🟢 ManagerTeamComponent init');
     this.loadTeamUsers();
   }
 
@@ -70,12 +69,10 @@ export class ManagerTeamComponent implements OnInit {
 
     this.api.getManagerTeamUsers().subscribe({
       next: (res: any) => {
-        console.log('✅ Utilisateurs récupérés :', res);
         this.users = res.users || [];
         this.loading = false;
       },
       error: (err) => {
-        console.error('❌ Erreur API manager/team/users :', err);
         this.error = 'Impossible de charger les utilisateurs de votre équipe';
         this.loading = false;
       }

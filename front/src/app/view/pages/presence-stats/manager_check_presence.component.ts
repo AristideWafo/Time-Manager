@@ -17,7 +17,7 @@ interface Presence {
   template: `
   <section class="stats-container">
 
-    <h1>Présences de {{ employeeName }}</h1>
+    <h1>Présence de {{ employeeName }}</h1>
 
     <div *ngIf="loading">Chargement des données...</div>
 
