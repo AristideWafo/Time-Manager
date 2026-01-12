@@ -61,6 +61,10 @@ jobs:
     name: Build
     needs: [detect-changes, cache-deps]
     if: needs.detect-changes.outputs.backend == 'true' || needs.detect-changes.outputs.frontend == 'true'
+    permissions:
+      contents: read
+      id-token: write
+      attestations: write
     uses: ./.github/workflows/build.yml
     with:
       build-backend: ${{ needs.detect-changes.outputs.backend == 'true' }}
