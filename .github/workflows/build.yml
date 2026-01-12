@@ -11,7 +11,7 @@ on:
         required: false
         type: boolean
         default: true
-        
+
 permissions:
   contents: read
   id-token: write
@@ -62,7 +62,7 @@ jobs:
       - name: Attest build provenance
         uses: actions/attest-build-provenance@v3
         with:
-          subject-path: dist/
+          subject-path: ${{ vars.FRONT_REPOSITORY }}/dist
 
   back-build:
     if: inputs.build-backend == true
@@ -109,5 +109,4 @@ jobs:
       - name: Attest build provenance
         uses: actions/attest-build-provenance@v3
         with:
-          subject-path: app
-
+          subject-path: ${{ vars.BACK_REPOSITORY }}/${{ vars.APP_NAME }}
