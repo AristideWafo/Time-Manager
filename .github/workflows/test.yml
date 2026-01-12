@@ -17,7 +17,7 @@ permissions:
 
 jobs:
   go-lint:
-    if: inputs.test-backend == true
+    if: inputs.test-backend == true && github.event_name == 'pull_request'
     name: go-lint
     runs-on: ubuntu-22.04
     steps:
@@ -83,7 +83,7 @@ jobs:
           path: ${{ vars.BACK_REPOSITORY }}/coverage.out
 
   angular-lint:
-    if: inputs.test-frontend == true
+    if: inputs.test-frontend == true && github.event_name == 'pull_request'
     name: angular-lint
     runs-on: ubuntu-22.04
     steps:
