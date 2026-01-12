@@ -77,7 +77,7 @@ jobs:
         run: go test $(go list ./... | grep -v /repository) -v -coverprofile=coverage.out
 
       - name: Upload test coverage
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v6
         with:
           name: backend-coverage-report
           path: ${{ vars.BACK_REPOSITORY }}/coverage.out
